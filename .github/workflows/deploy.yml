@@ -10,18 +10,25 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
+
       - name: Use Node.js 13.10
         uses: actions/setup-node@v1
         with:
           node-version: "13.10"
-      - name: Install yarn and run unit tests
-        run: cd client
-        run: yarn
-        run: yarn test
+
+      - name: Install yarn
+        run: |
+          cd client,
+          yarn --frozen-lockfile
+  
+      - name: Run unit tests
+          run: yarn test
         env:
           CI: true
+
       - name: Publish to Github Packages Registry
         uses: LynchyNZ/trackportfol.io@master
         with:
@@ -31,6 +38,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           dockerfile: client/Dockerfile-prod
           tags: latest
+
       - name: Deploy package to server
         uses: appleboy/ssh-action@master
         env:
