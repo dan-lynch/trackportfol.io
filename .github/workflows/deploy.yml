@@ -2,10 +2,10 @@ name: Build and Deploy Client
 
 on:
   push:
-    branches:
-      - master
     paths:
       - 'client/**'
+    # branches:
+    #   - master
 
 jobs:
   build-and-deploy-client:
