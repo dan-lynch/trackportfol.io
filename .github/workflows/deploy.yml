@@ -34,24 +34,24 @@ jobs:
         with:
           name: LynchyNZ/trackportfol.io/client-prod
           registry: docker.pkg.github.com
-          username: ${{ secrets.GITHUB_USERNAME }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.GIT_USERNAME }}
+          password: ${{ secrets.GIT_TOKEN }}
           dockerfile: client/Dockerfile-prod
           tags: latest
 
       - name: Deploy package to server
         uses: appleboy/ssh-action@master
         env:
-          GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+          GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
-          envs: GITHUB_USERNAME, GITHUB_TOKEN
+          envs: GIT_USERNAME, GIT_TOKEN
           script: |
             docker stop client-prod
-            docker login docker.pkg.github.com -u $GITHUB_USERNAME -p $GITHUB_TOKEN
+            docker login docker.pkg.github.com -u $GIT_USERNAME -p $GIT_TOKEN
             docker pull docker.pkg.github.com/LynchyNZ/trackportfol.io/client-prod:latest
             docker run -dit -p 1337:1337 docker.pkg.github.com/LynchyNZ/trackportfol.io/client-prod:latest
