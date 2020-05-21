@@ -4,10 +4,10 @@ services:
   client-dev:
     container_name: client-dev
     build:
-      context: ./packages/client
+      context: ./client
       dockerfile: Dockerfile.dev
     volumes:
-      - './packages/client:/app'
+      - './client:/app'
       - '/app/node_modules'
     ports:
       - 3001:3000
