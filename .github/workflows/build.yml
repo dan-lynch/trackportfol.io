@@ -3,11 +3,7 @@ name: Build and Test Client
 on:
     push:
       paths:
-        - 'client/**'
-
-    pull_request:
-      paths:
-        - 'client/**'     
+        - 'client/**'    
 
 jobs:
   build-and-test-client:
