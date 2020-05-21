@@ -6,7 +6,7 @@ type Props = {};
 const Dashboard: React.FC<Props> = () => {
   return (
     <React.Fragment>
-      <h2>Dashboard</h2>
+      <h2>Dashboard:</h2>
       <Suspense fallback={<div>Loading...</div>}>
         <DailyChart />
       </Suspense>
