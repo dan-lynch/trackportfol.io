@@ -32,7 +32,7 @@ jobs:
       - name: Publish to Github Packages Registry
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          name: LynchyNZ/trackportfol.io/client-prod
+          name: lynchynz/trackportfol.io/client-prod
           registry: docker.pkg.github.com
           username: ${{ secrets.GIT_USERNAME }}
           password: ${{ secrets.GIT_TOKEN }}
