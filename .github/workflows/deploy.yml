@@ -2,10 +2,10 @@ name: Build and Deploy Client
 
 on:
   push:
-    branches:
-      - master
     paths:
       - 'client/**'
+    branches:
+      - master
 
 jobs:
   build-and-deploy-client:
@@ -58,5 +58,5 @@ jobs:
           script: |
             docker stop client-prod
             docker login docker.pkg.github.com -u $GIT_USERNAME -p $GIT_TOKEN
-            docker pull docker.pkg.github.com/LynchyNZ/trackportfol.io/client-prod:latest
-            docker run -dit -p 1337:1337 docker.pkg.github.com/LynchyNZ/trackportfol.io/client-prod:latest
+            docker pull docker.pkg.github.com/lynchynz/trackportfol.io/client-prod:latest
+            docker run -dit -p 1337:1337 docker.pkg.github.com/lynchynz/trackportfol.io/client-prod:latest
