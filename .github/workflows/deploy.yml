@@ -1,0 +1,57 @@
+name: Build and Deploy Client
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'client/*'
+
+jobs:
+  build-and-deploy-client:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js 13.10
+        uses: actions/setup-node@v1
+        with:
+          node-version: "13.10"
+
+      - name: Install yarn
+        run: |
+          cd client
+          yarn --frozen-lockfile
+  
+      - name: Run unit tests
+        run: yarn test
+        env:
+          CI: true
+
+      - name: Publish to Github Packages Registry
+        uses: LynchyNZ/trackportfol.io@master
+        with:
+          name: LynchyNZ/trackportfol.io/client-prod
+          registry: docker.pkg.github.com
+          username: ${{ secrets.GITHUB_USERNAME }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          dockerfile: client/Dockerfile-prod
+          tags: latest
+
+      - name: Deploy package to server
+        uses: appleboy/ssh-action@master
+        env:
+          GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          envs: GITHUB_USERNAME, GITHUB_TOKEN
+          script: |
+            docker stop client-prod
+            docker login docker.pkg.github.com -u $GITHUB_USERNAME -p $GITHUB_TOKEN
+            docker pull docker.pkg.github.com/LynchyNZ/trackportfol.io/client-prod:latest
+            docker run -dit -p 1337:1337 docker.pkg.github.com/LynchyNZ/trackportfol.io/client-prod:latest
