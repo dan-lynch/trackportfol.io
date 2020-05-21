@@ -1,8 +1,6 @@
 # Script for manually deploying project
 # Ensure .env file populated and schema decrypted
 
-cd trackportfol.io
-
 git fetch --all
 
 git reset --hard origin/master
