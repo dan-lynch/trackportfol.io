@@ -30,7 +30,7 @@ jobs:
           CI: true
 
       - name: Publish to Github Packages Registry
-        uses: LynchyNZ/trackportfol.io@master
+        uses: elgohr/Publish-Docker-Github-Action@master
         with:
           name: LynchyNZ/trackportfol.io/client-prod
           registry: docker.pkg.github.com
