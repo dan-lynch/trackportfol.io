@@ -36,7 +36,7 @@ jobs:
           registry: docker.pkg.github.com
           username: ${{ secrets.GIT_USERNAME }}
           password: ${{ secrets.GIT_TOKEN }}
-          dockerfile: client/Dockerfile-prod
+          dockerfile: client/Dockerfile.prod
           tags: latest
 
       - name: Deploy package to server
