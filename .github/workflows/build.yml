@@ -27,4 +27,6 @@ jobs:
           yarn --frozen-lockfile
 
       - name: Run unit tests
-        run: yarn test
+        run: |
+          cd client
+          yarn test
