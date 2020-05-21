@@ -1,18 +1,25 @@
-name: build-and-test
+name: Build and Test Client
 
-on: [push]
+on: [push, pull_request]    
 
 jobs:
-  build:
+  build-and-test-client:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
+
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:
           node-version: "13.10"
-      - name: Install yarn and run unit tests
+
+      - name: Install yarn
         run: |
-        cd client
-        yarn --frozen-lockfile
-        yarn test
+          cd client
+          yarn --frozen-lockfile
+
+      - name: Run unit tests
+        run: |
+          cd client
+          yarn test

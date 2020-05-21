@@ -1,48 +1,63 @@
-name: build-and-deploy
+name: Build and Deploy Client
 
 on:
   push:
+    paths:
+      - 'client/**'
     branches:
       - master
 
 jobs:
-  build:
+  build-and-deploy-client:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
+
       - name: Use Node.js 13.10
         uses: actions/setup-node@v1
         with:
           node-version: "13.10"
-      - name: Install yarn and run unit tests
+
+      - name: Install yarn
         run: |
           cd client
-          yarn
+          yarn --frozen-lockfile
+  
+      - name: Build and run unit tests
+        run: |
+          cd client
           yarn test
-        env:
-          CI: true
+
+      - name: Build production client
+        run: |
+          cd client
+          yarn build
+
       - name: Publish to Github Packages Registry
-        uses: LynchyNZ/trackportfol.io@master
+        uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          name: LynchyNZ/trackportfol.io/client-prod
+          name: lynchynz/trackportfol.io/client-prod
           registry: docker.pkg.github.com
-          username: ${{ secrets.GITHUB_USERNAME }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          dockerfile: client/Dockerfile-prod
+          username: ${{ secrets.GIT_USERNAME }}
+          password: ${{ secrets.GIT_TOKEN }}
+          dockerfile: client/Dockerfile.deploy
           tags: latest
+
       - name: Deploy package to server
         uses: appleboy/ssh-action@master
         env:
-          GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+          GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
-          envs: GITHUB_USERNAME, GITHUB_TOKEN
+          envs: GIT_USERNAME, GIT_TOKEN
           script: |
             docker stop client-prod
-            docker login docker.pkg.github.com -u $GITHUB_USERNAME -p $GITHUB_TOKEN
-            docker pull docker.pkg.github.com/LynchyNZ/trackportfol.io/client-prod:latest
-            docker run -dit -p 1337:1337 docker.pkg.github.com/LynchyNZ/trackportfol.io/client-prod:latest
+            docker remove client-prod
+            docker login docker.pkg.github.com -u $GIT_USERNAME -p $GIT_TOKEN
+            docker pull docker.pkg.github.com/lynchynz/trackportfol.io/client-prod:latest
+            docker run -dit --name client-prod -p 1337:1337 docker.pkg.github.com/lynchynz/trackportfol.io/client-prod:latest
