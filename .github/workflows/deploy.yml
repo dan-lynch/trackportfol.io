@@ -1,4 +1,4 @@
-name: build-and-deploy-client
+name: Build and Deploy Client
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
       - 'client/*'
 
 jobs:
-  build:
+  build-and-deploy-client:
     runs-on: ubuntu-latest
 
     steps:

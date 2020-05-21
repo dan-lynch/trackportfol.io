@@ -1,4 +1,4 @@
-name: build-and-test-client
+name: Build and Test Client
 
 on:
     push:
@@ -10,7 +10,7 @@ on:
         - 'client/**'     
 
 jobs:
-  build:
+  build-and-test-client:
     runs-on: ubuntu-latest
 
     steps:
