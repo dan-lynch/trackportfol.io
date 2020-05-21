@@ -6,7 +6,7 @@ services:
     restart: always
     image: db
     build:
-      context: ./packages/backend/db
+      context: ./backend/db
     volumes:
       - db:/var/lib/postgresql/data
     env_file:
@@ -21,7 +21,7 @@ services:
     restart: always
     image: graphql
     build:
-      context: ./packages/backend/graphql
+      context: ./backend/graphql
     env_file:
       - .env
     depends_on:
