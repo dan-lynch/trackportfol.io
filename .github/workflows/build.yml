@@ -1,6 +1,12 @@
-name: build-and-test
+name: build-and-test-client
 
-on: [push]
+on:
+    push:
+      paths:
+        - 'client/*'
+    pull_request:
+      paths:
+        - 'client/*'      
 
 jobs:
   build:
@@ -12,7 +18,6 @@ jobs:
         with:
           node-version: "13.10"
       - name: Install yarn and run unit tests
-        run: |
-        cd client
-        yarn --frozen-lockfile
-        yarn test
+        run: cd client
+        run: yarn --frozen-lockfile
+        run: yarn test

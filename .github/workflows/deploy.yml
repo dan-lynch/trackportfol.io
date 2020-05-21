@@ -1,9 +1,11 @@
-name: build-and-deploy
+name: build-and-deploy-client
 
 on:
   push:
     branches:
       - master
+    paths:
+      - 'client/*'
 
 jobs:
   build:
@@ -15,10 +17,9 @@ jobs:
         with:
           node-version: "13.10"
       - name: Install yarn and run unit tests
-        run: |
-          cd client
-          yarn
-          yarn test
+        run: cd client
+        run: yarn
+        run: yarn test
         env:
           CI: true
       - name: Publish to Github Packages Registry
