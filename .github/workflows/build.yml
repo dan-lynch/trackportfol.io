@@ -14,5 +14,5 @@ jobs:
       - name: Install yarn and run unit tests
         run: |
         cd client
-        yarn yarn --frozen-lockfile
+        yarn --frozen-lockfile
         yarn test
