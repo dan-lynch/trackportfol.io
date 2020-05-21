@@ -24,10 +24,15 @@ jobs:
           cd client
           yarn --frozen-lockfile
   
-      - name: Run unit tests
+      - name: Build and run unit tests
         run: |
           cd client
           yarn test
+
+      - name: Build production client
+        run: |
+          cd client
+          yarn build
 
       - name: Publish to Github Packages Registry
         uses: elgohr/Publish-Docker-Github-Action@master
@@ -36,7 +41,7 @@ jobs:
           registry: docker.pkg.github.com
           username: ${{ secrets.GIT_USERNAME }}
           password: ${{ secrets.GIT_TOKEN }}
-          dockerfile: client/Dockerfile.prod
+          dockerfile: client/Dockerfile.deploy
           tags: latest
 
       - name: Deploy package to server
