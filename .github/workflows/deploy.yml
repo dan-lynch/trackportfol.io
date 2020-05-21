@@ -25,9 +25,9 @@ jobs:
           yarn --frozen-lockfile
   
       - name: Run unit tests
-        run: yarn test
-        env:
-          CI: true
+        run: |
+          cd client
+          yarn test
 
       - name: Publish to Github Packages Registry
         uses: elgohr/Publish-Docker-Github-Action@master
