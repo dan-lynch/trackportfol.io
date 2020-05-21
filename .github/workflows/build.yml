@@ -23,7 +23,7 @@ jobs:
 
       - name: Install yarn
         run: |
-          cd client,
+          cd client
           yarn --frozen-lockfile
 
       - name: Run unit tests
