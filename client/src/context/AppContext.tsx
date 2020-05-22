@@ -1,6 +1,8 @@
 import React from 'react';
 
 type ContextProps = {
+  isLoggedIn: boolean;
+  setIsLoggedIn: any;
   stock: string;
   setStock: any;
   userInputStock: string;
@@ -9,4 +11,4 @@ type ContextProps = {
   setTheme: any;
 };
 
-export const StockContext = React.createContext<Partial<ContextProps>>({});
+export const AppContext = React.createContext<Partial<ContextProps>>({});
