@@ -1,6 +1,6 @@
 import { parseData } from 'utils';
 import * as React from 'react';
-import { StockContext } from 'context/StockContext';
+import { AppContext } from 'context/AppContext';
 import { API_KEY } from 'helpers/constants';
 
 interface WithOHLCDataProps {
@@ -24,7 +24,7 @@ export interface IOHLCData {
 function fetchStockData() {
   return <TProps extends WithOHLCDataProps>(OriginalComponent: React.ComponentClass<TProps>) => {
     return class WithOHLCData extends React.Component<Omit<TProps, 'data'>, WithOHLCState> {
-      static contextType = StockContext;
+      static contextType = AppContext;
       currentStock: string | undefined;
 
       public constructor(props: Omit<TProps, 'data'>) {
@@ -50,7 +50,7 @@ function fetchStockData() {
       public render() {
         const { data, message } = this.state;
         if (data === undefined) {
-          return <div className="center">{message}</div>;
+          return <div className='center'>{message}</div>;
         }
         return <OriginalComponent {...(this.props as TProps)} data={data} />;
       }
@@ -59,7 +59,7 @@ function fetchStockData() {
         try {
           this.currentStock = this.context.stock;
           const response = await fetch(
-            `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${this.context.stock}&apikey=${API_KEY}`,
+            `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${this.context.stock}&apikey=${API_KEY}`
           );
           response.json().then((data) => {
             const parsedData = parseData(data);

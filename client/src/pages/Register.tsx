@@ -1,16 +1,16 @@
 import React, { lazy, Suspense } from 'react';
-const DashboardComponent = lazy(() => import('components/Dashboard'));
+const ResgisterComponent = lazy(() => import('components/Register'));
 
 type Props = {};
 
-const Dashboard: React.FC<Props> = () => {
+const Register: React.FC<Props> = () => {
   return (
     <React.Fragment>
       <Suspense fallback={<div>Loading...</div>}>
-        <DashboardComponent />
+        <ResgisterComponent />
       </Suspense>
     </React.Fragment>
   );
 };
 
-export default Dashboard;
+export default Register;

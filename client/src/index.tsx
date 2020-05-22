@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import 'semantic-ui-css/semantic.min.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { ApolloProvider } from 'react-apollo';
@@ -10,7 +9,7 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import { setContext } from 'apollo-link-context';
 import { API_URL } from 'helpers/constants';
 import { userService } from 'services/userService';
-import 'index.css';
+import 'typeface-roboto';
 
 const httpLink = createHttpLink({
   uri: `${API_URL}`,

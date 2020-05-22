@@ -82,12 +82,11 @@ class StockChart extends React.Component<Props> {
         margin={margin}
         data={data}
         displayXAccessor={displayXAccessor}
-        seriesName="Data"
+        seriesName='Data'
         xScale={xScale}
         xAccessor={xAccessor}
         xExtents={xExtents}
-        zoomAnchor={lastVisibleItemBasedZoomAnchor}
-      >
+        zoomAnchor={lastVisibleItemBasedZoomAnchor}>
         <Chart id={2} height={barChartHeight} origin={barChartOrigin} yExtents={this.barChartExtents}>
           <BarSeries fill={this.openCloseColor} yAccessor={this.yBarSeries} />
         </Chart>
@@ -99,7 +98,7 @@ class StockChart extends React.Component<Props> {
           <LineSeries yAccessor={ema12.accessor()} stroke={ema12.stroke()} />
           <MouseCoordinateY rectWidth={margin.right} displayFormat={this.pricesDisplayFormat} />
           <EdgeIndicator
-            itemType="last"
+            itemType='last'
             rectWidth={margin.right}
             fill={this.openCloseColor}
             lineStroke={this.openCloseColor}
@@ -132,9 +131,8 @@ class StockChart extends React.Component<Props> {
           height={elderRayHeight}
           yExtents={[0, elder.accessor()]}
           origin={elderRayOrigin}
-          padding={{ top: 8, bottom: 8 }}
-        >
-          <XAxis showGridLines gridLinesStroke="#e0e3eb" />
+          padding={{ top: 8, bottom: 8 }}>
+          <XAxis showGridLines gridLinesStroke='#e0e3eb' />
           <YAxis ticks={4} tickFormat={this.pricesDisplayFormat} />
 
           <MouseCoordinateX displayFormat={timeDisplayFormat} />
@@ -144,7 +142,7 @@ class StockChart extends React.Component<Props> {
 
           <SingleValueTooltip
             yAccessor={elder.accessor()}
-            yLabel="Elder Ray"
+            yLabel='Elder Ray'
             yDisplayFormat={(d: any) =>
               `${this.pricesDisplayFormat(d.bullPower)}, ${this.pricesDisplayFormat(d.bearPower)}`
             }
