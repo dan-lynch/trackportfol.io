@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Mutation } from 'react-apollo';
+import { AppContext } from 'context/AppContext';
 import { userService } from 'services/userService';
 import gql from 'graphql-tag';
 import { Container, Grid, Paper, Typography, Button, TextField, Link } from '@material-ui/core';
@@ -30,7 +31,7 @@ const useStyles = makeStyles(() => ({
     justify: 'center',
     margin: '0 2rem',
   },
-  login: {
+  registerGrid: {
     alignItems: 'flex-end',
     textAlign: 'end',
   },
@@ -59,9 +60,12 @@ const Register: React.FC<Props> = () => {
 
   const history = useHistory();
   const classes = useStyles();
+  const appContext = useContext(AppContext);
 
   async function onConfirm(data: any) {
+    appContext.setSignupEmail(email);
     setStatus(Status.Success);
+    history.push('/login');
   }
 
   async function onError(error: any) {
@@ -70,7 +74,7 @@ const Register: React.FC<Props> = () => {
   }
 
   useEffect(() => {
-    if (userService.loggedInUser) {
+    if (userService.isLoggedIn) {
       history.push('/dashboard');
     }
   }, [history]);
@@ -85,7 +89,7 @@ const Register: React.FC<Props> = () => {
           {status === Status.Success && (
             <Grid item xs={12} className={classes.gridItem}>
               <Alert severity='success'>
-                Account created successfully! You can now <Link href='/login'>Login</Link>
+                Account created successfully! Redirecting to <Link href='/login'>Login</Link>...
               </Alert>
             </Grid>
           )}
@@ -145,6 +149,11 @@ const Register: React.FC<Props> = () => {
           <Grid item xs={12} className={classes.gridItem}>
             <Grid container>
               <Grid item xs={6}>
+                  <Button onClick={() => history.push('/login')}>
+                    Go To Login
+                  </Button>
+                </Grid>
+              <Grid item className={classes.registerGrid} xs={6}>
                 <Mutation
                   mutation={REGISTER_MUTATION}
                   variables={{ firstName, lastName, email, password }}
@@ -152,15 +161,10 @@ const Register: React.FC<Props> = () => {
                   onError={(error: any) => onError(error)}>
                   {(mutation: any) => (
                     <Button className={classes.button} variant='contained' color='primary' onClick={mutation}>
-                      Register
+                      Sign up
                     </Button>
                   )}
                 </Mutation>
-              </Grid>
-              <Grid item className={classes.login} xs={6}>
-                <Button variant='outlined' onClick={() => history.push('/login')}>
-                  Go To Login
-                </Button>
               </Grid>
             </Grid>
           </Grid>

@@ -7,7 +7,7 @@ export interface ProtectedRouteProps extends RouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = (props) => {
-  const authenticated = userService.loggedInUser;
+  const authenticated = userService.isLoggedIn;
 
   if (!authenticated) {
     const renderComponent = () => <Redirect to={{ pathname: props.authenticationPath }} />;

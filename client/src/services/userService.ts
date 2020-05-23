@@ -13,6 +13,9 @@ export const userService = {
   get loggedInUser(): User {
     return currentUser.value;
   },
+  get isLoggedIn(): boolean {
+    return !!currentUser.value;
+  },
 };
 
 async function login(token: string) {
