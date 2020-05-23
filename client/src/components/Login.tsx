@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Mutation } from 'react-apollo';
 import { AppContext } from 'context/AppContext';
@@ -26,7 +26,7 @@ const useStyles = makeStyles(() => ({
     justify: 'center',
     margin: '0 2rem',
   },
-  register: {
+  loginGrid: {
     alignItems: 'flex-end',
     textAlign: 'end',
   },
@@ -43,6 +43,7 @@ type Props = {};
 enum Status {
   Success,
   Failed,
+  Registered,
   None,
 }
 
@@ -52,15 +53,15 @@ const Login: React.FC<Props> = () => {
   const [status, setStatus] = useState<Status>(Status.None);
 
   const history = useHistory();
-
   const classes = useStyles();
+  const appContext = useContext(AppContext);
 
   async function onConfirm(data: any) {
     const { jwtToken } = data.authenticate;
     if (jwtToken) {
-      setStatus(Status.Success);
       await userService.login(jwtToken);
-      history.push('/dashboard');
+      setStatus(Status.Success);
+      appContext.setIsLoggedIn(true);
     } else {
       onError('Login failed');
     }
@@ -72,81 +73,87 @@ const Login: React.FC<Props> = () => {
   }
 
   useEffect(() => {
-    if (userService.loggedInUser) {
+    if (userService.isLoggedIn || appContext.isLoggedIn) {
       history.push('/dashboard');
     }
-  }, [history]);
+    if (appContext.signupEmail) {
+      setEmail(appContext.signupEmail);
+      setStatus(Status.Registered);
+      appContext.setSignupEmail('');
+    }
+  }, [history, appContext]);
 
   return (
-    <AppContext.Consumer>
-      {({ isLoggedIn, setIsLoggedIn }) => (
-        <Container className={classes.login} maxWidth='sm'>
-          <Paper>
-            <Grid container spacing={3}>
-              <Grid item xs={12} className={classes.gridItem}>
-                <Typography variant='h4'>Login</Typography>
+    <Container className={classes.login} maxWidth='sm'>
+      <Paper>
+        <Grid container spacing={3}>
+          <Grid item xs={12} className={classes.gridItem}>
+            <Typography variant='h4'>Login</Typography>
+          </Grid>
+          {status === Status.Success && (
+            <Grid item xs={12} className={classes.gridItem}>
+              <Alert severity='success'>You have logged in successfully, redirecting to dashboard...</Alert>
+            </Grid>
+          )}
+          {status === Status.Failed && (
+            <Grid item xs={12} className={classes.gridItem}>
+              <Alert severity='error'>Error! Login unsuccessful, please try again</Alert>
+            </Grid>
+          )}
+          {status === Status.Registered && (
+            <Grid item xs={12} className={classes.gridItem}>
+              <Alert severity='success'>Account created successfully! You can now login</Alert>
+            </Grid>
+          )}
+          <Grid item xs={12} className={classes.gridItem}>
+            <TextField
+              id='email'
+              name='email'
+              label='Email Address'
+              variant='outlined'
+              fullWidth
+              autoComplete='on'
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={12} className={classes.gridItem}>
+            <TextField
+              id='password'
+              name='password'
+              label='Choose Password'
+              variant='outlined'
+              fullWidth
+              value={password}
+              type='password'
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={12} className={classes.gridItem}>
+            <Grid container>
+              <Grid item xs={6}>
+                <Button onClick={() => history.push('/register')}>
+                  Sign Up
+                </Button>
               </Grid>
-              {status === Status.Success && (
-                <Grid item xs={12} className={classes.gridItem}>
-                  <Alert severity='success'>You have logged in successfully, redirecting to dashboard...</Alert>
-                </Grid>
-              )}
-              {status === Status.Failed && (
-                <Grid item xs={12} className={classes.gridItem}>
-                  <Alert severity='error'>Error! Login unsuccessful, please try again</Alert>
-                </Grid>
-              )}
-              <Grid item xs={12} className={classes.gridItem}>
-                <TextField
-                  id='email'
-                  name='email'
-                  label='Email Address'
-                  variant='outlined'
-                  fullWidth
-                  autoComplete='on'
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={12} className={classes.gridItem}>
-                <TextField
-                  id='password'
-                  name='password'
-                  label='Choose Password'
-                  variant='outlined'
-                  fullWidth
-                  value={password}
-                  type='password'
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={12} className={classes.gridItem}>
-                <Grid container>
-                  <Grid item xs={6}>
-                    <Mutation
-                      mutation={LOGIN_MUTATION}
-                      variables={{ email, password }}
-                      onCompleted={(data: any) => onConfirm(data)}
-                      onError={(error: any) => onError(error)}>
-                      {(mutation: any) => (
-                        <Button className={classes.button} variant='contained' color='primary' onClick={mutation}>
-                          Login
-                        </Button>
-                      )}
-                    </Mutation>
-                  </Grid>
-                  <Grid item className={classes.register} xs={6}>
-                    <Button variant='outlined' onClick={() => history.push('/register')}>
-                      Create Account
+              <Grid item xs={6} className={classes.loginGrid}>
+                <Mutation
+                  mutation={LOGIN_MUTATION}
+                  variables={{ email, password }}
+                  onCompleted={(data: any) => onConfirm(data)}
+                  onError={(error: any) => onError(error)}>
+                  {(mutation: any) => (
+                    <Button className={classes.button} variant='contained' color='primary' onClick={mutation}>
+                      Login
                     </Button>
-                  </Grid>
-                </Grid>
+                  )}
+                </Mutation>
               </Grid>
             </Grid>
-          </Paper>
-        </Container>
-      )}
-    </AppContext.Consumer>
+          </Grid>
+        </Grid>
+      </Paper>
+    </Container>
   );
 };
 

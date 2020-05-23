@@ -17,8 +17,10 @@ const darkTheme = createMuiTheme({
 
 class App extends React.Component {
   state = {
-    isLoggedIn: !!userService.loggedInUser,
+    isLoggedIn: userService.isLoggedIn,
     setIsLoggedIn: (value: boolean) => this.setState({ isLoggedIn: value }),
+    signupEmail: '',
+    setSignupEmail: (value: string) => this.setState( { signupEmail: value }),
     stock: '',
     setStock: (value: string) => this.setState({ stock: value }),
     userInputStock: '',
