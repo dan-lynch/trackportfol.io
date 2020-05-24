@@ -3,18 +3,10 @@ import { useHistory } from 'react-router-dom';
 import { Mutation } from 'react-apollo';
 import { AppContext } from 'context/AppContext';
 import { userService } from 'services/userService';
-import gql from 'graphql-tag';
 import { Container, Grid, Paper, Typography, Button, TextField } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
-
-const LOGIN_MUTATION = gql`
-  mutation authenticate($email: String!, $password: String!) {
-    authenticate(input: { email: $email, password: $password }) {
-      jwtToken
-    }
-  }
-`;
+import { apiService } from 'services/apiService'; 
 
 const useStyles = makeStyles(() => ({
   login: {
@@ -69,7 +61,7 @@ const Login: React.FC<Props> = () => {
 
   async function onError(error: any) {
     setStatus(Status.Failed);
-    console.error(error);
+    console.info(error);
   }
 
   useEffect(() => {
@@ -138,7 +130,7 @@ const Login: React.FC<Props> = () => {
               </Grid>
               <Grid item xs={6} className={classes.loginGrid}>
                 <Mutation
-                  mutation={LOGIN_MUTATION}
+                  mutation={apiService.loginMutation}
                   variables={{ email, password }}
                   onCompleted={(data: any) => onConfirm(data)}
                   onError={(error: any) => onError(error)}>
