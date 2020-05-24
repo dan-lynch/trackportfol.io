@@ -1,6 +1,9 @@
-name: Build and Test Client
+name: Test Client
 
-on: [push, pull_request]    
+on:
+  push:
+    paths:
+      - 'client/**'
 
 jobs:
   build-and-test-client:

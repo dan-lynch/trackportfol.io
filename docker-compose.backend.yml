@@ -28,24 +28,6 @@ services:
       - db
     ports:
       - 5433:5433
-    command:
-      [
-        "--connection",
-        "${DATABASE_URL}",
-        "--port",
-        "5433",
-        "--schema",
-        "public",
-        "--default-role",
-        "trackportfolio_anonymous",
-        "--jwt-secret",
-        "${JWT_SECRET}",
-        "--jwt-token-identifier",
-        "public.jwt_token",
-        "--append-plugins",
-        "postgraphile-plugin-connection-filter",
-        "--cors",
-      ]
 
 volumes:
   db:
