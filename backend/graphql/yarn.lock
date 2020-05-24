@@ -457,7 +457,7 @@ fresh@0.5.2:
   resolved "https://registry.yarnpkg.com/fresh/-/fresh-0.5.2.tgz#3d8cadd90d976569fa835ab1f8e4b23a105605a7"
   integrity sha1-PYyt2Q2XZWn6g1qx+OSyOhBWBac=
 
-graphile-build-pg@4.7.0, graphile-build-pg@^4.7.0:
+graphile-build-pg@4.7.0:
   version "4.7.0"
   resolved "https://registry.yarnpkg.com/graphile-build-pg/-/graphile-build-pg-4.7.0.tgz#6ee86e0623bad433c61812119ac22aa420788841"
   integrity sha512-dwGV+wUoPbly9RP9WgShs6yPv8A4N/xhdHGFu9sxYn49qkwJaAEdFehgsdCl12ZvJYpe/eDyK/6jR5PQOhJDbw==
@@ -473,7 +473,7 @@ graphile-build-pg@4.7.0, graphile-build-pg@^4.7.0:
     pg-sql2 "4.7.0"
     postgres-interval "^1.2.0"
 
-graphile-build@4.7.0, graphile-build@^4.7.0:
+graphile-build@4.7.0:
   version "4.7.0"
   resolved "https://registry.yarnpkg.com/graphile-build/-/graphile-build-4.7.0.tgz#138ebd706f6418dcec08b7301c769267bf242a24"
   integrity sha512-zoh5KItIj40bZnHLEh1G6zAN6C0hmJkKVYsQUEZUeX4Ex80YoX9eFO8rI7LwMumPASJf4nmjlziksLY1+1cn6g==
@@ -514,11 +514,6 @@ graphql-parse-resolve-info@4.7.0:
   integrity sha512-VKzfvHEKybTKjQVpTFrA5yUq2S9ihcZvfJAtsDBBCuV6wauPu1xl/f9ehgVf0FcEJJs4vz6ysb/ZMkGigQZseg==
   dependencies:
     iterall "^1.2.2"
-
-graphql@^15.0.0:
-  version "15.0.0"
-  resolved "https://registry.yarnpkg.com/graphql/-/graphql-15.0.0.tgz#042a5eb5e2506a2e2111ce41eb446a8e570b8be9"
-  integrity sha512-ZyVO1xIF9F+4cxfkdhOJINM+51B06Friuv4M66W7HzUOeFd+vNzUn4vtswYINPi6sysjf1M2Ri/rwZALqgwbaQ==
 
 has-flag@^3.0.0:
   version "3.0.0"
@@ -856,7 +851,7 @@ pg-types@^2.1.0:
     postgres-date "~1.0.4"
     postgres-interval "^1.1.0"
 
-"pg@>=6.1.0 <9", pg@^8.2.1:
+"pg@>=6.1.0 <9":
   version "8.2.1"
   resolved "https://registry.yarnpkg.com/pg/-/pg-8.2.1.tgz#f5a81f5e2025182fbe701514d3e1a43e68a616ac"
   integrity sha512-DKzffhpkWRr9jx7vKxA+ur79KG+SKw+PdjMb1IRhMiKI9zqYUGczwFprqy+5Veh/DCcFs1Y6V8lRLN5I1DlleQ==
