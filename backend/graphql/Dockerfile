@@ -1,8 +1,10 @@
-FROM node:alpine
-LABEL description="GraphQL API for PostgreSQL database"
-
-RUN npm install -g postgraphile
-RUN npm install -g postgraphile-plugin-connection-filter
-
+# build environment
+FROM node:13.12.0-alpine as build
+WORKDIR /app
+ENV PATH /app/node_modules/.bin:$PATH
+COPY package.json ./
+COPY yarn.lock ./
+COPY index.js ./
+RUN yarn install --frozen-lockfile --silent
 EXPOSE 5433
-ENTRYPOINT ["postgraphile", "-n", "0.0.0.0"]
+CMD ["node", "index.js"]
