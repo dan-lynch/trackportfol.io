@@ -39,18 +39,20 @@ const Header: React.FC<Props> = (props) => {
               </Button>
             )}
             {isLoggedIn && (
-              <Button color='inherit' onClick={() => userService.logout() && setIsLoggedIn(false) && history.push('/login')}>
-                Logout
+              <Button
+                color='inherit'
+                onClick={() => userService.logout() && setIsLoggedIn(false) && history.push('/login')}>
+                Sign out
               </Button>
             )}
             {!isLoggedIn && (
               <Button color='inherit' onClick={() => history.push('/login')}>
-                Login
+                Sign in
               </Button>
             )}
             {!isLoggedIn && (
-              <Button color='inherit' onClick={() => history.push('/register')}>
-                Register
+              <Button color='inherit' onClick={() => history.push('/join')}>
+                Sign up
               </Button>
             )}
           </Toolbar>

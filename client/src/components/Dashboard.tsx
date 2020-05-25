@@ -1,8 +1,13 @@
-import React from 'react';
-import { Container, Grid, Paper, Typography, Button, TextField, Divider } from '@material-ui/core';
+import React, { useEffect, useContext, useState } from 'react';
+import { Container, Grid, Paper, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import StockCharts from 'components/StockChart';
+import SearchStock from 'components/SearchStock';
 import { AppContext } from 'context/AppContext';
+import { apiService } from 'services/apiService';
+import { userService } from 'services/userService';
+import { useQuery } from 'react-apollo';
+import { Instrument, Holding } from 'helpers/types';
 
 type Props = {};
 
@@ -17,9 +22,6 @@ const useStyles = makeStyles(() => ({
     margin: '0 2rem',
   },
   button: {
-    height: '3.8rem',
-    width: '10rem',
-    marginLeft: '1rem',
     backgroundColor: 'black',
     '&:hover': {
       backgroundColor: 'black',
@@ -28,42 +30,86 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Dashboard: React.FC<Props> = () => {
+  const [name, setName] = useState<string>('');
+  const [holdings, setHoldings] = useState<Holding[] | null>(null);
+  const [instruments, setInstruments] = useState<Instrument[] | []>([]);
   const classes = useStyles();
+  const appContext = useContext(AppContext);
+  const [searchInstrument, setSearchInstrument] = useState<Instrument | null>(null);
+  const currentUser = useQuery(apiService.currentUser);
+  const instrumentsQuery = useQuery(apiService.allInstruments);
+
+  useEffect(() => {
+    if (userService.isLoggedIn || appContext.isLoggedIn) {
+      if (!currentUser.error && currentUser.data) {
+        setName(currentUser.data.currentUser.firstName);
+        setHoldings(currentUser.data.currentUser.holdingsByUserId.nodes);
+      }
+    }
+  }, [appContext.isLoggedIn, currentUser]);
+
+  useEffect(() => {
+    if (!instrumentsQuery.error && instrumentsQuery.data) {
+      setInstruments(instrumentsQuery.data.allInstruments.nodes);
+    }
+  }, [instrumentsQuery]);
+
+  async function processSearch(searchQuery: Instrument | null) {
+    if (searchQuery && searchQuery.code) {
+      setSearchInstrument(searchQuery);
+      appContext.setStock(searchQuery.code);
+    }
+  }
 
   return (
     <AppContext.Consumer>
-      {({ stock, setStock, userInputStock, setUserInputStock }) => (
+      {({ stock }) => (
         <React.Fragment>
           <Container className={classes.dashboard} maxWidth='lg'>
             <Paper>
               <Grid container spacing={3}>
-                <Grid item xs={12} className={classes.gridItem}>
-                  <Typography variant='h4'>Dashboard</Typography>
+                {/* Left column */}
+                <Grid item md={6}>
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} className={classes.gridItem}>
+                      <Typography variant='h5'>Welcome to your Dashboard{name ? `, ${name}!` : ``}</Typography>
+                    </Grid>
+                    <Grid item xs={12} className={classes.gridItem}>
+                      <Typography variant='h5'>Your holdings</Typography>
+                    </Grid>
+                    <Grid item xs={12} className={classes.gridItem}>
+                      {holdings && holdings.length > 0 ? (
+                        holdings.map((holding, key) => {
+                          return (
+                            <Typography key={key} variant='body1'>
+                              ${holding.instrumentByInstrumentId.code} ($
+                              {holding.instrumentByInstrumentId.description}) - ${holding.amount}
+                            </Typography>
+                          );
+                        })
+                      ) : (
+                        <Typography variant='body1'>You have no holdings.</Typography>
+                      )}
+                    </Grid>
+                  </Grid>
                 </Grid>
-                <Grid item xs={12} className={classes.gridItem}>
-                  <TextField
-                    id='searchstock'
-                    name='searchstock'
-                    label='Enter Stock'
-                    variant='outlined'
-                    value={userInputStock}
-                    onChange={(e) => setUserInputStock(e.target.value)}
-                  />
-                  <Button
-                    variant='contained'
-                    className={classes.button}
-                    color='primary'
-                    onClick={() => setStock(userInputStock)}>
-                    Search
-                  </Button>
-                </Grid>
-                <Divider />
-                <Grid item xs={12} className={classes.gridItem}>
-                  {stock ? (
-                    <StockCharts stock={stock} />
-                  ) : (
-                    <Typography>Enter a stock code and click 'Fetch Stock' to view chart.</Typography>
-                  )}
+                {/* Right column */}
+                <Grid item md={6}>
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} className={classes.gridItem}>
+                      <Typography variant='h5'>Search stocks</Typography>
+                    </Grid>
+                    <Grid item xs={12} className={classes.gridItem}>
+                      <SearchStock instruments={instruments} value={searchInstrument} setValue={processSearch} />
+                    </Grid>
+                    <Grid item xs={12} className={classes.gridItem}>
+                      {stock ? (
+                        <StockCharts stock={stock} />
+                      ) : (
+                        <Typography>Enter a stock code and click 'Fetch Stock' to view chart.</Typography>
+                      )}
+                    </Grid>
+                  </Grid>
                 </Grid>
               </Grid>
             </Paper>

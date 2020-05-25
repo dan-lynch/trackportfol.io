@@ -2,7 +2,7 @@ import React from 'react';
 import { Router as ReactRouter, Route, Switch, Redirect } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import Login from 'pages/Login';
-import Register from 'pages/Register';
+import Join from 'pages/Join';
 import Dashboard from 'pages/Dashboard';
 import ProtectedRoute, { ProtectedRouteProps } from 'components/ProtectedRoute';
 import ReactGA from 'react-ga';
@@ -24,7 +24,7 @@ const Router = () => (
       <ProtectedRoute path='/dashboard' component={Dashboard} {...defaultProtectedRouteProps} />
       <ProtectedRoute path='/stock/:stock' component={Dashboard} {...defaultProtectedRouteProps} />
       <Route path='/login' component={Login} />
-      <Route path='/register' component={Register} />
+      <Route path='/join' component={Join} />
       <Redirect to='/dashboard' />
     </Switch>
   </ReactRouter>

@@ -3,27 +3,15 @@ import { useHistory } from 'react-router-dom';
 import { Mutation } from 'react-apollo';
 import { AppContext } from 'context/AppContext';
 import { userService } from 'services/userService';
-import gql from 'graphql-tag';
 import { Container, Grid, Paper, Typography, Button, TextField, Link } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
+import { apiService } from 'services/apiService';
+import { Status } from 'helpers/types';
 import { gaService } from 'services/gaService';
 
-const REGISTER_MUTATION = gql`
-  mutation registerUser($email: String!, $password: String!, $firstName: String!, $lastName: String!) {
-    registerUser(input: { email: $email, password: $password, firstName: $firstName, lastName: $lastName }) {
-      user {
-        id
-        firstName
-        lastName
-        createdAt
-      }
-    }
-  }
-`;
-
 const useStyles = makeStyles(() => ({
-  register: {
+  join: {
     minWidth: '5rem',
     minHeight: '5rem',
   },
@@ -32,27 +20,21 @@ const useStyles = makeStyles(() => ({
     justify: 'center',
     margin: '0 2rem',
   },
-  registerGrid: {
+  joinGrid: {
     alignItems: 'flex-end',
     textAlign: 'end',
   },
   button: {
     backgroundColor: 'black',
-    '&:hover' : {
-      backgroundColor: 'black'
+    '&:hover': {
+      backgroundColor: 'black',
     },
   },
 }));
 
 type Props = {};
 
-enum Status {
-  Success,
-  Failed,
-  None,
-}
-
-const Register: React.FC<Props> = () => {
+const Join: React.FC<Props> = () => {
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
@@ -73,7 +55,7 @@ const Register: React.FC<Props> = () => {
   async function onError(error: any) {
     gaService.registerFailedEvent();
     setStatus(Status.Failed);
-    console.error(error);
+    console.info(error);
   }
 
   useEffect(() => {
@@ -83,16 +65,16 @@ const Register: React.FC<Props> = () => {
   }, [history]);
 
   return (
-    <Container className={classes.register} maxWidth='sm'>
+    <Container className={classes.join} maxWidth='sm'>
       <Paper>
         <Grid container spacing={3}>
           <Grid item xs={12} className={classes.gridItem}>
-            <Typography variant='h4'>Create account</Typography>
+            <Typography variant='h4'>Create your account</Typography>
           </Grid>
           {status === Status.Success && (
             <Grid item xs={12} className={classes.gridItem}>
               <Alert severity='success'>
-                Account created successfully! Redirecting to <Link href='/login'>Login</Link>...
+                Account created successfully! Redirecting to <Link href='/login'>Sign in page</Link>...
               </Alert>
             </Grid>
           )}
@@ -152,19 +134,17 @@ const Register: React.FC<Props> = () => {
           <Grid item xs={12} className={classes.gridItem}>
             <Grid container>
               <Grid item xs={6}>
-                  <Button onClick={() => history.push('/login')}>
-                    Go To Login
-                  </Button>
-                </Grid>
-              <Grid item className={classes.registerGrid} xs={6}>
+                <Button onClick={() => history.push('/login')}>Log in</Button>
+              </Grid>
+              <Grid item className={classes.joinGrid} xs={6}>
                 <Mutation
-                  mutation={REGISTER_MUTATION}
+                  mutation={apiService.registerMutation}
                   variables={{ firstName, lastName, email, password }}
                   onCompleted={(data: any) => onConfirm(data)}
                   onError={(error: any) => onError(error)}>
                   {(mutation: any) => (
                     <Button className={classes.button} variant='contained' color='primary' onClick={mutation}>
-                      Sign up
+                      Create Account
                     </Button>
                   )}
                 </Mutation>
@@ -177,4 +157,4 @@ const Register: React.FC<Props> = () => {
   );
 };
 
-export default Register;
+export default Join;

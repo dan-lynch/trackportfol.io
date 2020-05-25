@@ -7,8 +7,6 @@ type ContextProps = {
   setSignupEmail: any;
   stock: string;
   setStock: any;
-  userInputStock: string;
-  setUserInputStock: any;
   theme: string;
   setTheme: any;
 };
