@@ -5,6 +5,8 @@ import { AppContext } from 'context/AppContext';
 import { BrowserRouter } from 'react-router-dom';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { userService } from 'services/userService';
+import ReactGA from 'react-ga';
+import { GA_ID } from 'helpers/constants';
 
 const lightTheme = createMuiTheme({});
 
@@ -13,6 +15,9 @@ const darkTheme = createMuiTheme({
     type: 'dark',
   },
 });
+
+const trackingId = GA_ID;
+ReactGA.initialize(trackingId);
 
 class App extends React.Component {
   state = {

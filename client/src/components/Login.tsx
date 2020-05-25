@@ -7,6 +7,7 @@ import { Container, Grid, Paper, Typography, Button, TextField } from '@material
 import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
 import { apiService } from 'services/apiService';
+import { gaService } from 'services/gaService';
 
 const useStyles = makeStyles(() => ({
   login: {
@@ -51,6 +52,7 @@ const Login: React.FC<Props> = () => {
   async function onConfirm(data: any) {
     const { jwtToken } = data.authenticate;
     if (jwtToken) {
+      gaService.loginSuccessEvent();
       await userService.login(jwtToken);
       setStatus(Status.Success);
       appContext.setIsLoggedIn(true);
@@ -60,6 +62,7 @@ const Login: React.FC<Props> = () => {
   }
 
   async function onError(error: any) {
+    gaService.loginFailedEvent();
     setStatus(Status.Failed);
     console.info(error);
   }

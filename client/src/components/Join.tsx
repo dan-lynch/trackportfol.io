@@ -8,6 +8,7 @@ import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
 import { apiService } from 'services/apiService';
 import { Status } from 'helpers/types';
+import { gaService } from 'services/gaService';
 
 const useStyles = makeStyles(() => ({
   join: {
@@ -45,12 +46,14 @@ const Join: React.FC<Props> = () => {
   const appContext = useContext(AppContext);
 
   async function onConfirm(data: any) {
+    gaService.registerSuccessEvent();
     appContext.setSignupEmail(email);
     setStatus(Status.Success);
     history.push('/login');
   }
 
   async function onError(error: any) {
+    gaService.registerFailedEvent();
     setStatus(Status.Failed);
     console.info(error);
   }
