@@ -7,6 +7,7 @@ import gql from 'graphql-tag';
 import { Container, Grid, Paper, Typography, Button, TextField, Link } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
+import { gaService } from 'services/gaService';
 
 const REGISTER_MUTATION = gql`
   mutation registerUser($email: String!, $password: String!, $firstName: String!, $lastName: String!) {
@@ -63,12 +64,14 @@ const Register: React.FC<Props> = () => {
   const appContext = useContext(AppContext);
 
   async function onConfirm(data: any) {
+    gaService.registerSuccessEvent();
     appContext.setSignupEmail(email);
     setStatus(Status.Success);
     history.push('/login');
   }
 
   async function onError(error: any) {
+    gaService.registerFailedEvent();
     setStatus(Status.Failed);
     console.error(error);
   }

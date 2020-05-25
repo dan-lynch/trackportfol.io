@@ -7,6 +7,7 @@ import gql from 'graphql-tag';
 import { Container, Grid, Paper, Typography, Button, TextField } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
+import { gaService } from 'services/gaService';
 
 const LOGIN_MUTATION = gql`
   mutation authenticate($email: String!, $password: String!) {
@@ -59,6 +60,7 @@ const Login: React.FC<Props> = () => {
   async function onConfirm(data: any) {
     const { jwtToken } = data.authenticate;
     if (jwtToken) {
+      gaService.loginSuccessEvent();
       await userService.login(jwtToken);
       setStatus(Status.Success);
       appContext.setIsLoggedIn(true);
@@ -68,6 +70,7 @@ const Login: React.FC<Props> = () => {
   }
 
   async function onError(error: any) {
+    gaService.loginFailedEvent();
     setStatus(Status.Failed);
     console.error(error);
   }
