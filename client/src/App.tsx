@@ -6,8 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { userService } from 'services/userService';
 
-const lightTheme = createMuiTheme({
-});
+const lightTheme = createMuiTheme({});
 
 const darkTheme = createMuiTheme({
   palette: {
@@ -20,11 +19,9 @@ class App extends React.Component {
     isLoggedIn: userService.isLoggedIn,
     setIsLoggedIn: (value: boolean) => this.setState({ isLoggedIn: value }),
     signupEmail: '',
-    setSignupEmail: (value: string) => this.setState( { signupEmail: value }),
+    setSignupEmail: (value: string) => this.setState({ signupEmail: value }),
     stock: '',
     setStock: (value: string) => this.setState({ stock: value }),
-    userInputStock: '',
-    setUserInputStock: (value: string) => this.setState({ userInputStock: value }),
     theme: 'light',
     setTheme: (value: string) => this.setState({ theme: value }),
   };
@@ -33,10 +30,10 @@ class App extends React.Component {
     return (
       <AppContext.Provider value={this.state}>
         <BrowserRouter>
-        <ThemeProvider theme={this.state.theme === 'dark' ? darkTheme : lightTheme}>
-          <Layout>
-            <Router />
-          </Layout>
+          <ThemeProvider theme={this.state.theme === 'dark' ? darkTheme : lightTheme}>
+            <Layout>
+              <Router />
+            </Layout>
           </ThemeProvider>
         </BrowserRouter>
       </AppContext.Provider>

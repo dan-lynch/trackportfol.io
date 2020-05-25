@@ -1,16 +1,16 @@
 import React, { lazy, Suspense } from 'react';
-const ResgisterComponent = lazy(() => import('components/Register'));
+const JoinComponent = lazy(() => import('components/Join'));
 
 type Props = {};
 
-const Register: React.FC<Props> = () => {
+const Join: React.FC<Props> = () => {
   return (
     <React.Fragment>
       <Suspense fallback={<div>Loading...</div>}>
-        <ResgisterComponent />
+        <JoinComponent />
       </Suspense>
     </React.Fragment>
   );
 };
 
-export default Register;
+export default Join;

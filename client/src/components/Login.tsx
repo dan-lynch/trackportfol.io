@@ -6,7 +6,7 @@ import { userService } from 'services/userService';
 import { Container, Grid, Paper, Typography, Button, TextField } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
-import { apiService } from 'services/apiService'; 
+import { apiService } from 'services/apiService';
 
 const useStyles = makeStyles(() => ({
   login: {
@@ -55,7 +55,7 @@ const Login: React.FC<Props> = () => {
       setStatus(Status.Success);
       appContext.setIsLoggedIn(true);
     } else {
-      onError('Login failed');
+      onError('Sign in failed');
     }
   }
 
@@ -80,21 +80,21 @@ const Login: React.FC<Props> = () => {
       <Paper>
         <Grid container spacing={3}>
           <Grid item xs={12} className={classes.gridItem}>
-            <Typography variant='h4'>Login</Typography>
+            <Typography variant='h4'>Sign in</Typography>
           </Grid>
           {status === Status.Success && (
             <Grid item xs={12} className={classes.gridItem}>
-              <Alert severity='success'>You have logged in successfully, redirecting to dashboard...</Alert>
+              <Alert severity='success'>You have signed in successfully, redirecting to dashboard...</Alert>
             </Grid>
           )}
           {status === Status.Failed && (
             <Grid item xs={12} className={classes.gridItem}>
-              <Alert severity='error'>Error! Login unsuccessful, please try again</Alert>
+              <Alert severity='error'>Error! Sign in unsuccessful, please try again</Alert>
             </Grid>
           )}
           {status === Status.Registered && (
             <Grid item xs={12} className={classes.gridItem}>
-              <Alert severity='success'>Account created successfully! You can now login</Alert>
+              <Alert severity='success'>Account created successfully! You can now sign in</Alert>
             </Grid>
           )}
           <Grid item xs={12} className={classes.gridItem}>
@@ -124,9 +124,7 @@ const Login: React.FC<Props> = () => {
           <Grid item xs={12} className={classes.gridItem}>
             <Grid container>
               <Grid item xs={6}>
-                <Button onClick={() => history.push('/register')}>
-                  Sign Up
-                </Button>
+                <Button onClick={() => history.push('/join')}>Sign Up</Button>
               </Grid>
               <Grid item xs={6} className={classes.loginGrid}>
                 <Mutation
@@ -136,7 +134,7 @@ const Login: React.FC<Props> = () => {
                   onError={(error: any) => onError(error)}>
                   {(mutation: any) => (
                     <Button className={classes.button} variant='contained' color='primary' onClick={mutation}>
-                      Login
+                      Log in
                     </Button>
                   )}
                 </Mutation>

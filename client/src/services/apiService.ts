@@ -43,8 +43,21 @@ const currentUser = gql`
   }
 `;
 
+const allInstruments = gql`
+  query allInstruments {
+    allInstruments {
+      nodes {
+        code
+        description
+        id
+      }
+    }
+  }
+`;
+
 export const apiService = {
   loginMutation,
   registerMutation,
-  currentUser
+  currentUser,
+  allInstruments,
 };
