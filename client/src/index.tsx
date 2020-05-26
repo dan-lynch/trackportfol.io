@@ -16,12 +16,11 @@ const httpLink = createHttpLink({
 });
 
 const authLink = setContext((_, { headers }) => {
-  const currentUser = userService.loggedInUser;
-  if (currentUser) {
+  if (userService.isLoggedIn && userService.token) {
     return {
       headers: {
         ...headers,
-        authorization: currentUser ? `Bearer ${currentUser.authToken}` : '',
+        authorization: `Bearer ${userService.token.authToken}`,
       },
     };
   } else {

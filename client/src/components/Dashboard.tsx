@@ -30,23 +30,22 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Dashboard: React.FC<Props> = () => {
-  const [name, setName] = useState<string>('');
   const [holdings, setHoldings] = useState<Holding[] | null>(null);
   const [instruments, setInstruments] = useState<Instrument[] | []>([]);
+  const [searchInstrument, setSearchInstrument] = useState<Instrument | null>(null);
+
   const classes = useStyles();
   const appContext = useContext(AppContext);
-  const [searchInstrument, setSearchInstrument] = useState<Instrument | null>(null);
-  const currentUser = useQuery(apiService.currentUser);
+
+  const currentUserQuery = useQuery(apiService.currentUser);
   const instrumentsQuery = useQuery(apiService.allInstruments);
 
   useEffect(() => {
-    if (userService.isLoggedIn || appContext.isLoggedIn) {
-      if (!currentUser.error && currentUser.data) {
-        setName(currentUser.data.currentUser.firstName);
-        setHoldings(currentUser.data.currentUser.holdingsByUserId.nodes);
-      }
+    if (!currentUserQuery.error && currentUserQuery.data) {
+      setHoldings(currentUserQuery.data.currentUser.holdingsByUserId.nodes);
+      userService.storeUserData(currentUserQuery.data);
     }
-  }, [appContext.isLoggedIn, currentUser]);
+  }, [currentUserQuery]);
 
   useEffect(() => {
     if (!instrumentsQuery.error && instrumentsQuery.data) {
@@ -72,7 +71,10 @@ const Dashboard: React.FC<Props> = () => {
                 <Grid item md={6}>
                   <Grid container spacing={3}>
                     <Grid item xs={12} className={classes.gridItem}>
-                      <Typography variant='h5'>Welcome to your Dashboard{name ? `, ${name}!` : ``}</Typography>
+                      <Typography variant='h5'>
+                        Welcome to your Dashboard
+                        {userService.loggedInUser && `, ${userService.loggedInUser.firstName}!`}
+                      </Typography>
                     </Grid>
                     <Grid item xs={12} className={classes.gridItem}>
                       <Typography variant='h5'>Your holdings</Typography>
@@ -82,8 +84,8 @@ const Dashboard: React.FC<Props> = () => {
                         holdings.map((holding, key) => {
                           return (
                             <Typography key={key} variant='body1'>
-                              ${holding.instrumentByInstrumentId.code} ($
-                              {holding.instrumentByInstrumentId.description}) - ${holding.amount}
+                              {holding.amount}x {holding.instrumentByInstrumentId.code} 
+                              ({holding.instrumentByInstrumentId.description})
                             </Typography>
                           );
                         })

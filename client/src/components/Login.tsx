@@ -50,25 +50,26 @@ const Login: React.FC<Props> = () => {
   const appContext = useContext(AppContext);
 
   async function onConfirm(data: any) {
-    const { jwtToken } = data.authenticate;
-    if (jwtToken) {
-      gaService.loginSuccessEvent();
-      await userService.login(jwtToken);
-      setStatus(Status.Success);
+    const loginResult = await userService.login(data.authenticate);
+    if (loginResult) {
       appContext.setIsLoggedIn(true);
+      gaService.loginSuccessEvent();
+      setStatus(Status.Success);
+      history.push('/dashboard');
     } else {
       onError('Sign in failed');
     }
   }
 
   async function onError(error: any) {
+    appContext.setIsLoggedIn(false);
     gaService.loginFailedEvent();
     setStatus(Status.Failed);
     console.info(error);
   }
 
   useEffect(() => {
-    if (userService.isLoggedIn || appContext.isLoggedIn) {
+    if (userService.isLoggedIn) {
       history.push('/dashboard');
     }
     if (appContext.signupEmail) {
