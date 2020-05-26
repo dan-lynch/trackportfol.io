@@ -84,8 +84,8 @@ const Dashboard: React.FC<Props> = () => {
                         holdings.map((holding, key) => {
                           return (
                             <Typography key={key} variant='body1'>
-                              ${holding.instrumentByInstrumentId.code} ($
-                              {holding.instrumentByInstrumentId.description}) - ${holding.amount}
+                              {holding.amount}x {holding.instrumentByInstrumentId.code} 
+                              ({holding.instrumentByInstrumentId.description})
                             </Typography>
                           );
                         })

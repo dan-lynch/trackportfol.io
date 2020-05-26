@@ -29,7 +29,6 @@ const SearchStock: React.FC<Props> = (props) => {
 
   return (
     <Autocomplete
-      autoComplete={true}
       id='search-stock'
       value={value}
       onChange={(_event: any, newValue: Instrument | null) => {
@@ -48,7 +47,7 @@ const SearchStock: React.FC<Props> = (props) => {
         setOpen(false);
       }}
       autoHighlight
-      getOptionLabel={(option: Instrument) => option.code}
+      getOptionLabel={(option: Instrument) => `${option.code} (${option.description})`}
       loading={loading}
       renderOption={(option) => (
         <React.Fragment>
