@@ -28,9 +28,33 @@ const registerSuccessEvent = () => {
       });
   };
 
+  const addInstrumentSuccessEvent = () => {
+    ReactGA.event({
+      category: 'Instrument',
+      action: 'User successfully added an instrument',
+    });
+};
+
+const addInstrumentFailedEvent = () => {
+  ReactGA.event({
+    category: 'Instrument',
+    action: 'User failed to add an instrument',
+  });
+};
+
+const viewStockchartEvent = () => {
+  ReactGA.event({
+    category: 'Stockchart',
+    action: 'User searched a stock and loaded a stockchart',
+  });
+};
+
 export const gaService = {
   loginSuccessEvent,
   loginFailedEvent,
   registerSuccessEvent,
-  registerFailedEvent
+  registerFailedEvent,
+  addInstrumentSuccessEvent,
+  addInstrumentFailedEvent,
+  viewStockchartEvent
 };

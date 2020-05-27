@@ -61,6 +61,17 @@ const searchInstruments = gql`
       nodes {
         code
         description
+        id
+      }
+    }
+  }
+`;
+
+const createHolding = gql`
+  mutation createHolding($userId: Int!, $instrumentId: Int!, $amount: BigFloat!) {
+    createHolding(input: {holding: {userId: $userId, instrumentId: $instrumentId, amount: $amount}}) {
+      holding {
+        createdAt
       }
     }
   }
@@ -71,5 +82,6 @@ export const apiService = {
   registerMutation,
   currentUser,
   allInstruments,
-  searchInstruments
+  searchInstruments,
+  createHolding
 };

@@ -1,7 +1,9 @@
 import { USER, TOKEN } from 'helpers/constants';
 import { BehaviorSubject } from 'rxjs';
+import ReactGA from 'react-ga';
 
 export type User = {
+  userId: number;
   firstName: string;
   lastName: string;
 };
@@ -41,10 +43,11 @@ async function login(data: any) {
 }
 
 async function storeUserData(data: any) {
-  const { firstName, lastName } = data.currentUser;
-  if (firstName && lastName) {
-    const user: User = { firstName, lastName };
+  const { id, firstName, lastName } = data.currentUser;
+  if (id) {
+    const user: User = { userId: id, firstName, lastName };
     localStorage.setItem(USER, JSON.stringify(user));
+    ReactGA.set({ userId: id });
     currentUser.next(user);
     return user;
   } else {
