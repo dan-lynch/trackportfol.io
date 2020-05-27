@@ -37,16 +37,16 @@ const Dashboard: React.FC<Props> = () => {
   const [instrumentToAdd, setInstrumentToAdd] = useState<Instrument | null>(null);
   const [instrumentIdToAdd, setInstrumentIdToAdd] = useState<number | null>(null);
   const [quantityToAdd, setQuantityToAdd] = useState<number | undefined>(0.00);
+  const [userId, setUserId] = useState<number | null>(null);
 
   const classes = useStyles();
   const appContext = useContext(AppContext);
-  const userId = appContext.userService?.loggedInUser.userId;
-
   const currentUserQuery = useQuery(apiService.currentUser);
 
   useEffect(() => {
     if (!currentUserQuery.error && currentUserQuery.data) {
       setHoldings(currentUserQuery.data.currentUser.holdingsByUserId.nodes);
+      setUserId(currentUserQuery.data.currentUser.id);
       userService.storeUserData(currentUserQuery.data);
     }
   }, [currentUserQuery]);
