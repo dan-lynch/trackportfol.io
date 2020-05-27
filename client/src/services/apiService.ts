@@ -55,9 +55,21 @@ const allInstruments = gql`
   }
 `;
 
+const searchInstruments = gql`
+  query searchInstruments($search: String!, $firstLetter: String!) {
+    allInstruments(filter: {name: {includesInsensitive: $search}, or: {name: {startsWithInsensitive: $firstLetter}}}, first: 10) {
+      nodes {
+        code
+        description
+      }
+    }
+  }
+`;
+
 export const apiService = {
   loginMutation,
   registerMutation,
   currentUser,
   allInstruments,
+  searchInstruments
 };

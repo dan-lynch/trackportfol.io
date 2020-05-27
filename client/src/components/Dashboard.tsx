@@ -31,14 +31,12 @@ const useStyles = makeStyles(() => ({
 
 const Dashboard: React.FC<Props> = () => {
   const [holdings, setHoldings] = useState<Holding[] | null>(null);
-  const [instruments, setInstruments] = useState<Instrument[] | []>([]);
   const [searchInstrument, setSearchInstrument] = useState<Instrument | null>(null);
 
   const classes = useStyles();
   const appContext = useContext(AppContext);
 
   const currentUserQuery = useQuery(apiService.currentUser);
-  const instrumentsQuery = useQuery(apiService.allInstruments);
 
   useEffect(() => {
     if (!currentUserQuery.error && currentUserQuery.data) {
@@ -46,12 +44,6 @@ const Dashboard: React.FC<Props> = () => {
       userService.storeUserData(currentUserQuery.data);
     }
   }, [currentUserQuery]);
-
-  useEffect(() => {
-    if (!instrumentsQuery.error && instrumentsQuery.data) {
-      setInstruments(instrumentsQuery.data.allInstruments.nodes);
-    }
-  }, [instrumentsQuery]);
 
   async function processSearch(searchQuery: Instrument | null) {
     if (searchQuery && searchQuery.code) {
@@ -102,7 +94,7 @@ const Dashboard: React.FC<Props> = () => {
                       <Typography variant='h5'>Search stocks</Typography>
                     </Grid>
                     <Grid item xs={12} className={classes.gridItem}>
-                      <SearchStock instruments={instruments} value={searchInstrument} setValue={processSearch} />
+                      <SearchStock value={searchInstrument} setValue={processSearch} />
                     </Grid>
                     <Grid item xs={12} className={classes.gridItem}>
                       {stock ? (

@@ -2,6 +2,7 @@ const express = require("express")
 const compression = require('compression')
 const helmet = require('helmet')
 const { postgraphile } = require("postgraphile")
+const ConnectionFilterPlugin = require("postgraphile-plugin-connection-filter");
 
 const app = express()
 
@@ -14,6 +15,7 @@ app.use(
     process.env.DATABASE_URL,
     "public",
     {
+    appendPlugins: [ConnectionFilterPlugin],
     subscriptions: true,
     retryOnInitFail: true,
     dynamicJson: true,

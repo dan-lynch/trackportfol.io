@@ -12,6 +12,7 @@
     "express": "^4.17.1",
     "helmet": "^3.22.0",
     "postgraphile": "^4.7.0",
+    "postgraphile-plugin-connection-filter": "^2.0.0",
     "typescript": "^3.9.3"
   }
 }

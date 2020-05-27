@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Autocomplete } from '@material-ui/lab';
 import { CircularProgress, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Instrument } from 'helpers/types';
+import { useQuery } from 'react-apollo';
+import { apiService } from 'services/apiService';
 
 const useStyles = makeStyles(() => ({
   option: {
@@ -15,17 +17,31 @@ const useStyles = makeStyles(() => ({
 }));
 
 type Props = {
-  instruments: Instrument[] | [];
   value: Instrument | null;
   setValue: any;
 };
 
 const SearchStock: React.FC<Props> = (props) => {
-  const { instruments, value, setValue } = props;
-  const [open, setOpen] = useState(false);
-  const loading = open && props.instruments.length === 0;
-
+  const { value, setValue } = props;
+  const [inputValue, setInputValue] = useState<string | undefined>('');
+  const [instruments, setInstruments] = useState<Instrument[] | []>([]);
+  const [open, setOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const classes = useStyles();
+
+  const searchResults = useQuery(apiService.searchInstruments, {
+    variables: { search: inputValue, firstLetter: inputValue?.slice(0,1) },
+  });
+
+  useEffect(() => {
+    if (open) {
+      setLoading(true);
+      if (searchResults.data && searchResults.data.allInstruments.nodes) {
+        setInstruments(searchResults.data.allInstruments.nodes)
+        setLoading(false);
+      }
+    }
+  }, [searchResults, inputValue, open]);
 
   return (
     <Autocomplete
@@ -33,6 +49,10 @@ const SearchStock: React.FC<Props> = (props) => {
       value={value}
       onChange={(_event: any, newValue: Instrument | null) => {
         setValue(newValue);
+      }}
+      inputValue={inputValue}
+      onInputChange={(_event: any, newValue: string | undefined) => {
+        setInputValue(newValue);
       }}
       style={{ width: 300 }}
       options={instruments}
