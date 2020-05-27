@@ -19,10 +19,11 @@ const useStyles = makeStyles(() => ({
 type Props = {
   value: Instrument | null;
   setValue: any;
+  id: string;
 };
 
 const SearchStock: React.FC<Props> = (props) => {
-  const { value, setValue } = props;
+  const { value, setValue, id } = props;
   const [inputValue, setInputValue] = useState<string | undefined>('');
   const [instruments, setInstruments] = useState<Instrument[] | []>([]);
   const [open, setOpen] = useState<boolean>(false);
@@ -34,25 +35,29 @@ const SearchStock: React.FC<Props> = (props) => {
   });
 
   useEffect(() => {
-    if (open) {
-      setLoading(true);
-      if (searchResults.data && searchResults.data.allInstruments.nodes) {
+    if (open && inputValue && searchResults.data && searchResults.data.allInstruments.nodes) {
         setInstruments(searchResults.data.allInstruments.nodes)
-        setLoading(false);
-      }
+    } else {
+      setInstruments([]);
     }
+    setLoading(false);
   }, [searchResults, inputValue, open]);
+
+  function updateInputValue(newValue: any) {
+    setInputValue(newValue);
+    setLoading(true);
+  }
 
   return (
     <Autocomplete
-      id='search-stock'
+      id={id}
       value={value}
       onChange={(_event: any, newValue: Instrument | null) => {
         setValue(newValue);
       }}
       inputValue={inputValue}
       onInputChange={(_event: any, newValue: string | undefined) => {
-        setInputValue(newValue);
+        updateInputValue(newValue);
       }}
       style={{ width: 300 }}
       options={instruments}
@@ -67,7 +72,8 @@ const SearchStock: React.FC<Props> = (props) => {
         setOpen(false);
       }}
       autoHighlight
-      getOptionLabel={(option: Instrument) => `${option.code} (${option.description})`}
+      getOptionLabel={(option: Instrument) => `${option.code} ${option.description}`}
+      noOptionsText="Start typing to search..."
       loading={loading}
       renderOption={(option) => (
         <React.Fragment>
@@ -78,7 +84,7 @@ const SearchStock: React.FC<Props> = (props) => {
       renderInput={(params) => (
         <TextField
           {...params}
-          label='Choose a stock'
+          label='Search stocks'
           variant='outlined'
           InputProps={{
             ...params.InputProps,
