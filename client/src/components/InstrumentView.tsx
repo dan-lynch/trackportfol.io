@@ -5,6 +5,11 @@ import { makeStyles } from '@material-ui/core/styles';
 const useStyles = makeStyles((theme) => ({
   root: {
     boxShadow: 'none !important',
+    marginBottom: '0',
+    paddingTop: '0.5rem',
+  },
+  code: {
+    fontSize: '1.2rem',
   },
   amount: {
     fontSize: '0.875rem',
@@ -16,7 +21,10 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     flex: '1 0 auto',
-    padding: '1rem',
+    padding: '0 0 0 1rem',
+    '&:last-child': {
+      paddingBottom: '1rem',
+    },
   },
 }));
 
@@ -35,7 +43,7 @@ const InstrumentView: React.FC<Props> = (props) => {
     <Card className={classes.root}>
       <div className={classes.details}>
         <CardContent className={classes.content}>
-          <Typography component='h5' variant='h5'>
+          <Typography variant='h5' className={classes.code}>
             {code} <span className={classes.amount}>{parseInt(amount).toFixed(3)}</span>
           </Typography>
           <Typography variant='subtitle1' color='textSecondary'>

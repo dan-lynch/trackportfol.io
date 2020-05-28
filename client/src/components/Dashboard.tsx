@@ -45,6 +45,9 @@ const useStyles = makeStyles(() => ({
   collapse: {
     marginBottom: '1rem',
   },
+  holdings: {
+    paddingBottom: '1rem',
+  }
 }));
 
 const Dashboard: React.FC<Props> = () => {
@@ -116,7 +119,7 @@ const Dashboard: React.FC<Props> = () => {
             {/* Left column */}
             <Grid item sm={6} xs={12}>
               <Paper className={classes.paper}>
-                <Typography variant='h6'>Your holdings</Typography>
+                <Typography variant='h6' className={classes.holdings}>Your holdings</Typography>
                 {holdings && holdings.length > 0 ? (
                   holdings.map((holding, key) => {
                     return (
@@ -141,16 +144,16 @@ const Dashboard: React.FC<Props> = () => {
                     Add holding
                   </Typography>
                 </Grid>
-                <Collapse in={successMessage} className={classes.collapse}>
+                <Collapse in={successMessage}>
                   <Grid item xs={12}>
-                    <Alert severity='success' onClose={() => setSuccessMessage(false)}>
+                    <Alert severity='success' onClose={() => setSuccessMessage(false)} className={classes.collapse}>
                       Holding added successfully
                     </Alert>
                   </Grid>
                 </Collapse>
-                <Collapse in={failedMessage} className={classes.collapse}>
+                <Collapse in={failedMessage}>
                   <Grid item xs={12}>
-                    <Alert severity='error' onClose={() => setFailedMessage(false)}>
+                    <Alert severity='error' onClose={() => setFailedMessage(false)} className={classes.collapse}>
                       Failed to add holding
                     </Alert>
                   </Grid>
