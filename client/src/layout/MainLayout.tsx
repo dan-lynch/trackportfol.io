@@ -4,7 +4,11 @@ import TopHeader from 'layout/Header';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
-  offset: theme.mixins.toolbar,
+  root: {
+    display: 'flex',
+    padding: '1rem',
+    justifyContent: 'center',
+  },
 }));
 
 type Props = {
@@ -17,8 +21,7 @@ const MainLayout: React.FC<Props> = (props) => {
   return (
     <React.Fragment>
       <TopHeader />
-      <div className={classes.offset} />
-      <Container>{props.children}</Container>
+      <Container maxWidth="xl" className={classes.root}>{props.children}</Container>
     </React.Fragment>
   );
 };

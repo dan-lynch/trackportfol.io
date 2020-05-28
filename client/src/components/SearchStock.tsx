@@ -59,7 +59,6 @@ const SearchStock: React.FC<Props> = (props) => {
       onInputChange={(_event: any, newValue: string | undefined) => {
         updateInputValue(newValue);
       }}
-      style={{ width: 300 }}
       options={instruments}
       classes={{
         option: classes.option,

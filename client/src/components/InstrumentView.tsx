@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'flex',
+    boxShadow: 'none !important',
   },
   amount: {
     fontSize: '0.875rem',
@@ -39,7 +39,7 @@ const InstrumentView: React.FC<Props> = (props) => {
             {code} <span className={classes.amount}>{parseInt(amount).toFixed(3)}</span>
           </Typography>
           <Typography variant='subtitle1' color='textSecondary'>
-          {description}
+            {description}
           </Typography>
         </CardContent>
       </div>

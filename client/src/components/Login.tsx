@@ -3,23 +3,21 @@ import { useHistory } from 'react-router-dom';
 import { Mutation } from 'react-apollo';
 import { AppContext } from 'context/AppContext';
 import { userService } from 'services/userService';
-import { Container, Grid, Paper, Typography, Button, TextField } from '@material-ui/core';
+import { Grid, Paper, Typography, Button, TextField, Link } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import { apiService } from 'services/apiService';
 import { gaService } from 'services/gaService';
 
-const useStyles = makeStyles(() => ({
-  login: {
-    minWidth: '5rem',
-    minHeight: '5rem',
+const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    maxWidth: '32rem',
+    padding: '0.5rem 0',
   },
-  gridItem: {
-    alignItems: 'center',
-    justify: 'center',
-    margin: '0 2rem',
+  margin: {
+    margin: '0 0.5rem',
   },
-  loginGrid: {
+  end: {
     alignItems: 'flex-end',
     textAlign: 'end',
   },
@@ -54,7 +52,6 @@ const Login: React.FC<Props> = () => {
     if (loginResult) {
       appContext.setIsLoggedIn(true);
       gaService.loginSuccessEvent();
-      setStatus(Status.Success);
       history.push('/dashboard');
     } else {
       onError('Sign in failed');
@@ -80,74 +77,65 @@ const Login: React.FC<Props> = () => {
   }, [history, appContext]);
 
   return (
-    <Container className={classes.login} maxWidth='sm'>
-      <Paper>
-        <Grid container spacing={3}>
-          <Grid item xs={12} className={classes.gridItem}>
-            <Typography variant='h4'>Sign in</Typography>
-          </Grid>
-          {status === Status.Success && (
-            <Grid item xs={12} className={classes.gridItem}>
-              <Alert severity='success'>You have signed in successfully, redirecting to dashboard...</Alert>
-            </Grid>
-          )}
-          {status === Status.Failed && (
-            <Grid item xs={12} className={classes.gridItem}>
-              <Alert severity='error'>Error! Sign in unsuccessful, please try again</Alert>
-            </Grid>
-          )}
-          {status === Status.Registered && (
-            <Grid item xs={12} className={classes.gridItem}>
-              <Alert severity='success'>Account created successfully! You can now sign in</Alert>
-            </Grid>
-          )}
-          <Grid item xs={12} className={classes.gridItem}>
-            <TextField
-              id='email'
-              name='email'
-              label='Email Address'
-              variant='outlined'
-              fullWidth
-              autoComplete='on'
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </Grid>
-          <Grid item xs={12} className={classes.gridItem}>
-            <TextField
-              id='password'
-              name='password'
-              label='Choose Password'
-              variant='outlined'
-              fullWidth
-              value={password}
-              type='password'
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </Grid>
-          <Grid item xs={12} className={classes.gridItem}>
-            <Grid container>
-              <Grid item xs={6}>
-                <Button onClick={() => history.push('/join')}>Sign Up</Button>
-              </Grid>
-              <Grid item xs={6} className={classes.loginGrid}>
-                <Mutation
-                  mutation={apiService.loginMutation}
-                  variables={{ email, password }}
-                  onCompleted={(data: any) => onConfirm(data)}
-                  onError={(error: any) => onError(error)}>
-                  {(mutation: any) => (
-                    <Button className={classes.button} variant='contained' color='primary' onClick={mutation}>
-                      Log in
-                    </Button>
-                  )}
-                </Mutation>
-              </Grid>
-            </Grid>
-          </Grid>
+    <Paper className={classes.root}>
+      <Grid container spacing={3}>
+        <Grid item xs={12} className={classes.margin}>
+          <Typography variant='h5'>Sign in</Typography>
         </Grid>
-      </Paper>
-    </Container>
+        {status === Status.Failed && (
+          <Grid item xs={12} className={classes.margin}>
+            <Alert severity='error'>Error! Sign in unsuccessful, please try again</Alert>
+          </Grid>
+        )}
+        {status === Status.Registered && (
+          <Grid item xs={12} className={classes.margin}>
+            <Alert severity='success'>Account created successfully! You can now sign in</Alert>
+          </Grid>
+        )}
+        <Grid item xs={12} className={classes.margin}>
+          <TextField
+            id='email'
+            name='email'
+            label='Email Address'
+            variant='outlined'
+            fullWidth
+            autoComplete='on'
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} className={classes.margin}>
+          <TextField
+            id='password'
+            name='password'
+            label='Choose Password'
+            variant='outlined'
+            fullWidth
+            value={password}
+            type='password'
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} className={classes.margin}>
+          <Mutation
+            mutation={apiService.loginMutation}
+            variables={{ email, password }}
+            onCompleted={(data: any) => onConfirm(data)}
+            onError={(error: any) => onError(error)}>
+            {(mutation: any) => (
+              <Button className={classes.button} variant='contained' fullWidth color='primary' onClick={mutation}>
+                Log in
+              </Button>
+            )}
+          </Mutation>
+        </Grid>
+        <Grid item xs={12} className={classes.margin}>
+          <Typography variant='body1' align='center'>
+            Don't have an account? <Link href='/join'>Sign up</Link>
+          </Typography>
+        </Grid>
+      </Grid>
+    </Paper>
   );
 };
 

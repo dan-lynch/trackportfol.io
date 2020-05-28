@@ -22,7 +22,6 @@ const useStyles = makeStyles((theme) => ({
 type Props = {};
 
 const Header: React.FC<Props> = (props) => {
-
   const classes = useStyles();
 
   const history = useHistory();
@@ -30,33 +29,37 @@ const Header: React.FC<Props> = (props) => {
   return (
     <AppContext.Consumer>
       {({ isLoggedIn, setIsLoggedIn, userService }) => (
-      <AppBar className={classes.header} position='static'>
-        <Toolbar>
-          <Typography variant='h6' className={classes.title}>
-            trackportfol.io
-          </Typography>
-          {isLoggedIn && (
-            <Button color='inherit' onClick={() => history.push('/dashboard')}>
-              Dashboard
-            </Button>
-          )}
-          {isLoggedIn && (
-            <Button color='inherit' onClick={() => userService.logout() && setIsLoggedIn(false) && history.push('/login')}>
-              Sign out
-            </Button>
-          )}
-          {!isLoggedIn && (
-            <Button color='inherit' onClick={() => history.push('/login')}>
-              Sign in
-            </Button>
-          )}
-          {!isLoggedIn && (
-            <Button color='inherit' onClick={() => history.push('/join')}>
-              Sign up
-            </Button>
-          )}
-        </Toolbar>
-      </AppBar>
+        <React.Fragment>
+          <AppBar className={classes.header} position='static'>
+            <Toolbar>
+              <Typography variant='h6' className={classes.title}>
+                trackportfol.io
+              </Typography>
+              {isLoggedIn && (
+                <Button color='inherit' onClick={() => history.push('/dashboard')}>
+                  Dashboard
+                </Button>
+              )}
+              {isLoggedIn && (
+                <Button
+                  color='inherit'
+                  onClick={() => userService.logout() && setIsLoggedIn(false) && history.push('/login')}>
+                  Sign out
+                </Button>
+              )}
+              {!isLoggedIn && (
+                <Button color='inherit' onClick={() => history.push('/login')}>
+                  Sign in
+                </Button>
+              )}
+              {!isLoggedIn && (
+                <Button color='inherit' onClick={() => history.push('/join')}>
+                  Sign up
+                </Button>
+              )}
+            </Toolbar>
+          </AppBar>
+        </React.Fragment>
       )}
     </AppContext.Consumer>
   );
