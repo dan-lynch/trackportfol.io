@@ -3,11 +3,10 @@ import { useHistory } from 'react-router-dom';
 import { Mutation } from 'react-apollo';
 import { AppContext } from 'context/AppContext';
 import { userService } from 'services/userService';
-import { Grid, Paper, Typography, Button, TextField, Link } from '@material-ui/core';
+import { Grid, Paper, Typography, Button, TextField, Link, CircularProgress, Collapse } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
 import { apiService } from 'services/apiService';
-import { Status } from 'helpers/types';
 import { gaService } from 'services/gaService';
 
 const useStyles = makeStyles(() => ({
@@ -28,6 +27,13 @@ const useStyles = makeStyles(() => ({
       backgroundColor: 'black',
     },
   },
+  loading: {
+    color: 'white',
+  },
+  collapse: {
+    width: '100%',
+    margin: '0px 1rem',
+  },
 }));
 
 type Props = {};
@@ -37,22 +43,26 @@ const Join: React.FC<Props> = () => {
   const [lastName, setLastName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [status, setStatus] = useState<Status>(Status.None);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [failedMessage, setFailedMessage] = useState<boolean>(false);
 
   const history = useHistory();
   const classes = useStyles();
   const appContext = useContext(AppContext);
 
   async function onConfirm(data: any) {
-    gaService.registerSuccessEvent();
-    appContext.setSignupEmail(email);
-    setStatus(Status.Success);
-    history.push('/login');
+    if (data.registerUser) {
+      gaService.registerSuccessEvent();
+      appContext.setSignupEmail(email);
+      history.push('/login');
+    } else {
+      onError('Sign in failed');
+    }
   }
 
   async function onError(error: any) {
     gaService.registerFailedEvent();
-    setStatus(Status.Failed);
+    setFailedMessage(true);
     console.info(error);
   }
 
@@ -68,18 +78,13 @@ const Join: React.FC<Props> = () => {
         <Grid item xs={12} className={classes.margin}>
           <Typography variant='h5'>Create your account</Typography>
         </Grid>
-        {status === Status.Success && (
+        <Collapse in={failedMessage} className={classes.collapse}>
           <Grid item xs={12} className={classes.margin}>
-            <Alert severity='success'>
-              Account created successfully! Redirecting to <Link href='/login'>Sign in page</Link>...
+            <Alert severity='error' onClose={() => setFailedMessage(false)}>
+              Account was not created, please try again
             </Alert>
           </Grid>
-        )}
-        {status === Status.Failed && (
-          <Grid item xs={12} className={classes.margin}>
-            <Alert severity='error'>Error! Account was not created, please try again</Alert>
-          </Grid>
-        )}
+        </Collapse>
         <Grid item xs={12} className={classes.margin}>
           <TextField
             id='firstname'
@@ -132,18 +137,34 @@ const Join: React.FC<Props> = () => {
           <Mutation
             mutation={apiService.registerMutation}
             variables={{ firstName, lastName, email, password }}
-            onCompleted={(data: any) => onConfirm(data)}
-            onError={(error: any) => onError(error)}>
+            onCompleted={(data: any) => {
+              setLoading(false);
+              onConfirm(data);
+            }}
+            onError={(error: any) => {
+              setLoading(false);
+              onError(error);
+            }}>
             {(mutation: any) => (
-              <Button className={classes.button} variant='contained' fullWidth color='primary' onClick={mutation}>
-                Create Account
+              <Button
+                className={classes.button}
+                variant='contained'
+                fullWidth
+                color='primary'
+                onClick={() => {
+                  setLoading(true);
+                  mutation();
+                }}>
+                {loading ? <CircularProgress size={24} className={classes.loading} /> : 'Create Account'}
               </Button>
             )}
           </Mutation>
         </Grid>
         <Grid item xs={12} className={classes.margin}>
-        <Typography variant='body1' align='center'>Already have an account? <Link href='/login'>Sign in</Link></Typography>
-      </Grid>
+          <Typography variant='body1' align='center'>
+            Already have an account? <Link href='/login'>Sign in</Link>
+          </Typography>
+        </Grid>
       </Grid>
     </Paper>
   );

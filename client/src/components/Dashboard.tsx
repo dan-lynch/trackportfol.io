@@ -1,5 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react';
-import { Grid, Paper, Typography, TextField, Button } from '@material-ui/core';
+import { Grid, Paper, Typography, TextField, Button, CircularProgress, Collapse } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
 import StockCharts from 'components/StockChart';
 import SearchStock from 'components/SearchStock';
@@ -38,6 +39,12 @@ const useStyles = makeStyles(() => ({
       backgroundColor: 'black',
     },
   },
+  loading: {
+    color: 'white',
+  },
+  collapse: {
+    marginBottom: '1rem',
+  },
 }));
 
 const Dashboard: React.FC<Props> = () => {
@@ -47,6 +54,9 @@ const Dashboard: React.FC<Props> = () => {
   const [instrumentIdToAdd, setInstrumentIdToAdd] = useState<number | null>(null);
   const [quantityToAdd, setQuantityToAdd] = useState<number | undefined>(0.0);
   const [userId, setUserId] = useState<number | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [successMessage, setSuccessMessage] = useState<boolean>(false);
+  const [failedMessage, setFailedMessage] = useState<boolean>(false);
 
   const classes = useStyles();
   const appContext = useContext(AppContext);
@@ -83,10 +93,12 @@ const Dashboard: React.FC<Props> = () => {
 
   async function onAddConfirm(data: any) {
     gaService.addInstrumentSuccessEvent();
+    setSuccessMessage(true);
   }
 
   async function onAddError(error: any) {
     gaService.addInstrumentFailedEvent();
+    setFailedMessage(true);
     console.info(error);
   }
 
@@ -124,9 +136,25 @@ const Dashboard: React.FC<Props> = () => {
             {/* Right column */}
             <Grid item sm={6} xs={12}>
               <Paper className={classes.paper}>
-              <Grid item xs={12}>
-                    <Typography variant='h6' className={classes.subtitle}>Add holding</Typography>
+                <Grid item xs={12}>
+                  <Typography variant='h6' className={classes.subtitle}>
+                    Add holding
+                  </Typography>
                 </Grid>
+                <Collapse in={successMessage} className={classes.collapse}>
+                  <Grid item xs={12}>
+                    <Alert severity='success' onClose={() => setSuccessMessage(false)}>
+                      Holding added successfully
+                    </Alert>
+                  </Grid>
+                </Collapse>
+                <Collapse in={failedMessage} className={classes.collapse}>
+                  <Grid item xs={12}>
+                    <Alert severity='error' onClose={() => setFailedMessage(false)}>
+                      Failed to add holding
+                    </Alert>
+                  </Grid>
+                </Collapse>
                 <Grid container spacing={3}>
                   <Grid item xs={12} lg={6}>
                     <SearchStock id='add-holding-search' value={instrumentToAdd} setValue={updateInstrumentToAdd} />
@@ -149,11 +177,25 @@ const Dashboard: React.FC<Props> = () => {
                     <Mutation
                       mutation={apiService.createHolding}
                       variables={{ userId, instrumentId: instrumentIdToAdd, amount: quantityToAdd }}
-                      onCompleted={(data: any) => onAddConfirm(data)}
-                      onError={(error: any) => onAddError(error)}>
+                      onCompleted={(data: any) => {
+                        setLoading(false);
+                        onAddConfirm(data);
+                      }}
+                      onError={(error: any) => {
+                        setLoading(false);
+                        onAddError(error);
+                      }}>
                       {(mutation: any) => (
-                        <Button className={classes.button} fullWidth variant='contained' color='primary' onClick={mutation}>
-                          Add
+                        <Button
+                          className={classes.button}
+                          fullWidth
+                          variant='contained'
+                          color='primary'
+                          onClick={() => {
+                            setLoading(true);
+                            mutation();
+                          }}>
+                          {loading ? <CircularProgress size={24} className={classes.loading} /> : 'Add'}
                         </Button>
                       )}
                     </Mutation>
@@ -162,7 +204,9 @@ const Dashboard: React.FC<Props> = () => {
               </Paper>
               <Paper className={classes.paper}>
                 <Grid item xs={12}>
-                  <Typography variant='h6' className={classes.subtitle}>View stockchart</Typography>
+                  <Typography variant='h6' className={classes.subtitle}>
+                    View stockchart
+                  </Typography>
                 </Grid>
                 <Grid item xs={12}>
                   <SearchStock id='view-stockchart-search' value={searchInstrument} setValue={processSearch} />
