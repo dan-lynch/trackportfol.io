@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { Mutation } from 'react-apollo';
 import { AppContext } from 'context/AppContext';
 import { userService } from 'services/userService';
-import { Grid, Paper, Typography, Button, TextField, Link } from '@material-ui/core';
+import { Grid, Paper, Typography, Button, TextField, Link, CircularProgress, Collapse } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import { apiService } from 'services/apiService';
@@ -27,21 +27,23 @@ const useStyles = makeStyles((theme: Theme) => ({
       backgroundColor: 'black',
     },
   },
+  loading: {
+    color: 'white',
+  },
+  collapse: {
+    width: '100%',
+    margin: '0px 1rem',
+  },
 }));
 
 type Props = {};
 
-enum Status {
-  Success,
-  Failed,
-  Registered,
-  None,
-}
-
 const Login: React.FC<Props> = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [status, setStatus] = useState<Status>(Status.None);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [failedMessage, setFailedMessage] = useState<boolean>(false);
+  const [registeredMessage, setRegisteredMessage] = useState<boolean>(false);
 
   const history = useHistory();
   const classes = useStyles();
@@ -61,7 +63,7 @@ const Login: React.FC<Props> = () => {
   async function onError(error: any) {
     appContext.setIsLoggedIn(false);
     gaService.loginFailedEvent();
-    setStatus(Status.Failed);
+    setFailedMessage(true);
     console.info(error);
   }
 
@@ -71,7 +73,7 @@ const Login: React.FC<Props> = () => {
     }
     if (appContext.signupEmail) {
       setEmail(appContext.signupEmail);
-      setStatus(Status.Registered);
+      setRegisteredMessage(true);
       appContext.setSignupEmail('');
     }
   }, [history, appContext]);
@@ -82,16 +84,20 @@ const Login: React.FC<Props> = () => {
         <Grid item xs={12} className={classes.margin}>
           <Typography variant='h5'>Sign in</Typography>
         </Grid>
-        {status === Status.Failed && (
+        <Collapse in={failedMessage} className={classes.collapse}>
           <Grid item xs={12} className={classes.margin}>
-            <Alert severity='error'>Error! Sign in unsuccessful, please try again</Alert>
+            <Alert severity='error' onClose={() => setFailedMessage(false)}>
+              Sign in unsuccessful, please try again
+            </Alert>
           </Grid>
-        )}
-        {status === Status.Registered && (
+        </Collapse>
+        <Collapse in={registeredMessage} className={classes.collapse}>
           <Grid item xs={12} className={classes.margin}>
-            <Alert severity='success'>Account created successfully! You can now sign in</Alert>
+            <Alert severity='success' onClose={() => setRegisteredMessage(false)}>
+              Account created successfully! You can now sign in
+            </Alert>
           </Grid>
-        )}
+        </Collapse>
         <Grid item xs={12} className={classes.margin}>
           <TextField
             id='email'
@@ -120,11 +126,25 @@ const Login: React.FC<Props> = () => {
           <Mutation
             mutation={apiService.loginMutation}
             variables={{ email, password }}
-            onCompleted={(data: any) => onConfirm(data)}
-            onError={(error: any) => onError(error)}>
+            onCompleted={(data: any) => {
+              setLoading(false);
+              onConfirm(data);
+            }}
+            onError={(error: any) => {
+              setLoading(false);
+              onError(error);
+            }}>
             {(mutation: any) => (
-              <Button className={classes.button} variant='contained' fullWidth color='primary' onClick={mutation}>
-                Log in
+              <Button
+                className={classes.button}
+                variant='contained'
+                fullWidth
+                color='primary'
+                onClick={() => {
+                  setLoading(true);
+                  mutation();
+                }}>
+                {loading ? <CircularProgress size={24} className={classes.loading} /> : 'Log in'}
               </Button>
             )}
           </Mutation>
