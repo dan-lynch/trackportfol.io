@@ -112,8 +112,7 @@ const Dashboard: React.FC<Props> = () => {
           <Grid container spacing={3}>
             <Grid item xs={12} className={classes.welcome}>
               <Typography variant='subtitle1' className={classes.welcomeText}>
-                Welcome to your Dashboard
-                {userService.loggedInUser && `, ${userService.loggedInUser.firstName}!`}
+                Welcome {userService.loggedInUser && `${userService.loggedInUser.firstName}!`}
               </Typography>
             </Grid>
             {/* Left column */}
