@@ -16,5 +16,6 @@ export type Holding = {
   instrumentByInstrumentId: {
     code: string;
     description: string;
+    id: number;
   };
 };

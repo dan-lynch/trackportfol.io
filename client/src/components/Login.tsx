@@ -137,6 +137,7 @@ const Login: React.FC<Props> = () => {
             {(mutation: any) => (
               <Button
                 className={classes.button}
+                aria-label='Sign in'
                 variant='contained'
                 fullWidth
                 color='primary'
@@ -144,7 +145,7 @@ const Login: React.FC<Props> = () => {
                   setLoading(true);
                   mutation();
                 }}>
-                {loading ? <CircularProgress size={24} className={classes.loading} /> : 'Log in'}
+                {loading ? <CircularProgress size={24} className={classes.loading} /> : 'Sign in'}
               </Button>
             )}
           </Mutation>

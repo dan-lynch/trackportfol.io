@@ -11,6 +11,7 @@ import { useQuery, Mutation } from 'react-apollo';
 import { Instrument, Holding } from 'helpers/types';
 import { gaService } from 'services/gaService';
 import InstrumentView from 'components/InstrumentView';
+import { isNumeric } from 'helpers/misc';
 
 type Props = {};
 
@@ -55,7 +56,7 @@ const Dashboard: React.FC<Props> = () => {
   const [searchInstrument, setSearchInstrument] = useState<Instrument | null>(null);
   const [instrumentToAdd, setInstrumentToAdd] = useState<Instrument | null>(null);
   const [instrumentIdToAdd, setInstrumentIdToAdd] = useState<number | null>(null);
-  const [quantityToAdd, setQuantityToAdd] = useState<number | undefined>(0.0);
+  const [quantityToAdd, setQuantityToAdd] = useState<number | undefined>(0.000);
   const [userId, setUserId] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<boolean>(false);
@@ -89,13 +90,17 @@ const Dashboard: React.FC<Props> = () => {
   }
 
   async function updateQuantityToAdd(quantity: any) {
-    if (!isNaN(quantity)) {
+    if (isNumeric(quantity) || quantity === '') {
       setQuantityToAdd(quantity);
     }
   }
 
   async function onAddConfirm(data: any) {
     gaService.addInstrumentSuccessEvent();
+    setHoldings(data.createHolding.query.currentUser.holdingsByUserId.nodes);
+    setInstrumentToAdd(null);
+    setInstrumentIdToAdd(null);
+    setQuantityToAdd(0.0);
     setSuccessMessage(true);
   }
 
@@ -104,6 +109,28 @@ const Dashboard: React.FC<Props> = () => {
     setFailedMessage(true);
     console.info(error);
   }
+
+  async function onUpdateSuccess(data: any) {
+    gaService.updateInstrumentSuccessEvent();
+    setHoldings(data.updateHoldingByUserIdAndInstrumentId.query.currentUser.holdingsByUserId.nodes);
+  }
+
+  async function onUpdateError(error: any) {
+    gaService.updateInstrumentFailedEvent();
+    console.info(error);
+  }
+
+
+  async function onDeleteSuccess(data: any) {
+    gaService.deleteInstrumentSuccessEvent();
+    setHoldings(data.deleteHoldingByUserIdAndInstrumentId.query.currentUser.holdingsByUserId.nodes);
+  }
+
+  async function onDeleteError(error: any) {
+    gaService.deleteInstrumentFailedEvent();
+    console.info(error);
+  }
+
 
   return (
     <AppContext.Consumer>
@@ -119,20 +146,26 @@ const Dashboard: React.FC<Props> = () => {
             <Grid item sm={6} xs={12}>
               <Paper className={classes.paper}>
                 <Typography variant='h6' className={classes.holdings}>Your holdings</Typography>
-                {holdings && holdings.length > 0 ? (
-                  holdings.map((holding, key) => {
+                {userId ? holdings && holdings.length > 0 ? (
+                  holdings.map((holding) => {
                     return (
                       <InstrumentView
-                        key={key}
+                        key={holding.instrumentByInstrumentId.id}
                         amount={holding.amount}
                         code={holding.instrumentByInstrumentId.code}
                         description={holding.instrumentByInstrumentId.description}
+                        userId={userId}
+                        instrumentId={holding.instrumentByInstrumentId.id}
+                        onDeleteSuccess={onDeleteSuccess}
+                        onDeleteError={onDeleteError}
+                        onUpdateSuccess={onUpdateSuccess}
+                        onUpdateError={onUpdateError}
                       />
                     );
                   })
                 ) : (
                   <Typography variant='body1'>You have no holdings.</Typography>
-                )}
+                ) : <Typography variant='body1'>Loading your holdings...</Typography>}
               </Paper>
             </Grid>
             {/* Right column */}
@@ -190,6 +223,7 @@ const Dashboard: React.FC<Props> = () => {
                       {(mutation: any) => (
                         <Button
                           className={classes.button}
+                          aria-label='Add Holding'
                           fullWidth
                           variant='contained'
                           color='primary'

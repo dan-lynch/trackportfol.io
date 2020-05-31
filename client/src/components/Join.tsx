@@ -148,6 +148,7 @@ const Join: React.FC<Props> = () => {
             {(mutation: any) => (
               <Button
                 className={classes.button}
+                aria-label='Create Account'
                 variant='contained'
                 fullWidth
                 color='primary'

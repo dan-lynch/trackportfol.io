@@ -33,6 +33,7 @@ const currentUser = gql`
           instrumentByInstrumentId {
             code
             description
+            id
           }
           createdAt
           amount
@@ -70,8 +71,65 @@ const searchInstruments = gql`
 const createHolding = gql`
   mutation createHolding($userId: Int!, $instrumentId: Int!, $amount: BigFloat!) {
     createHolding(input: {holding: {userId: $userId, instrumentId: $instrumentId, amount: $amount}}) {
-      holding {
-        createdAt
+      query {
+        currentUser {
+          holdingsByUserId {
+            nodes {
+              amount
+              instrumentByInstrumentId {
+                id
+                code
+                description
+              }
+              instrumentId
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+const deleteHolding = gql`
+  mutation deleteHolding($userId: Int!, $instrumentId: Int!) {
+    deleteHoldingByUserIdAndInstrumentId(input: {userId: $userId, instrumentId: $instrumentId}) {
+      query {
+        currentUser {
+          firstName
+          lastName
+          id
+          holdingsByUserId {
+            nodes {
+              amount
+              instrumentByInstrumentId {
+                code
+                description
+                id
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+const updateHolding = gql`
+  mutation updateHoldingHolding($userId: Int!, $instrumentId: Int!, $amount: BigFloat!) {
+    updateHoldingByUserIdAndInstrumentId(input: {holdingPatch: {amount: $amount}, userId: $userId, instrumentId: $instrumentId}) {
+      query {
+        currentUser {
+          holdingsByUserId {
+            nodes {
+              amount
+              instrumentByInstrumentId {
+                code
+                description
+                id
+              }
+            }
+          }
+        }
       }
     }
   }
@@ -83,5 +141,7 @@ export const apiService = {
   currentUser,
   allInstruments,
   searchInstruments,
-  createHolding
+  createHolding,
+  deleteHolding,
+  updateHolding
 };
