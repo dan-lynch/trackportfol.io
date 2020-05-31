@@ -2,6 +2,7 @@ import { parseData } from 'utils';
 import * as React from 'react';
 import { AppContext } from 'context/AppContext';
 import { API_KEY } from 'helpers/constants';
+import { Typography, CircularProgress } from '@material-ui/core';
 
 interface WithOHLCDataProps {
   readonly data: IOHLCData[];
@@ -10,6 +11,7 @@ interface WithOHLCDataProps {
 export interface WithOHLCState {
   data?: IOHLCData[];
   message: string;
+  isLoading: boolean;
 }
 
 export interface IOHLCData {
@@ -31,7 +33,8 @@ function fetchStockData() {
         super(props);
 
         this.state = {
-          message: 'Loading data...',
+          message: 'Fetching stock data...',
+          isLoading: true,
         };
 
         this.currentStock = undefined;
@@ -48,9 +51,15 @@ function fetchStockData() {
       }
 
       public render() {
-        const { data, message } = this.state;
+        const { data, message, isLoading } = this.state;
         if (data === undefined) {
-          return <div className='center'>{message}</div>;
+          return isLoading ? (
+            <div style={{display: 'flex', justifyContent: 'center', paddingTop: '1rem'}}><CircularProgress size={32} disableShrink /></div>
+          ) : (
+            <Typography align='center' variant='subtitle1'>
+              {message}
+            </Typography>
+          );
         }
         return <OriginalComponent {...(this.props as TProps)} data={data} />;
       }
@@ -62,12 +71,18 @@ function fetchStockData() {
             `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${this.context.stock}&apikey=${API_KEY}`
           );
           response.json().then((data) => {
-            const parsedData = parseData(data);
-            this.setState({ data: parsedData });
+            if (!data['Error Message']) {
+              const parsedData = parseData(data);
+              this.setState({ data: parsedData });
+            } else {
+              this.setState({
+                message: `Failed to fetch data for ${this.context.stock}`,
+              });
+            }
           });
         } catch (error) {
           this.setState({
-            message: `Failed to fetch data. Error: {error}`,
+            message: `Failed to fetch data for ${this.context.stock}`,
           });
         }
       }
