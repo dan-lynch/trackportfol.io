@@ -3,7 +3,23 @@ import { useHistory } from 'react-router-dom';
 import { Mutation } from 'react-apollo';
 import { AppContext } from 'context/AppContext';
 import { userService } from 'services/userService';
-import { Grid, Paper, Typography, Button, TextField, Link, CircularProgress, Collapse } from '@material-ui/core';
+import {
+  Grid,
+  Paper,
+  Typography,
+  Button,
+  TextField,
+  Link,
+  CircularProgress,
+  Collapse,
+  FormControl,
+  InputLabel,
+  InputAdornment,
+  OutlinedInput,
+  IconButton,
+} from '@material-ui/core';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { Alert } from '@material-ui/lab';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import { apiService } from 'services/apiService';
@@ -44,6 +60,7 @@ const Login: React.FC<Props> = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [failedMessage, setFailedMessage] = useState<boolean>(false);
   const [registeredMessage, setRegisteredMessage] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const history = useHistory();
   const classes = useStyles();
@@ -66,6 +83,14 @@ const Login: React.FC<Props> = () => {
     setFailedMessage(true);
     console.info(error);
   }
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleMouseDownPassword = (event: any) => {
+    event.preventDefault();
+  };
 
   useEffect(() => {
     if (userService.isLoggedIn) {
@@ -111,16 +136,28 @@ const Login: React.FC<Props> = () => {
           />
         </Grid>
         <Grid item xs={12} className={classes.margin}>
-          <TextField
-            id='password'
-            name='password'
-            label='Choose Password'
-            variant='outlined'
-            fullWidth
-            value={password}
-            type='password'
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <FormControl fullWidth variant='outlined'>
+            <InputLabel htmlFor='password'>Password</InputLabel>
+            <OutlinedInput
+              id='password'
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              fullWidth
+              onChange={(e) => setPassword(e.target.value)}
+              endAdornment={
+                <InputAdornment position='end'>
+                  <IconButton
+                    aria-label='toggle password visibility'
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge='end'>
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              }
+              labelWidth={70}
+            />
+          </FormControl>
         </Grid>
         <Grid item xs={12} className={classes.margin}>
           <Mutation
@@ -137,6 +174,7 @@ const Login: React.FC<Props> = () => {
             {(mutation: any) => (
               <Button
                 className={classes.button}
+                aria-label='Sign in'
                 variant='contained'
                 fullWidth
                 color='primary'
@@ -144,7 +182,7 @@ const Login: React.FC<Props> = () => {
                   setLoading(true);
                   mutation();
                 }}>
-                {loading ? <CircularProgress size={24} className={classes.loading} /> : 'Log in'}
+                {loading ? <CircularProgress size={24} className={classes.loading} /> : 'Sign in'}
               </Button>
             )}
           </Mutation>
