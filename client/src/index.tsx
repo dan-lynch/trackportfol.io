@@ -1,40 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { ApolloProvider } from 'react-apollo';
-import { ApolloClient } from 'apollo-client';
-import { createHttpLink } from 'apollo-link-http';
-import { InMemoryCache } from 'apollo-cache-inmemory';
-import { setContext } from 'apollo-link-context';
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import 'typeface-roboto';
+import App from './App';
 import { userService } from 'services/userService';
 import { API_URL } from 'helpers/constants';
-import 'typeface-roboto';
 
-const httpLink = createHttpLink({
-  uri: `${API_URL}`,
-});
 
-const authLink = setContext((_, { headers }) => {
-  if (userService.isLoggedIn && userService.token) {
-    return {
-      headers: {
-        ...headers,
-        authorization: `Bearer ${userService.token.authToken}`,
-      },
-    };
-  } else {
-    return {
-      headers: {
-        ...headers,
-      },
-    };
-  }
-});
+const cache = new InMemoryCache();
+
+const token = userService.isLoggedIn && userService.token ? `Bearer ${userService.token.authToken}` : null;
 
 const client = new ApolloClient({
-  link: authLink.concat(httpLink),
-  cache: new InMemoryCache(),
+  cache,
+  uri: API_URL,
+  headers: token ? {
+    authorization: token || '',
+  } : {},
 });
 
 ReactDOM.render(

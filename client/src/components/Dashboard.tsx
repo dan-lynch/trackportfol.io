@@ -1,16 +1,17 @@
 import React, { useEffect, useContext, useState } from 'react';
+import { useQuery } from '@apollo/client';
+import { Mutation } from '@apollo/react-components';
 import { Grid, Paper, Typography, TextField, Button, CircularProgress, Collapse } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import { Alert, Skeleton } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
-import StockCharts from 'components/StockChart';
-import SearchStock from 'components/SearchStock';
 import { AppContext } from 'context/AppContext';
 import { apiService } from 'services/apiService';
-import { userService } from 'services/userService';
-import { useQuery, Mutation } from 'react-apollo';
-import { Instrument, Holding } from 'helpers/types';
 import { gaService } from 'services/gaService';
+import { userService } from 'services/userService';
+import StockCharts from 'components/StockChart';
+import SearchStock from 'components/SearchStock';
 import InstrumentView from 'components/InstrumentView';
+import { Instrument, Holding } from 'helpers/types';
 import { isNumeric } from 'helpers/misc';
 
 type Props = {};
@@ -48,7 +49,7 @@ const useStyles = makeStyles(() => ({
   },
   holdings: {
     paddingBottom: '1rem',
-  }
+  },
 }));
 
 const Dashboard: React.FC<Props> = () => {
@@ -56,7 +57,7 @@ const Dashboard: React.FC<Props> = () => {
   const [searchInstrument, setSearchInstrument] = useState<Instrument | null>(null);
   const [instrumentToAdd, setInstrumentToAdd] = useState<Instrument | null>(null);
   const [instrumentIdToAdd, setInstrumentIdToAdd] = useState<number | null>(null);
-  const [quantityToAdd, setQuantityToAdd] = useState<number | undefined>(0.000);
+  const [quantityToAdd, setQuantityToAdd] = useState<number | undefined>(0.0);
   const [userId, setUserId] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<boolean>(false);
@@ -120,7 +121,6 @@ const Dashboard: React.FC<Props> = () => {
     console.info(error);
   }
 
-
   async function onDeleteSuccess(data: any) {
     gaService.deleteInstrumentSuccessEvent();
     setHoldings(data.deleteHoldingByUserIdAndInstrumentId.query.currentUser.holdingsByUserId.nodes);
@@ -131,131 +131,138 @@ const Dashboard: React.FC<Props> = () => {
     console.info(error);
   }
 
-
   return (
-    <AppContext.Consumer>
-      {({ stock }) => (
-        <React.Fragment>
-          <Grid container spacing={3}>
-            <Grid item xs={12} className={classes.welcome}>
-              <Typography variant='subtitle1' className={classes.welcomeText}>
-                {userService.loggedInUser && `Welcome to trackportfol.io, ${userService.loggedInUser.firstName}!`}
+    <React.Fragment>
+      <Grid container spacing={3}>
+        <Grid item xs={12} className={classes.welcome}>
+          <Typography variant='subtitle1' className={classes.welcomeText}>
+            {userService.loggedInUser && `Welcome to trackportfol.io, ${userService.loggedInUser.firstName}!`}
+          </Typography>
+        </Grid>
+        <Grid item sm={6} xs={12}>
+          <Paper className={classes.paper}>
+            <Typography variant='h6' className={classes.holdings}>
+              Your holdings
+            </Typography>
+            {userId ? (
+              holdings && holdings.length > 0 ? (
+                holdings.map((holding: Holding) => {
+                  return (
+                    <InstrumentView
+                      key={holding.instrumentByInstrumentId.id}
+                      amount={holding.amount}
+                      code={holding.instrumentByInstrumentId.code}
+                      description={holding.instrumentByInstrumentId.description}
+                      userId={userId}
+                      instrumentId={holding.instrumentByInstrumentId.id}
+                      onDeleteSuccess={onDeleteSuccess}
+                      onDeleteError={onDeleteError}
+                      onUpdateSuccess={onUpdateSuccess}
+                      onUpdateError={onUpdateError}
+                    />
+                  );
+                })
+              ) : (
+                <Typography variant='body1'>You have no holdings.</Typography>
+              )
+            ) : (
+              <div>
+                <Skeleton variant='text' />
+                <Skeleton variant='text' />
+                <Skeleton variant='text' />
+              </div>
+            )}
+          </Paper>
+        </Grid>
+        <Grid item sm={6} xs={12}>
+          <Paper className={classes.paper}>
+            <Grid item xs={12}>
+              <Typography variant='h6' className={classes.subtitle}>
+                Add holding
               </Typography>
             </Grid>
-            {/* Left column */}
-            <Grid item sm={6} xs={12}>
-              <Paper className={classes.paper}>
-                <Typography variant='h6' className={classes.holdings}>Your holdings</Typography>
-                {userId ? holdings && holdings.length > 0 ? (
-                  holdings.map((holding) => {
-                    return (
-                      <InstrumentView
-                        key={holding.instrumentByInstrumentId.id}
-                        amount={holding.amount}
-                        code={holding.instrumentByInstrumentId.code}
-                        description={holding.instrumentByInstrumentId.description}
-                        userId={userId}
-                        instrumentId={holding.instrumentByInstrumentId.id}
-                        onDeleteSuccess={onDeleteSuccess}
-                        onDeleteError={onDeleteError}
-                        onUpdateSuccess={onUpdateSuccess}
-                        onUpdateError={onUpdateError}
-                      />
-                    );
-                  })
-                ) : (
-                  <Typography variant='body1'>You have no holdings.</Typography>
-                ) : <Typography variant='body1'>Loading your holdings...</Typography>}
-              </Paper>
+            <Collapse in={successMessage}>
+              <Grid item xs={12}>
+                <Alert severity='success' onClose={() => setSuccessMessage(false)} className={classes.collapse}>
+                  Holding added successfully
+                </Alert>
+              </Grid>
+            </Collapse>
+            <Collapse in={failedMessage}>
+              <Grid item xs={12}>
+                <Alert severity='error' onClose={() => setFailedMessage(false)} className={classes.collapse}>
+                  Failed to add holding
+                </Alert>
+              </Grid>
+            </Collapse>
+            {userId ? (
+              <Grid container spacing={3}>
+                <Grid item xs={12} lg={6}>
+                  <SearchStock id='add-holding-search' value={instrumentToAdd} setValue={updateInstrumentToAdd} />
+                </Grid>
+                <Grid item xs={12} lg={4}>
+                  <TextField
+                    id='add-holding-quantity'
+                    label='Quantity'
+                    type='number'
+                    fullWidth
+                    value={quantityToAdd}
+                    onChange={(e) => updateQuantityToAdd(e.target.value)}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    variant='outlined'
+                  />
+                </Grid>
+                <Grid item xs={12} lg={2} className={classes.flex}>
+                  <Mutation
+                    mutation={apiService.createHolding}
+                    variables={{ userId, instrumentId: instrumentIdToAdd, amount: quantityToAdd }}
+                    onCompleted={(data: any) => {
+                      setLoading(false);
+                      onAddConfirm(data);
+                    }}
+                    onError={(error: any) => {
+                      setLoading(false);
+                      onAddError(error);
+                    }}>
+                    {(mutation: any) => (
+                      <Button
+                        className={classes.button}
+                        aria-label='Add Holding'
+                        fullWidth
+                        variant='contained'
+                        color='primary'
+                        onClick={() => {
+                          setLoading(true);
+                          mutation();
+                        }}>
+                        {loading ? <CircularProgress size={24} className={classes.loading} /> : 'Add'}
+                      </Button>
+                    )}
+                  </Mutation>
+                </Grid>
+              </Grid>
+            ) : (
+              <Skeleton variant='text' />
+            )}
+          </Paper>
+          <Paper className={classes.paper}>
+            <Grid item xs={12}>
+              <Typography variant='h6' className={classes.subtitle}>
+                View stockchart
+              </Typography>
             </Grid>
-            {/* Right column */}
-            <Grid item sm={6} xs={12}>
-              <Paper className={classes.paper}>
-                <Grid item xs={12}>
-                  <Typography variant='h6' className={classes.subtitle}>
-                    Add holding
-                  </Typography>
-                </Grid>
-                <Collapse in={successMessage}>
-                  <Grid item xs={12}>
-                    <Alert severity='success' onClose={() => setSuccessMessage(false)} className={classes.collapse}>
-                      Holding added successfully
-                    </Alert>
-                  </Grid>
-                </Collapse>
-                <Collapse in={failedMessage}>
-                  <Grid item xs={12}>
-                    <Alert severity='error' onClose={() => setFailedMessage(false)} className={classes.collapse}>
-                      Failed to add holding
-                    </Alert>
-                  </Grid>
-                </Collapse>
-                <Grid container spacing={3}>
-                  <Grid item xs={12} lg={6}>
-                    <SearchStock id='add-holding-search' value={instrumentToAdd} setValue={updateInstrumentToAdd} />
-                  </Grid>
-                  <Grid item xs={12} lg={4}>
-                    <TextField
-                      id='add-holding-quantity'
-                      label='Quantity'
-                      type='number'
-                      fullWidth
-                      value={quantityToAdd}
-                      onChange={(e) => updateQuantityToAdd(e.target.value)}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      variant='outlined'
-                    />
-                  </Grid>
-                  <Grid item xs={12} lg={2} className={classes.flex}>
-                    <Mutation
-                      mutation={apiService.createHolding}
-                      variables={{ userId, instrumentId: instrumentIdToAdd, amount: quantityToAdd }}
-                      onCompleted={(data: any) => {
-                        setLoading(false);
-                        onAddConfirm(data);
-                      }}
-                      onError={(error: any) => {
-                        setLoading(false);
-                        onAddError(error);
-                      }}>
-                      {(mutation: any) => (
-                        <Button
-                          className={classes.button}
-                          aria-label='Add Holding'
-                          fullWidth
-                          variant='contained'
-                          color='primary'
-                          onClick={() => {
-                            setLoading(true);
-                            mutation();
-                          }}>
-                          {loading ? <CircularProgress size={24} className={classes.loading} /> : 'Add'}
-                        </Button>
-                      )}
-                    </Mutation>
-                  </Grid>
-                </Grid>
-              </Paper>
-              <Paper className={classes.paper}>
-                <Grid item xs={12}>
-                  <Typography variant='h6' className={classes.subtitle}>
-                    View stockchart
-                  </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <SearchStock id='view-stockchart-search' value={searchInstrument} setValue={processSearch} />
-                </Grid>
-                <Grid item xs={12}>
-                  {stock && <StockCharts stock={stock} />}
-                </Grid>
-              </Paper>
+            <Grid item xs={12}>
+              <SearchStock id='view-stockchart-search' value={searchInstrument} setValue={processSearch} />
             </Grid>
-          </Grid>
-        </React.Fragment>
-      )}
-    </AppContext.Consumer>
+            <Grid item xs={12}>
+              {appContext.stock && <StockCharts stock={appContext.stock} />}
+            </Grid>
+          </Paper>
+        </Grid>
+      </Grid>
+    </React.Fragment>
   );
 };
 

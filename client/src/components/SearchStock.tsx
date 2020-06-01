@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Autocomplete } from '@material-ui/lab';
+import { useQuery } from '@apollo/client';
 import { CircularProgress, TextField } from '@material-ui/core';
+import { Autocomplete } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
-import { Instrument } from 'helpers/types';
-import { useQuery } from 'react-apollo';
 import { apiService } from 'services/apiService';
+import { Instrument } from 'helpers/types';
 
 const useStyles = makeStyles(() => ({
   option: {
