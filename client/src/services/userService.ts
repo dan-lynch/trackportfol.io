@@ -1,6 +1,8 @@
-import { USER, TOKEN } from 'helpers/constants';
 import { BehaviorSubject } from 'rxjs';
 import ReactGA from 'react-ga';
+import { USER, TOKEN } from 'helpers/constants';
+
+
 
 export type User = {
   userId: number;

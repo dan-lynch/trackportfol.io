@@ -1,5 +1,5 @@
-import AutoSizer from 'react-virtualized-auto-sizer';
 import * as React from 'react';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 export const parseData = (data: any) => {
   // eslint-disable-next-line prefer-const

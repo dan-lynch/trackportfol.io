@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container } from '@material-ui/core';
-import TopHeader from 'layout/Header';
 import { makeStyles } from '@material-ui/core/styles';
+import TopHeader from 'layout/Header';
 
 const useStyles = makeStyles((theme) => ({
   root: {

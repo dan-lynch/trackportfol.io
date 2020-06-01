@@ -1,12 +1,11 @@
 import React from 'react';
 import { Router as ReactRouter, Route, Switch, Redirect } from 'react-router-dom';
+import ReactGA from 'react-ga';
 import { createBrowserHistory } from 'history';
 import Login from 'pages/Login';
 import Join from 'pages/Join';
 import Dashboard from 'pages/Dashboard';
 import ProtectedRoute, { ProtectedRouteProps } from 'components/ProtectedRoute';
-import ReactGA from 'react-ga';
-
 const defaultProtectedRouteProps: ProtectedRouteProps = {
   authenticationPath: '/login',
 };
