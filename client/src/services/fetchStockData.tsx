@@ -54,7 +54,9 @@ function fetchStockData() {
         const { data, message, isLoading } = this.state;
         if (data === undefined) {
           return isLoading ? (
-            <div style={{display: 'flex', justifyContent: 'center', paddingTop: '1rem'}}><CircularProgress size={32} disableShrink /></div>
+            <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '1rem' }}>
+              <CircularProgress size={32} disableShrink />
+            </div>
           ) : (
             <Typography align='center' variant='subtitle1'>
               {message}

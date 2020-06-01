@@ -1,10 +1,11 @@
 {
-    "name": "trackportfol.io",
-    "description": "trackportfol.io - Portfolio Tracker",
-    "version": "0.1.0",
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/LynchyNZ/trackportfol.io"
-    },
-    "homepage": "https://trackportfol.io"
-  }
+  "name": "trackportfol.io",
+  "description": "trackportfol.io - Portfolio Tracker",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LynchyNZ/trackportfol.io"
+  },
+  "homepage": "https://trackportfol.io",
+  "dependencies": {}
+}
