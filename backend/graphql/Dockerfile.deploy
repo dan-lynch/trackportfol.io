@@ -1,0 +1,10 @@
+# build environment
+FROM node:13.12.0-alpine as build
+WORKDIR /app
+ENV PATH /app/node_modules/.bin:$PATH
+COPY backend/graphql/package.json ./
+COPY backend/graphql/yarn.lock ./
+COPY backend/graphql/index.js ./
+RUN yarn install --frozen-lockfile --silent
+EXPOSE 5433
+CMD ["node", "index.js"]
