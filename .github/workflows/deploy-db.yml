@@ -47,4 +47,4 @@ jobs:
             docker rmi db
             docker login docker.pkg.github.com -u $GIT_USERNAME -p $GIT_TOKEN
             docker pull docker.pkg.github.com/lynchynz/trackportfol.io/db:latest
-            docker run -dit --name db -p 1337:1337 docker.pkg.github.com/lynchynz/trackportfol.io/db:latest
+            docker run -dit --name db -p 5432:5432 docker.pkg.github.com/lynchynz/trackportfol.io/db:latest
