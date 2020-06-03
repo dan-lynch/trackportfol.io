@@ -12,3 +12,6 @@ gpg --quiet --batch --yes --decrypt --passphrase="$SCHEMA_PASSPHRASE" \
 
 gpg --quiet --batch --yes --decrypt --passphrase="$SCHEMA_PASSPHRASE" \
 --output backend/db/init/04-instruments.sql backend/db/init/04-instruments.sql.gpg
+
+gpg --quiet --batch --yes --decrypt --passphrase="$SCHEMA_PASSPHRASE" \
+--output .env .env.gpg
