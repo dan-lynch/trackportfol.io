@@ -34,6 +34,7 @@ jobs:
         env:
           GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
           GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+          DB_SCHEMA_PASS: ${{ secrets.DB_SCHEMA_PASS }}
         with:
           host: ${{ secrets.PROD_HOST }}
           username: ${{ secrets.PROD_USERNAME }}
