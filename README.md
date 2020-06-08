@@ -8,11 +8,11 @@
 
 <img src="https://cdn.svgporn.com/logos/react.svg" alt="React" width="50" height="50"> <img src="https://cdn.svgporn.com/logos/typescript-icon.svg" alt="TypeScript" width="50" height="50"> <img src="https://cdn.svgporn.com/logos/graphql.svg" alt="Graph QL" width="50" height="50"> <img src="https://cdn.svgporn.com/logos/postgresql.svg" alt="PostgreSQL" width="50" height="50"> <img src="https://cdn.svgporn.com/logos/docker-icon.svg" alt="Docker" width="50" height="50">
 
-React | TypeScript | GraphQL | PostgreSQL | Docker
+**React** | **TypeScript** | **GraphQL** | **PostgreSQL** | **Docker**
 
 ### Setup Local Frontend Environment
 
-Prerequisites: Git, Docker and docker-compose (or Yarn if you prefer)
+Prerequisites: **Git**, **Docker** and **docker-compose** (or **Yarn** if you prefer)
 
 1) Clone Repo: `git clone https://github.com/LynchyNZ/trackportfol.io.git`
 
@@ -43,7 +43,7 @@ Run `yarn test` to start the test runner in interactive watch mode.
 
 ### Local Backend
 
-If you want a local API running, you'll need to configure the .env file and decrypt the DB schema files (Message Lynchy on [Slack](https://lynchyworkspace.slack.com/) for help with this)
+If you want a local API running, you'll need to configure the .env file and decrypt the DB schema files *(Message Lynchy on [Slack](https://lynchyworkspace.slack.com/) for help with this)*
 
 You'll then be able to run the backend using Docker, this will create two containers (one for DB, one for GraphQL):
 `docker-compose -f docker-compose.backend.yml up -d`
