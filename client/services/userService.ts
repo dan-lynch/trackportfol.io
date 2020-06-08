@@ -1,4 +1,3 @@
-import { BehaviorSubject } from 'rxjs';
 import ReactGA from 'react-ga';
 import { USER, TOKEN } from 'helpers/constants';
 import Cookie from 'js-cookie';
@@ -13,22 +12,22 @@ export type Token = {
   authToken: string;
 };
 
-const currentUser = new BehaviorSubject(JSON.parse(Cookie.get(USER)!));
+const currentUser = Cookie.getJSON(USER);
 
-const currentToken = new BehaviorSubject(JSON.parse(Cookie.get(TOKEN)!));
+const currentToken = Cookie.getJSON(TOKEN);
 
 export const userService = {
   login,
   logout,
   storeUserData,
   get loggedInUser(): User | null {
-    return currentUser.value || null;
+    return currentUser;
   },
   get token(): Token | null {
-    return currentToken.value || null;
+    return currentToken ? currentToken.value : null;
   },
   get isLoggedIn(): boolean {
-    return !!currentToken.value || false;
+    return !!currentToken;
   },
 };
 

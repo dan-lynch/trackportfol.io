@@ -4,6 +4,7 @@ import Head from 'next/head';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import theme from 'theme';
+import { ContextProvider } from 'context/AppContext';
 
 class MyApp extends App {
   static async getInitialProps({ Component, ctx }: any) {
@@ -30,10 +31,12 @@ class MyApp extends App {
         <title>trackportfol.io</title>
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
       </Head>
+      <ContextProvider>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Component {...pageProps} />
       </ThemeProvider>
+      </ContextProvider>
     </React.Fragment>
     )
   }

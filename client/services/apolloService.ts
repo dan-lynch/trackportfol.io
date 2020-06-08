@@ -14,7 +14,7 @@ let globalApolloClient: any = null
 
 function createIsomorphLink() {
   return new HttpLink({
-    uri: API_URL,
+    uri: "http://localhost:5433/graphql",
   })
 }
 
