@@ -6,7 +6,7 @@ COPY package.json ./
 COPY yarn.lock ./
 RUN yarn install --frozen-lockfile --silent
 COPY . ./
-RUN yarn build
+RUN next build
 
 # production environment
 FROM nginx:stable-alpine

@@ -19,15 +19,15 @@ jobs:
         with:
           node-version: "13.10"
 
-      - name: Install yarn
+      - name: Install dependencies
         run: |
           cd client
           yarn --frozen-lockfile
   
-      - name: Build and run unit tests
+      - name: Test local build
         run: |
           cd client
-          yarn test
+          yarn dev
 
       - name: Build production client
         run: |
