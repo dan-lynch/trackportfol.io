@@ -57,9 +57,8 @@ You can run the backend using Docker, this will create two containers (one for D
 
 
 If you make changes to the database schema and need to re-initialise the database, run the following commands:
-1) `docker-compose down`
-2) `docker volume rm db`
-3) `docker rmi db`
-4) `docker-compose up -d`
+1) `docker-compose -f docker-compose.backend.yml down`
+2) `docker rmi db`
+3) `docker-compose -f docker-compose.backend.yml up -d`
 
-  (or `docker-compose down;docker volume rm db;docker rmi db;docker-compose up -d`)
+  (or `docker-compose -f docker-compose.backend.yml down;docker rmi db;docker-compose -f docker-compose.backend.yml up -d`)
