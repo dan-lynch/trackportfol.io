@@ -7,11 +7,7 @@ import { initApolloClient } from 'services/apolloService'
 import { withApollo } from 'components/withApollo'
 import { apiService } from 'services/apiService';
 
-interface Props {
-  data: any
-}
-
-function Home({ data }: Props) {
+function Home() {
   return (
   <Layout title="Home | trackportfol.io">
     <Container maxWidth="sm">

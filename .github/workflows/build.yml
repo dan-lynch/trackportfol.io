@@ -25,4 +25,4 @@ jobs:
       - name: Test local build
         run: |
           cd client
-          yarn dev
+          yarn build

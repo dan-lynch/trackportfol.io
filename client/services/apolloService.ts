@@ -6,7 +6,6 @@ import {
   ApolloLink,
   HttpLink,
 } from '@apollo/client'
-import { API_URL } from 'helpers/constants'
 
 global.fetch = require('node-fetch')
 

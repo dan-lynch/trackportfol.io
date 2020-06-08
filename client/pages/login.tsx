@@ -20,7 +20,7 @@ import {
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { Alert } from '@material-ui/lab';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import { AppContext } from '../context/AppContext';
 import { apiService } from '../services/apiService';
 import { gaService } from '../services/gaService';
@@ -28,7 +28,7 @@ import { userService } from '../services/userService';
 import { initApolloClient } from 'services/apolloService'
 import { withApollo } from 'components/withApollo'
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     maxWidth: '32rem',
     padding: '0.5rem 0',

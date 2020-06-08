@@ -62,7 +62,7 @@ type Props = {
   onDeleteError: any;
 };
 
-export function InstrumentView(props: Props) {
+export default function InstrumentView(props: Props) {
   const {
     amount,
     code,
