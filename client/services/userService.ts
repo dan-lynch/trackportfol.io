@@ -1,6 +1,7 @@
 import { BehaviorSubject } from 'rxjs';
 import ReactGA from 'react-ga';
 import { USER, TOKEN } from 'helpers/constants';
+import Cookie from 'js-cookie';
 
 export type User = {
   userId: number;
@@ -12,45 +13,31 @@ export type Token = {
   authToken: string;
 };
 
-const currentUser = typeof window === 'undefined' ? null : new BehaviorSubject(JSON.parse(localStorage.getItem(USER)!));
+const currentUser = new BehaviorSubject(JSON.parse(Cookie.get(USER)!));
 
-const currentToken = typeof window === 'undefined' ? null : new BehaviorSubject(JSON.parse(localStorage.getItem(TOKEN)!));
+const currentToken = new BehaviorSubject(JSON.parse(Cookie.get(TOKEN)!));
 
 export const userService = {
   login,
   logout,
   storeUserData,
   get loggedInUser(): User | null {
-    if (typeof window === 'undefined') {
-      return null
-    } else {
-    return currentUser.value;
-    }
+    return currentUser.value || null;
   },
   get token(): Token | null {
-    if (typeof window === 'undefined') {
-      return null
-    } else {
-    return currentToken.value;
-    }
+    return currentToken.value || null;
   },
   get isLoggedIn(): boolean {
-    if (typeof window === 'undefined') {
-      return false
-    } else {
-    return !!currentToken.value;
-    }
+    return !!currentToken.value || false;
   },
 };
 
 async function login(data: any) {
   if (data.jwtToken) {
-    const token: Token = { authToken: data.jwtToken };
-    localStorage.setItem(TOKEN, JSON.stringify(token));
-    currentToken.next(token);
-    return token;
+    Cookie.set(TOKEN, data.jwtToken);
+    return true;
   } else {
-    return null;
+    return false;
   }
 }
 
@@ -58,7 +45,7 @@ async function storeUserData(data: any) {
   const { id, firstName, lastName } = data.currentUser;
   if (id) {
     const user: User = { userId: id, firstName, lastName };
-    localStorage.setItem(USER, JSON.stringify(user));
+    Cookie.set(USER, JSON.stringify(user));
     ReactGA.set({ userId: id });
     currentUser.next(user);
     return user;
@@ -69,8 +56,8 @@ async function storeUserData(data: any) {
 
 
 function logout() {
-  localStorage.removeItem(USER);
-  localStorage.removeItem(TOKEN);
+  Cookie.remove(USER);
+  Cookie.remove(TOKEN);
   currentUser.next(null);
   currentToken.next(null);
   return true;

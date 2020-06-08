@@ -53,12 +53,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-
-interface Props {
-  data: any
-}
-
-function Dashboard({ data }: Props) {
+function Dashboard() {
   const [holdings, setHoldings] = useState<Holding[] | null>(null);
   const [searchInstrument, setSearchInstrument] = useState<Instrument | null>(null);
   const [instrumentToAdd, setInstrumentToAdd] = useState<Instrument | null>(null);
@@ -74,7 +69,7 @@ function Dashboard({ data }: Props) {
   const currentUserQuery = useQuery(apiService.currentUser);
 
   useEffect(() => {
-    if (!currentUserQuery.error && currentUserQuery.data) {
+    if (!currentUserQuery.error && currentUserQuery.data && currentUserQuery.data.currentUser) {
       setHoldings(currentUserQuery.data.currentUser.holdingsByUserId.nodes);
       setUserId(currentUserQuery.data.currentUser.id);
       userService.storeUserData(currentUserQuery.data);
@@ -272,7 +267,7 @@ function Dashboard({ data }: Props) {
   );
 }
 
-export async function getStaticProps() {
+export async function getServiceSideProps() {
   const client = await initApolloClient({})
   const { data } = await client.query({ query: apiService.currentUser })
   return {

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Typography, CircularProgress } from '@material-ui/core';
 import { AppContext } from 'context/AppContext';
 import { API_KEY } from 'helpers/constants';
-import { parseData } from 'utils';
+import { parseData } from 'helpers/utils';
 
 interface WithOHLCDataProps {
   readonly data: IOHLCData[];
