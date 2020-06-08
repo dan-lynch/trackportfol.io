@@ -19,9 +19,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type Props = {};
-
-const Header: React.FC<Props> = (props) => {
+export default function Header() {
   const router = useRouter()
   const classes = useStyles();
 
@@ -66,5 +64,3 @@ const Header: React.FC<Props> = (props) => {
     </AppContext.Consumer>
   );
 };
-
-export default Header;

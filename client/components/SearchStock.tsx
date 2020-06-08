@@ -21,8 +21,7 @@ type Props = {
   setValue: any;
   id: string;
 };
-
-const SearchStock: React.FC<Props> = (props) => {
+export default function SearchStock(props: Props) {
   const { value, setValue, id } = props;
   const [inputValue, setInputValue] = useState<string | undefined>('');
   const [instruments, setInstruments] = useState<Instrument[] | []>([]);
@@ -99,5 +98,3 @@ const SearchStock: React.FC<Props> = (props) => {
     />
   );
 };
-
-export default SearchStock;

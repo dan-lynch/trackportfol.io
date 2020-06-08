@@ -1,11 +1,9 @@
 import React, { ReactNode } from 'react'
-import Link from 'next/link'
-import Head from 'next/head'
 import { Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import TopHeader from 'components/Header';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     display: 'flex',
     padding: '1rem',

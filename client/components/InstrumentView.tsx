@@ -8,7 +8,7 @@ import DoneIcon from '@material-ui/icons/Done';
 import { apiService } from 'services/apiService';
 import { isNumeric } from 'helpers/misc';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     boxShadow: 'none !important',
     marginBottom: '0',
@@ -62,7 +62,7 @@ type Props = {
   onDeleteError: any;
 };
 
-const InstrumentView: React.FC<Props> = (props) => {
+export function InstrumentView(props: Props) {
   const {
     amount,
     code,
@@ -177,5 +177,3 @@ const InstrumentView: React.FC<Props> = (props) => {
     </Card>
   );
 };
-
-export default InstrumentView;
