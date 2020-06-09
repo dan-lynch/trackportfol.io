@@ -3,7 +3,7 @@ import { useQuery } from '@apollo/client';
 import { CircularProgress, TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
-import { apiService } from 'services/apiService';
+import { graphqlService } from 'services/graphql';
 import { Instrument } from 'helpers/types';
 
 const useStyles = makeStyles(() => ({
@@ -29,7 +29,7 @@ export default function SearchStock(props: Props) {
   const [loading, setLoading] = useState<boolean>(false);
   const classes = useStyles();
 
-  const searchResults = useQuery(apiService.searchInstruments, {
+  const searchResults = useQuery(graphqlService.SEARCH_INSTRUMENTS, {
     variables: { search: inputValue, firstLetter: inputValue?.slice(0,1) },
   });
 

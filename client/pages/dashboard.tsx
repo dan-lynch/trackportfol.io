@@ -1,21 +1,22 @@
 import React, { useEffect, useContext, useState } from 'react';
+import Router from 'next/router';
 import { useQuery } from '@apollo/client';
 import { Mutation } from '@apollo/react-components';
 import { Grid, Paper, Typography, TextField, Button, CircularProgress, Collapse } from '@material-ui/core';
 import { Alert, Skeleton } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
-import { AppContext } from '../context/AppContext';
-import { apiService } from '../services/apiService';
-import { gaService } from '../services/gaService';
-import { userService } from '../services/userService';
 import Layout from 'components/Layout'
-import StockCharts from '../components/StockChart';
-import SearchStock from '../components/SearchStock';
-import InstrumentView from '../components/InstrumentView';
-import { Instrument, Holding } from '../helpers/types';
-import { isNumeric } from '../helpers/misc';
-import { initApolloClient } from 'services/apolloService'
+import StockCharts from 'components/StockChart';
+import SearchStock from 'components/SearchStock';
+import InstrumentView from 'components/InstrumentView';
 import { withApollo } from 'components/withApollo'
+import { AppContext } from 'context/AppContext';
+import { graphqlService } from 'services/graphql';
+import { gaService } from 'services/gaService';
+import { userService } from 'services/userService';
+import { initApolloClient } from 'services/apolloService'
+import { Instrument, Holding } from 'helpers/types';
+import { isNumeric } from 'helpers/misc';
 
 const useStyles = makeStyles(() => ({
   paper: {
@@ -54,82 +55,92 @@ const useStyles = makeStyles(() => ({
 }));
 
 function Dashboard() {
-  const [holdings, setHoldings] = useState<Holding[] | null>(null);
-  const [searchInstrument, setSearchInstrument] = useState<Instrument | null>(null);
-  const [instrumentToAdd, setInstrumentToAdd] = useState<Instrument | null>(null);
-  const [instrumentIdToAdd, setInstrumentIdToAdd] = useState<number | null>(null);
-  const [quantityToAdd, setQuantityToAdd] = useState<number | undefined>(0.0);
-  const [userId, setUserId] = useState<number | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [successMessage, setSuccessMessage] = useState<boolean>(false);
-  const [failedMessage, setFailedMessage] = useState<boolean>(false);
+  const [holdings, setHoldings] = useState<Holding[] | null>(null)
+  const [searchInstrument, setSearchInstrument] = useState<Instrument | null>(null)
+  const [instrumentToAdd, setInstrumentToAdd] = useState<Instrument | null>(null)
+  const [instrumentIdToAdd, setInstrumentIdToAdd] = useState<number | null>(null)
+  const [quantityToAdd, setQuantityToAdd] = useState<number | undefined>(0.0)
+  const [userId, setUserId] = useState<number | null>(null)
+  const [loading, setLoading] = useState<boolean>(false)
+  const [successMessage, setSuccessMessage] = useState<boolean>(false)
+  const [failedMessage, setFailedMessage] = useState<boolean>(false)
 
-  const classes = useStyles();
-  const appContext = useContext(AppContext);
-  const currentUserQuery = useQuery(apiService.currentUser);
+  const classes = useStyles()
+  const appContext = useContext(AppContext)
+  const currentUserQuery = useQuery(graphqlService.CURRENT_USER)
 
   useEffect(() => {
-    if (!currentUserQuery.error && currentUserQuery.data && currentUserQuery.data.currentUser) {
-      setHoldings(currentUserQuery.data.currentUser.holdingsByUserId.nodes);
-      setUserId(currentUserQuery.data.currentUser.id);
-      userService.storeUserData(currentUserQuery.data);
+    if (currentUserQuery.data) {
+      if (!currentUserQuery.error && currentUserQuery.data.currentUser) {
+        setHoldings(currentUserQuery.data.currentUser.holdingsByUserId.nodes)
+        setUserId(currentUserQuery.data.currentUser.id)
+        userService.storeUserData(currentUserQuery.data)
+      } else {
+        appContext.setIsLoggedIn(false)
+        userService.logout()
+        Router.push('/login')
+      }
     }
   }, [currentUserQuery]);
 
+  useEffect(() => {
+    appContext.setIsLoggedIn(true);
+  }, []);
+
   async function processSearch(searchQuery: Instrument | null) {
     if (searchQuery && searchQuery.code) {
-      setSearchInstrument(searchQuery);
-      appContext.setStock(searchQuery.code);
-      gaService.viewStockchartEvent();
+      setSearchInstrument(searchQuery)
+      appContext.setStock(searchQuery.code)
+      gaService.viewStockchartEvent()
     }
   }
 
   async function updateInstrumentToAdd(instrument: Instrument | null) {
     if (instrument) {
-      setInstrumentToAdd(instrument);
-      setInstrumentIdToAdd(instrument.id);
+      setInstrumentToAdd(instrument)
+      setInstrumentIdToAdd(instrument.id)
     }
   }
 
   async function updateQuantityToAdd(quantity: any) {
     if (isNumeric(quantity) || quantity === '') {
-      setQuantityToAdd(quantity);
+      setQuantityToAdd(quantity)
     }
   }
 
   async function onAddConfirm(data: any) {
-    gaService.addInstrumentSuccessEvent();
-    setHoldings(data.createHolding.query.currentUser.holdingsByUserId.nodes);
-    setInstrumentToAdd(null);
-    setInstrumentIdToAdd(null);
-    setQuantityToAdd(0.0);
-    setSuccessMessage(true);
+    gaService.addInstrumentSuccessEvent()
+    setHoldings(data.createHolding.query.currentUser.holdingsByUserId.nodes)
+    setInstrumentToAdd(null)
+    setInstrumentIdToAdd(null)
+    setQuantityToAdd(0.0)
+    setSuccessMessage(true)
   }
 
   async function onAddError(error: any) {
-    gaService.addInstrumentFailedEvent();
-    setFailedMessage(true);
-    console.info(error);
+    gaService.addInstrumentFailedEvent()
+    setFailedMessage(true)
+    console.info(error)
   }
 
   async function onUpdateSuccess(data: any) {
-    gaService.updateInstrumentSuccessEvent();
-    setHoldings(data.updateHoldingByUserIdAndInstrumentId.query.currentUser.holdingsByUserId.nodes);
+    gaService.updateInstrumentSuccessEvent()
+    setHoldings(data.updateHoldingByUserIdAndInstrumentId.query.currentUser.holdingsByUserId.nodes)
   }
 
   async function onUpdateError(error: any) {
-    gaService.updateInstrumentFailedEvent();
-    console.info(error);
+    gaService.updateInstrumentFailedEvent()
+    console.info(error)
   }
 
   async function onDeleteSuccess(data: any) {
-    gaService.deleteInstrumentSuccessEvent();
-    setHoldings(data.deleteHoldingByUserIdAndInstrumentId.query.currentUser.holdingsByUserId.nodes);
+    gaService.deleteInstrumentSuccessEvent()
+    setHoldings(data.deleteHoldingByUserIdAndInstrumentId.query.currentUser.holdingsByUserId.nodes)
   }
 
   async function onDeleteError(error: any) {
-    gaService.deleteInstrumentFailedEvent();
-    console.info(error);
+    gaService.deleteInstrumentFailedEvent()
+    console.info(error)
   }
 
   return (
@@ -217,7 +228,7 @@ function Dashboard() {
                 </Grid>
                 <Grid item xs={12} lg={2} className={classes.flex}>
                   <Mutation
-                    mutation={apiService.createHolding}
+                    mutation={graphqlService.CREATE_HOLDING}
                     variables={{ userId, instrumentId: instrumentIdToAdd, amount: quantityToAdd }}
                     onCompleted={(data: any) => {
                       setLoading(false);
@@ -267,11 +278,10 @@ function Dashboard() {
   );
 }
 
-export async function getServiceSideProps() {
+export async function getServerSideProps() {
   const client = await initApolloClient({})
-  const { data } = await client.query({ query: apiService.currentUser })
+  const { data } = userService.token ? await client.query({ query: graphqlService.CURRENT_USER }) : {data: null};
   return {
-    unstable_revalidate: 300,
     props: {
       data,
       apolloStaticCache: client.cache.extract(),

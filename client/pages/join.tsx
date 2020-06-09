@@ -22,9 +22,8 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
 import { AppContext } from '../context/AppContext';
-import { apiService } from '../services/apiService';
+import { graphqlService } from '../services/graphql';
 import { gaService } from '../services/gaService';
-import { userService } from '../services/userService';
 import { initApolloClient } from 'services/apolloService'
 import { withApollo } from 'components/withApollo'
 
@@ -93,8 +92,8 @@ function Join() {
   };
 
   useEffect(() => {
-    if (userService.isLoggedIn) {
-      router.push('/dashboard');
+    if (appContext.isLoggedIn) {
+      window.location.replace('/dashboard');
     }
   }, [router]);
   
@@ -174,7 +173,7 @@ function Join() {
         </Grid>
         <Grid item xs={12} className={classes.margin}>
           <Mutation
-            mutation={apiService.registerMutation}
+            mutation={graphqlService.REGISTER}
             variables={{ firstName, lastName, email, password }}
             onCompleted={(data: any) => {
               setLoading(false);

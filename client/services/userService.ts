@@ -26,9 +26,6 @@ export const userService = {
   get token(): string | null {
     return currentToken ? currentToken : null;
   },
-  get isLoggedIn(): boolean {
-    return !!currentToken;
-  },
 };
 
 async function login(data: any) {
@@ -38,6 +35,12 @@ async function login(data: any) {
   } else {
     return false;
   }
+}
+
+function logout() {
+  Cookie.remove(USER);
+  Cookie.remove(TOKEN);
+  return true;
 }
 
 async function storeUserData(data: any) {
@@ -50,11 +53,4 @@ async function storeUserData(data: any) {
   } else {
     return null;
   }
-}
-
-
-function logout() {
-  Cookie.remove(USER);
-  Cookie.remove(TOKEN);
-  return true;
 }

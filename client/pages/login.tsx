@@ -22,7 +22,7 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
 import { AppContext } from '../context/AppContext';
-import { apiService } from '../services/apiService';
+import { graphqlService } from '../services/graphql';
 import { gaService } from '../services/gaService';
 import { userService } from '../services/userService';
 import { initApolloClient } from 'services/apolloService'
@@ -73,7 +73,7 @@ function Login() {
     if (loginResult) {
       appContext.setIsLoggedIn(true);
       gaService.loginSuccessEvent();
-      router.push('/dashboard');
+      window.location.replace('/dashboard');
     } else {
       onError('Sign in failed');
     }
@@ -95,8 +95,8 @@ function Login() {
   };
 
   useEffect(() => {
-    if (userService.isLoggedIn) {
-      router.push('/dashboard');
+    if (appContext.isLoggedIn) {
+      window.location.replace('/dashboard');
     }
     if (appContext.signupEmail) {
       setEmail(appContext.signupEmail);
@@ -164,7 +164,7 @@ function Login() {
         </Grid>
         <Grid item xs={12} className={classes.margin}>
           <Mutation
-            mutation={apiService.loginMutation}
+            mutation={graphqlService.LOGIN}
             variables={{ email, password }}
             onCompleted={(data: any) => {
               setLoading(false);

@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DoneIcon from '@material-ui/icons/Done';
-import { apiService } from 'services/apiService';
+import { graphqlService } from 'services/graphql';
 import { isNumeric } from 'helpers/misc';
 
 const useStyles = makeStyles(() => ({
@@ -118,7 +118,7 @@ export default function InstrumentView(props: Props) {
           )}
           {isEditing ? (
             <Mutation
-              mutation={apiService.updateHolding}
+              mutation={graphqlService.UPDATE_HOLDING}
               variables={{ userId, instrumentId, amount: updateQuantity }}
               onCompleted={(data: any) => {
                 setUpdateLoading(false);
@@ -147,7 +147,7 @@ export default function InstrumentView(props: Props) {
             </IconButton>
           )}
           <Mutation
-            mutation={apiService.deleteHolding}
+            mutation={graphqlService.DELETE_HOLDING}
             variables={{ userId, instrumentId }}
             onCompleted={(data: any) => {
               setDeleteLoading(false);
