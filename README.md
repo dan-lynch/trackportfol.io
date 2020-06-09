@@ -33,7 +33,7 @@ You can run `yarn build` in the `client` folder to build and bundle client for p
 
 ### Configuring Frontend
 
-You can specify which backend your local client uses by setting `REACT_APP_SERVER_URL` in the appropriate environment file (`client/.env` for production builds, `client/.env.development` for development builds)
+You can specify which backend your local client uses by setting `NEXT_PUBLIC_SERVER_URL` in the appropriate environment file (`client/.env` for production builds, `client/.env.development` for development builds)
   - Local backend (if you have one running, see below): `http://localhost:5433/graphql`
   - Production backend: ` https://trackportfol.io/api`
   

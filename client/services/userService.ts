@@ -21,10 +21,10 @@ export const userService = {
   logout,
   storeUserData,
   get loggedInUser(): User | null {
-    return currentUser;
+    return currentUser ? currentUser : null;
   },
-  get token(): Token | null {
-    return currentToken ? currentToken.value : null;
+  get token(): string | null {
+    return currentToken ? currentToken : null;
   },
   get isLoggedIn(): boolean {
     return !!currentToken;
@@ -46,7 +46,6 @@ async function storeUserData(data: any) {
     const user: User = { userId: id, firstName, lastName };
     Cookie.set(USER, JSON.stringify(user));
     ReactGA.set({ userId: id });
-    currentUser.next(user);
     return user;
   } else {
     return null;
@@ -57,7 +56,5 @@ async function storeUserData(data: any) {
 function logout() {
   Cookie.remove(USER);
   Cookie.remove(TOKEN);
-  currentUser.next(null);
-  currentToken.next(null);
   return true;
 }
