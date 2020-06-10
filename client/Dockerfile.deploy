@@ -3,7 +3,7 @@ WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 COPY client/package.json ./
 COPY client/yarn.lock ./
-RUN yarn install --frozen-lockfile --silent --production
+RUN yarn install --frozen-lockfile --silent
 COPY client ./
 RUN yarn build
 EXPOSE 3000
