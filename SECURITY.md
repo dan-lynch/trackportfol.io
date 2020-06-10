@@ -9,5 +9,5 @@
 ## Reporting a Vulnerability
 
 Either:
-- Message Lynchy on [Slack](https://lynchyworkspace.slack.com/)
-- Open a new [GitHub Issue](https://github.com/LynchyNZ/trackportfol.io/issues/new)
+- Message *Lynchy* on [Slack](https://trackportfolio.slack.com/)
+- Open a new [GitHub Issue](https://github.com/dan-lynch/trackportfol.io/issues/new)

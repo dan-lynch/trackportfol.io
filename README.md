@@ -14,7 +14,7 @@
 
 Prerequisites: **Git**, **Docker** and **docker-compose** (or **Yarn** if you prefer)
 
-1) Clone Repo: `git clone https://github.com/LynchyNZ/trackportfol.io.git`
+1) Clone Repo: `git clone https://github.com/dan-lynch/trackportfol.io.git`
 
 ##### Using Docker
 2) Run one of the following commands for a local dockerised client:
