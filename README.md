@@ -6,9 +6,9 @@
 
 ### Made with
 
-<img src="https://cdn.svgporn.com/logos/react.svg" alt="React" width="50" height="50"> <img src="https://cdn.svgporn.com/logos/typescript-icon.svg" alt="TypeScript" width="50" height="50"> <img src="https://cdn.svgporn.com/logos/graphql.svg" alt="Graph QL" width="50" height="50"> <img src="https://cdn.svgporn.com/logos/postgresql.svg" alt="PostgreSQL" width="50" height="50"> <img src="https://cdn.svgporn.com/logos/docker-icon.svg" alt="Docker" width="50" height="50">
+<img src="https://cdn.svgporn.com/logos/nextjs.svg" alt="Next.js" width="83" height="50">  <img src="https://cdn.svgporn.com/logos/graphql.svg" alt="Graph QL" width="50" height="50"> <img src="https://cdn.svgporn.com/logos/postgresql.svg" alt="PostgreSQL" width="50" height="50"> <img src="https://cdn.svgporn.com/logos/docker-icon.svg" alt="Docker" width="50" height="50">
 
-**React** | **TypeScript** | **GraphQL** | **PostgreSQL** | **Docker**
+**Next.js** | **GraphQL** | **PostgreSQL** | **Docker**
 
 ### Setup Local Frontend Environment
 
