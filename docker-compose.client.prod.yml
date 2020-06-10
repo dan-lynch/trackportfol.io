@@ -5,6 +5,6 @@ services:
     container_name: client-prod
     build:
       context: ./client
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile.production
     ports:
-      - 1337:1337
+      - 3000:3000
