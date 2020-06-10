@@ -46,4 +46,4 @@ jobs:
             docker rm client-prod
             docker login docker.pkg.github.com -u $GIT_USERNAME -p $GIT_TOKEN
             docker pull docker.pkg.github.com/dan-lynch/trackportfol.io/client-prod:latest
-            docker run -dit --name client-prod -p 1337:1337 docker.pkg.github.com/dan-lynch/trackportfol.io/client-prod:latest
+            docker run -dit --name client-prod -p 3000:3000 docker.pkg.github.com/dan-lynch/trackportfol.io/client-prod:latest

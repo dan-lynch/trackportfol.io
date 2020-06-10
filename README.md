@@ -21,7 +21,7 @@ Prerequisites: **Git**, **Docker** and **docker-compose** (or **Yarn** if you pr
 - Dev mode (live reload): `docker-compose -f docker-compose.client.dev.yml up -d`
 - Production mode (uses yarn build with an nginx server): `docker-compose -f docker-compose.client.prod.yml up -d`
 
-3) View app at [http://localhost:3001/](http://localhost:3001/) (Dev) or [http://localhost:1337/](http://localhost:1337/) (Prod)
+3) View app at [http://localhost:3001/](http://localhost:3001/) (Dev) or [http://localhost:3000/](http://localhost:3000/) (Prod)
 
 ##### Using Yarn
 2) Run one of the following commands for a local client:
