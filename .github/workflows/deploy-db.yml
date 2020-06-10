@@ -22,7 +22,7 @@ jobs:
       - name: Publish to Github Packages Registry
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          name: lynchynz/trackportfol.io/db
+          name: dan-lynch/trackportfol.io/db
           registry: docker.pkg.github.com
           username: ${{ secrets.GIT_USERNAME }}
           password: ${{ secrets.GIT_TOKEN }}
@@ -47,5 +47,5 @@ jobs:
             docker rm db
             docker rmi db
             docker login docker.pkg.github.com -u $GIT_USERNAME -p $GIT_TOKEN
-            docker pull docker.pkg.github.com/lynchynz/trackportfol.io/db:latest
-            docker run -dit --name db -p 5432:5432 docker.pkg.github.com/lynchynz/trackportfol.io/db:latest
+            docker pull docker.pkg.github.com/dan-lynch/trackportfol.io/db:latest
+            docker run -dit --name db -p 5432:5432 docker.pkg.github.com/dan-lynch/trackportfol.io/db:latest
