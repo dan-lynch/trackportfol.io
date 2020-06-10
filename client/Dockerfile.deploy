@@ -1,0 +1,10 @@
+FROM node:13.12.0-alpine
+WORKDIR /app
+ENV PATH /app/node_modules/.bin:$PATH
+COPY client/package.json ./
+COPY client/yarn.lock ./
+RUN yarn install --frozen-lockfile --silent --production
+COPY client ./
+RUN yarn build
+EXPOSE 3000
+CMD ["yarn", "start"]

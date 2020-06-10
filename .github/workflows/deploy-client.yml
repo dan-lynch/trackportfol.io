@@ -4,8 +4,9 @@ on:
   push:
     paths:
       - 'client/**'
-    branches:
-      - master
+      - '.github/**'
+#     branches:
+#       - master
 
 jobs:
   build-and-deploy-client:
@@ -26,7 +27,7 @@ jobs:
           registry: docker.pkg.github.com
           username: ${{ secrets.GIT_USERNAME }}
           password: ${{ secrets.GIT_TOKEN }}
-          dockerfile: client/Dockerfile.production
+          dockerfile: client/Dockerfile.deploy
           tags: latest
 
       - name: Deploy package to server
