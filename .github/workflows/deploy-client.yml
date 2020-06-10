@@ -19,16 +19,6 @@ jobs:
         with:
           node-version: "13.10"
 
-      - name: Install dependencies
-        run: |
-          cd client
-          yarn --frozen-lockfile
-
-      - name: Build production client
-        run: |
-          cd client
-          yarn build
-
       - name: Publish to Github Packages Registry
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
@@ -36,7 +26,7 @@ jobs:
           registry: docker.pkg.github.com
           username: ${{ secrets.GIT_USERNAME }}
           password: ${{ secrets.GIT_TOKEN }}
-          dockerfile: client/Dockerfile.deploy
+          dockerfile: client/Dockerfile.production
           tags: latest
 
       - name: Deploy package to server

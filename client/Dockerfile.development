@@ -6,4 +6,4 @@ COPY yarn.lock ./
 RUN yarn --silent
 RUN yarn global add next --silent
 COPY . ./
-CMD ["next", "dev"]
+CMD ["yarn", "dev"]
