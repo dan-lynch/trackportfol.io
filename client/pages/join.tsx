@@ -80,7 +80,7 @@ function Join() {
   async function onError(error: any) {
     gaService.registerFailedEvent();
     setFailedMessage(true);
-    console.info(error);
+    console.warn(error);
   }
 
   const handleClickShowPassword = () => {
@@ -98,7 +98,7 @@ function Join() {
   }, [router]);
   
   return (
-  <Layout title="Sign Up | trackportfol.io">
+  <Layout loggedIn={false} title="Sign Up | trackportfol.io">
     <Paper className={classes.root}>
       <Grid container spacing={3}>
         <Grid item xs={12} className={classes.margin}>

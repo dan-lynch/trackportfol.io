@@ -19,7 +19,6 @@ const useStyles = makeStyles(() => ({
   },
   amount: {
     fontSize: '0.875rem',
-    color: 'darkslategray',
     paddingRight: '0.5rem',
     marginLeft: '0.5rem',
     width: '5rem',
@@ -88,7 +87,7 @@ export default function InstrumentView(props: Props) {
     setIsEditing((currentIsEditing) => !currentIsEditing);
   };
 
-  async function changeUpdateQuantity(quantity: any) {
+  const changeUpdateQuantity = (quantity: any) => {
     if (isNumeric(quantity) || quantity === '') {
       setUpdateQuantity(quantity);
     }

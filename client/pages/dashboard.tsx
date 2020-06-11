@@ -87,7 +87,7 @@ function Dashboard() {
     appContext.setIsLoggedIn(true);
   }, []);
 
-  async function processSearch(searchQuery: Instrument | null) {
+  const processSearch = (searchQuery: Instrument | null) => {
     if (searchQuery && searchQuery.code) {
       setSearchInstrument(searchQuery)
       appContext.setStock(searchQuery.code)
@@ -95,20 +95,20 @@ function Dashboard() {
     }
   }
 
-  async function updateInstrumentToAdd(instrument: Instrument | null) {
+  const updateInstrumentToAdd = (instrument: Instrument | null) => {
     if (instrument) {
       setInstrumentToAdd(instrument)
       setInstrumentIdToAdd(instrument.id)
     }
   }
 
-  async function updateQuantityToAdd(quantity: any) {
+  const updateQuantityToAdd = (quantity: any) => {
     if (isNumeric(quantity) || quantity === '') {
       setQuantityToAdd(quantity)
     }
   }
 
-  async function onAddConfirm(data: any) {
+  const onAddConfirm = (data: any) => {
     gaService.addInstrumentSuccessEvent()
     setHoldings(data.createHolding.query.currentUser.holdingsByUserId.nodes)
     setInstrumentToAdd(null)
@@ -117,34 +117,34 @@ function Dashboard() {
     setSuccessMessage(true)
   }
 
-  async function onAddError(error: any) {
+  const onAddError = (error: any) => {
     gaService.addInstrumentFailedEvent()
     setFailedMessage(true)
-    console.info(error)
+    console.warn(error)
   }
 
-  async function onUpdateSuccess(data: any) {
+  const onUpdateSuccess = (data: any) => {
     gaService.updateInstrumentSuccessEvent()
     setHoldings(data.updateHoldingByUserIdAndInstrumentId.query.currentUser.holdingsByUserId.nodes)
   }
 
-  async function onUpdateError(error: any) {
+  const onUpdateError = (error: any) => {
     gaService.updateInstrumentFailedEvent()
-    console.info(error)
+    console.warn(error)
   }
 
-  async function onDeleteSuccess(data: any) {
+  const onDeleteSuccess = (data: any) => {
     gaService.deleteInstrumentSuccessEvent()
     setHoldings(data.deleteHoldingByUserIdAndInstrumentId.query.currentUser.holdingsByUserId.nodes)
   }
 
-  async function onDeleteError(error: any) {
+  const onDeleteError = (error: any) => {
     gaService.deleteInstrumentFailedEvent()
-    console.info(error)
+    console.warn(error)
   }
 
   return (
-  <Layout title="Dashboard | trackportfol.io">
+  <Layout loggedIn={true} title="Dashboard | trackportfol.io">
      <Grid container spacing={3}>
         <Grid item xs={12} className={classes.welcome}>
           <Typography variant='subtitle1' className={classes.welcomeText}>
