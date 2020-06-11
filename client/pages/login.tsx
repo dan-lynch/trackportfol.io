@@ -83,7 +83,7 @@ function Login() {
     appContext.setIsLoggedIn(false);
     gaService.loginFailedEvent();
     setFailedMessage(true);
-    console.info(error);
+    console.warn(error);
   }
 
   const handleClickShowPassword = () => {
@@ -106,7 +106,7 @@ function Login() {
   }, [router, appContext]);
 
   return (
-  <Layout title="Sign In | trackportfol.io">
+  <Layout loggedIn={false} title="Sign In | trackportfol.io">
     <Paper className={classes.root}>
       <Grid container spacing={3}>
         <Grid item xs={12} className={classes.margin}>

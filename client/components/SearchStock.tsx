@@ -3,6 +3,7 @@ import { useQuery } from '@apollo/client';
 import { CircularProgress, TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
+import SearchIcon from '@material-ui/icons/Search';
 import { graphqlService } from 'services/graphql';
 import { Instrument } from 'helpers/types';
 
@@ -62,7 +63,7 @@ export default function SearchStock(props: Props) {
       classes={{
         option: classes.option,
       }}
-      open={open}
+      open={open && instruments.length > 0}
       onOpen={() => {
         setOpen(true);
       }}
@@ -71,7 +72,6 @@ export default function SearchStock(props: Props) {
       }}
       autoHighlight
       getOptionLabel={(option: Instrument) => `${option.code} ${option.description}`}
-      noOptionsText="Start typing to search..."
       loading={loading}
       renderOption={(option) => (
         <React.Fragment>
@@ -83,9 +83,13 @@ export default function SearchStock(props: Props) {
         <TextField
           {...params}
           label='Search stocks'
+          placeholder='Start typing to search...'
           variant='outlined'
           InputProps={{
             ...params.InputProps,
+              startAdornment: (
+                  <SearchIcon />
+              ),
             endAdornment: (
               <React.Fragment>
                 {loading ? <CircularProgress color='inherit' size={20} /> : null}
