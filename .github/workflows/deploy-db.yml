@@ -21,11 +21,14 @@ jobs:
 
       - name: Publish to Github Packages Registry
         uses: elgohr/Publish-Docker-Github-Action@master
+        env:
+          PROTECTED_FILES_PASSPHRASE: ${{ secrets.PROTECTED_FILES_PASSPHRASE }}
         with:
           name: dan-lynch/trackportfol.io/db
           registry: docker.pkg.github.com
           username: ${{ secrets.GIT_USERNAME }}
           password: ${{ secrets.GIT_TOKEN }}
+          envs: PROTECTED_FILES_PASSPHRASE
           dockerfile: backend/db/Dockerfile.deploy
           tags: latest
 
@@ -34,7 +37,6 @@ jobs:
         env:
           GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
           GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
-          DB_SCHEMA_PASS: ${{ secrets.DB_SCHEMA_PASS }}
         with:
           host: ${{ secrets.PROD_HOST }}
           username: ${{ secrets.PROD_USERNAME }}
@@ -42,7 +44,6 @@ jobs:
           port: ${{ secrets.PROD_PORT }}
           envs: GIT_USERNAME, GIT_TOKEN
           script: |
-            env SCHEMA_PASSPHRASE=$DB_SCHEMA_PASS sh ./decrypt_schema.sh
             docker stop db
             docker rm db
             docker rmi db
