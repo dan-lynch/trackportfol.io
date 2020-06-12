@@ -4,8 +4,8 @@ on:
   push:
     paths:
       - 'backend/db/**'
-    branches:
-      - master
+    # branches:
+    #   - master
 
 jobs:
   deploy-db:

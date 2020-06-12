@@ -2,4 +2,6 @@ FROM postgres:11.0-alpine
 COPY decrypt_protected_files.sh ./
 COPY .env.gpg ./
 COPY backend/db/init /docker-entrypoint-initdb.d
+RUN yum install -y gpg
+RUN apt-get gpg
 RUN env PASSPHRASE=$PROTECTED_FILES_PASSPHRASE sh ./decrypt_protected_files.sh
