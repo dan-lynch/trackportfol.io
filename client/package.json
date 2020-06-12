@@ -28,7 +28,7 @@
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-financial-charts": "^0.5.1",
-    "react-ga": "^2.7.0",
+    "react-ga": "^3.0.0",
     "react-virtualized-auto-sizer": "^1.0.2",
     "typeface-roboto": "^0.0.75"
   },
