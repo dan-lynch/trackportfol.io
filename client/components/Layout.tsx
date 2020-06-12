@@ -13,7 +13,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 type Props = {
-  children?: React.FC;
+  children?: any;
   title?: string;
   loggedIn: boolean;
 };
