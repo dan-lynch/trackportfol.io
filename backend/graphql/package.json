@@ -13,6 +13,6 @@
     "helmet": "^3.22.1",
     "postgraphile": "^4.7.0",
     "postgraphile-plugin-connection-filter": "^2.0.0",
-    "typescript": "^3.9.3"
+    "typescript": "^3.9.5"
   }
 }
