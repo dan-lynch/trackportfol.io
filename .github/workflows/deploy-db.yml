@@ -19,34 +19,22 @@ jobs:
         with:
           node-version: "13.10"
 
-      - name: Publish to Github Packages Registry
-        uses: elgohr/Publish-Docker-Github-Action@master
-        env:
-          PROTECTED_FILES_PASSPHRASE: ${{ secrets.PROTECTED_FILES_PASSPHRASE }}
-        with:
-          name: dan-lynch/trackportfol.io/db
-          registry: docker.pkg.github.com
-          username: ${{ secrets.GIT_USERNAME }}
-          password: ${{ secrets.GIT_TOKEN }}
-          envs: PROTECTED_FILES_PASSPHRASE
-          dockerfile: backend/db/Dockerfile.deploy
-          tags: latest
-
-      - name: Deploy package to server
+      - name: Deploy DB changes to server
         uses: appleboy/ssh-action@master
         env:
           GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
           GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+          PROTECTED_FILES_PASSPHRASE: ${{ secrets.PROTECTED_FILES_PASSPHRASE }}
         with:
           host: ${{ secrets.PROD_HOST }}
           username: ${{ secrets.PROD_USERNAME }}
           key: ${{ secrets.PROD_KEY }}
           port: ${{ secrets.PROD_PORT }}
-          envs: GIT_USERNAME, GIT_TOKEN
+          envs: GIT_USERNAME, GIT_TOKEN, PROTECTED_FILES_PASSPHRASE
           script: |
-            docker stop db
-            docker rm db
+            git fetch --all
+            git reset --hard origin/master
+            env PASSPHRASE=$PROTECTED_FILES_PASSPHRASE sh ./decrypt_protected_files.sh
+            docker-compose -f docker-compose.backend.yml down
             docker rmi db
-            docker login docker.pkg.github.com -u $GIT_USERNAME -p $GIT_TOKEN
-            docker pull docker.pkg.github.com/dan-lynch/trackportfol.io/db:latest
-            docker run -dit --name db -p 5432:5432 docker.pkg.github.com/dan-lynch/trackportfol.io/db:latest
+            docker-compose -f docker-compose.backend.yml up -d --build
