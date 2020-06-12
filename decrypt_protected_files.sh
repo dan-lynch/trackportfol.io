@@ -1,3 +1,5 @@
+yarn global add gpg --silent
+
 gpg --quiet --batch --yes --decrypt --passphrase="$PASSPHRASE" \
 --output backend/db/init/00-database.sql backend/db/init/00-database.sql.gpg
 
