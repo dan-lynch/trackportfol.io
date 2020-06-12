@@ -1,7 +1,8 @@
 {
   "name": "trackportfol.io",
   "description": "trackportfol.io - Portfolio Tracker",
-  "version": "0.1.0",
+  "version": "0.1.1",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/dan-lynch/trackportfol.io"
