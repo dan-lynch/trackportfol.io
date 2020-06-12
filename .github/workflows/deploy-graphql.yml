@@ -4,9 +4,8 @@ on:
   push:
     paths:
       - 'backend/graphql/**'
-      - '.github/**'
-    # branches:
-    #   - master
+    branches:
+      - master
 
 jobs:
   deploy-graphql:

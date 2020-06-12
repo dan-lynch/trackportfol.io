@@ -4,9 +4,8 @@ on:
   push:
     paths:
       - 'backend/db/**'
-      - '.github/**'
-    # branches:
-    #   - master
+    branches:
+      - master
 
 jobs:
   deploy-db:
