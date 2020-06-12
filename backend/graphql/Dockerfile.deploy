@@ -7,7 +7,6 @@ COPY backend/graphql/yarn.lock ./
 COPY backend/graphql/index.js ./
 COPY decrypt_protected_files.sh ./
 COPY .env.gpg ./
-RUN yum install -y gpg
 RUN apt-get gpg
 RUN env PASSPHRASE=$PROTECTED_FILES_PASSPHRASE sh ./decrypt_protected_files.sh
 RUN yarn install --frozen-lockfile --silent
