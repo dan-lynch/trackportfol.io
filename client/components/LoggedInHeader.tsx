@@ -12,10 +12,12 @@ import {
   ListItemText,
   Divider,
 } from '@material-ui/core';
+import ToggleButton from '@material-ui/lab/ToggleButton';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import LogoutIcon from '@material-ui/icons/ExitToApp';
 import MenuIcon from '@material-ui/icons/Menu';
 import { makeStyles } from '@material-ui/core/styles';
+import BrightnessIcon from '@material-ui/icons/Brightness4';
 import { AppContext } from 'context/AppContext';
 import { userService } from 'services/userService';
 
@@ -24,13 +26,17 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   menuButton: {
-    marginRight: theme.spacing(2),
+    color: 'white',
   },
   title: {
     flexGrow: 1,
   },
   menu: {
     width: 250,
+  },
+  brightness: {
+    marginTop: theme.spacing(1),
+    width: '100%',
   },
 }));
 
@@ -54,7 +60,7 @@ export default function LoggedInHeader() {
           trackportfol.io
         </Typography>
         <Button onClick={() => setIsMenuOpen(true)}>
-          <MenuIcon />
+          <MenuIcon className={classes.menuButton} />
           <Typography variant='srOnly'>Menu</Typography>
         </Button>
         <Drawer anchor='right' open={isMenuOpen} onClose={() => setIsMenuOpen(false)}>
@@ -80,6 +86,10 @@ export default function LoggedInHeader() {
                 <ListItemText primary='Logout' />
               </ListItem>
             </List>
+            <ToggleButton value="check" selected={appContext.isDarkTheme} className={classes.brightness}
+              onChange={() => {appContext.setIsDarkTheme(!appContext.isDarkTheme);}}>
+              <BrightnessIcon />
+            </ToggleButton>
           </div>
         </Drawer>
       </Toolbar>

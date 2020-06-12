@@ -4,7 +4,7 @@ import { userService } from 'services/userService';
 export const ContextProvider = ({ children }: any) => {
   const [signupEmail, setSignupEmail] = React.useState<string>('');
   const [stock, setStock] = React.useState<string>('');
-  const [theme, setTheme] = React.useState<string>('');
+  const [isDarkTheme, setIsDarkTheme] = React.useState<boolean>(false);
   const [isLoggedIn, setIsLoggedIn] = React.useState<boolean>(false);
 
 
@@ -13,8 +13,8 @@ export const ContextProvider = ({ children }: any) => {
     setSignupEmail,
     stock,
     setStock,
-    theme,
-    setTheme,
+    isDarkTheme,
+    setIsDarkTheme,
     isLoggedIn,
     setIsLoggedIn,
     userService,
@@ -32,8 +32,8 @@ type ContextProps = {
   setSignupEmail: any;
   stock: string;
   setStock: any;
-  theme: string;
-  setTheme: any;
+  isDarkTheme: boolean;
+  setIsDarkTheme: any;
   isLoggedIn: boolean;
   setIsLoggedIn: any;
   userService: any;
