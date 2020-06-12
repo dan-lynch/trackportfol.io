@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import LoggedInHeader from 'components/LoggedInHeader';
@@ -13,7 +13,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 type Props = {
-  children?: ReactNode;
+  children?: React.FC;
   title?: string;
   loggedIn: boolean;
 };
