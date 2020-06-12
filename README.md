@@ -1,7 +1,6 @@
 ## trackportfol.io
 
 [Slack](https://trackportfolio.slack.com/)
-| [Confluence](https://lynchy.atlassian.net/wiki/spaces/PT/overview/)
 | [JIRA](https://lynchy.atlassian.net/browse/PT)
 
 ### Made with
