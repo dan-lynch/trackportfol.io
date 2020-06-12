@@ -4,8 +4,8 @@ import Head from 'next/head';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import ReactGA from 'react-ga';
-import theme from 'theme';
-import { ContextProvider } from 'context/AppContext';
+import { lightTheme, darkTheme } from 'theme';
+import { ContextProvider, AppContext } from 'context/AppContext';
 import { GA_ID } from 'helpers/constants';
 
 class MyApp extends App {
@@ -31,10 +31,14 @@ class MyApp extends App {
         <link rel="manifest" href="./manifest.json" />
       </Head>
       <ContextProvider>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Component {...pageProps} />
-      </ThemeProvider>
+        <AppContext.Consumer>
+          {context => (
+            <ThemeProvider theme={context.isDarkTheme ? darkTheme : lightTheme}>
+              <CssBaseline />
+              <Component {...pageProps} />
+            </ThemeProvider>
+          )}
+        </AppContext.Consumer>
       </ContextProvider>
     </React.Fragment>
     )
