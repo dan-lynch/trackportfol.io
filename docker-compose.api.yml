@@ -1,0 +1,13 @@
+version: "3.7"
+
+services:
+  graphql:
+    container_name: graphql
+    restart: always
+    image: graphql
+    build:
+      context: ./backend/graphql
+    env_file:
+      - .env
+    ports:
+      - 5433:5433

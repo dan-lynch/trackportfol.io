@@ -35,6 +35,6 @@ jobs:
             cd trackportfol.io
             git fetch --all
             git reset --hard origin/master
-            env PASSPHRASE=$PROTECTED_FILES_PASSPHRASE sh ./decrypt_protected_files.sh
-            docker-compose -f docker-compose.backend.yml down
-            docker-compose -f docker-compose.backend.yml up -d --build
+            env PASSPHRASE="$PROTECTED_FILES_PASSPHRASE" sh ./decrypt_protected_files.sh
+            docker-compose -f docker-compose.api.yml down
+            docker-compose -f docker-compose.api.yml up -d --build

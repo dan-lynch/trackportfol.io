@@ -22,8 +22,8 @@
 - Prod mode (fastest, but no *live reload*): Run `yarn build`, then `yarn start`
 
 You can specify which **API** your local client uses by setting `NEXT_PUBLIC_SERVER_URL` in the appropriate environment file (`client/.env` for production builds, `client/.env.development` for development builds)
-  - Local backend (if you have one running, see below): `http://localhost:5433/graphql`
-  - Production backend: ` https://trackportfol.io/api`
+  - Local API (if you have one running, see below): `http://localhost:5433/graphql`
+  - Production API: ` https://trackportfol.io/api`
 
 ### Setup Local Backend Environment
 
@@ -31,18 +31,20 @@ You can specify which **API** your local client uses by setting `NEXT_PUBLIC_SER
 
 If you want a local **API** and **DB** running, you'll first need access to some protected files. Please message *Dan* on [Slack](https://trackportfolio.slack.com/) to get set up.
 
-You'll then be able to start the backend services using Docker, this will create two containers (one for DB, one for GraphQL).
+You'll then be able to start the backend services using Docker:
 
-Run `docker-compose -f docker-compose.backend.yml up -d`
+1) Run DB: `docker-compose -f docker-compose.db.yml up -d --build`
+2) Run API: `docker-compose -f docker-compose.api.yml up -d --build`
 
 - GraphiQL Tool: [http://localhost:5433/graphiql](http://localhost:5433/graphiql)
 - GraphQL API: [http://localhost:5433/graphql](http://localhost:5433/graphql)
 
 
 If you make changes to the database schema and need to re-initialise the database, run the following commands:
-1) `docker-compose -f docker-compose.backend.yml down`
+1) `docker-compose -f docker-compose.db.yml down`
 2) `docker rmi db`
-3) `docker-compose -f docker-compose.backend.yml up -d`
+3) `docker volume prune`
+4) `docker-compose -f docker-compose.db.yml up -d --build`
 
 ### Local Docker Client
 

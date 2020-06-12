@@ -7,7 +7,6 @@ const ConnectionFilterPlugin = require("postgraphile-plugin-connection-filter");
 const app = express()
 
 app.use(helmet())
-
 app.use(compression())
 
 app.use(
