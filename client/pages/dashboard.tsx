@@ -64,6 +64,7 @@ function Dashboard() {
   const [loading, setLoading] = useState<boolean>(false)
   const [successMessage, setSuccessMessage] = useState<boolean>(false)
   const [failedMessage, setFailedMessage] = useState<boolean>(false)
+  const [welcomeMessage, setWelcomeMessage] = useState<string | null>(null)
 
   const classes = useStyles()
   const appContext = useContext(AppContext)
@@ -76,6 +77,7 @@ function Dashboard() {
         setUserId(response.data.currentUser.user.id)
         appContext.setIsLoggedIn(true);
         userService.storeUserData(response.data)
+        setWelcomeMessage(`Welcome to your dashboard, ${response.data.currentUser.user.username}!`)
       } else {
         appContext.setIsLoggedIn(false)
         userService.logout()
@@ -145,7 +147,7 @@ function Dashboard() {
      <Grid container spacing={3}>
         <Grid item xs={12} className={classes.welcome}>
           <Typography variant='subtitle1' className={classes.welcomeText}>
-            {userService.loggedInUser && `Welcome to trackportfol.io, ${userService.loggedInUser.username}!`}
+            {welcomeMessage}
           </Typography>
         </Grid>
         <Grid item sm={6} xs={12}>
