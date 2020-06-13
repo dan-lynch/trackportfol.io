@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react';
 import Router from 'next/router';
-import { useQuery } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { Mutation } from '@apollo/react-components';
 import { Grid, Paper, Typography, TextField, Button, CircularProgress, Collapse } from '@material-ui/core';
 import { Alert, Skeleton } from '@material-ui/lab';
@@ -67,24 +67,21 @@ function Dashboard() {
 
   const classes = useStyles()
   const appContext = useContext(AppContext)
-  const currentUserQuery = useQuery(graphqlService.CURRENT_USER)
+  const [currentUser] = useMutation(graphqlService.CURRENT_USER);
 
   useEffect(() => {
-    if (currentUserQuery.data) {
-      if (!currentUserQuery.error && currentUserQuery.data.currentUser) {
-        setHoldings(currentUserQuery.data.currentUser.holdingsByUserId.nodes)
-        setUserId(currentUserQuery.data.currentUser.id)
-        userService.storeUserData(currentUserQuery.data)
+    currentUser({ variables: { clientMutationId: 'trackportfol.io' } }).then(response => {
+      if (response.data.currentUser.user) {
+        setHoldings(response.data.currentUser.user.holdingsByUserId.nodes)
+        setUserId(response.data.currentUser.user.id)
+        appContext.setIsLoggedIn(true);
+        userService.storeUserData(response.data)
       } else {
         appContext.setIsLoggedIn(false)
         userService.logout()
         Router.push('/login')
       }
-    }
-  }, [currentUserQuery]);
-
-  useEffect(() => {
-    appContext.setIsLoggedIn(true);
+    });
   }, []);
 
   const processSearch = (searchQuery: Instrument | null) => {
@@ -110,7 +107,7 @@ function Dashboard() {
 
   const onAddConfirm = (data: any) => {
     gaService.addInstrumentSuccessEvent()
-    setHoldings(data.createHolding.query.currentUser.holdingsByUserId.nodes)
+    setHoldings(data.createHolding.userByUserId.holdingsByUserId.nodes)
     setInstrumentToAdd(null)
     setInstrumentIdToAdd(null)
     setQuantityToAdd(0.0)
@@ -125,7 +122,7 @@ function Dashboard() {
 
   const onUpdateSuccess = (data: any) => {
     gaService.updateInstrumentSuccessEvent()
-    setHoldings(data.updateHoldingByUserIdAndInstrumentId.query.currentUser.holdingsByUserId.nodes)
+    setHoldings(data.updateHoldingByUserIdAndInstrumentId.userByUserId.holdingsByUserId.nodes)
   }
 
   const onUpdateError = (error: any) => {
@@ -135,7 +132,7 @@ function Dashboard() {
 
   const onDeleteSuccess = (data: any) => {
     gaService.deleteInstrumentSuccessEvent()
-    setHoldings(data.deleteHoldingByUserIdAndInstrumentId.query.currentUser.holdingsByUserId.nodes)
+    setHoldings(data.deleteHoldingByUserIdAndInstrumentId.userByUserId.holdingsByUserId.nodes)
   }
 
   const onDeleteError = (error: any) => {
@@ -148,7 +145,7 @@ function Dashboard() {
      <Grid container spacing={3}>
         <Grid item xs={12} className={classes.welcome}>
           <Typography variant='subtitle1' className={classes.welcomeText}>
-            {userService.loggedInUser && `Welcome to trackportfol.io, ${userService.loggedInUser.firstName}!`}
+            {userService.loggedInUser && `Welcome to trackportfol.io, ${userService.loggedInUser.username}!`}
           </Typography>
         </Grid>
         <Grid item sm={6} xs={12}>
@@ -280,10 +277,8 @@ function Dashboard() {
 
 export async function getServerSideProps() {
   const client = await initApolloClient({})
-  const { data } = userService.token ? await client.query({ query: graphqlService.CURRENT_USER }) : {data: null};
   return {
     props: {
-      data,
       apolloStaticCache: client.cache.extract(),
     },
   }

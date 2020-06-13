@@ -21,9 +21,9 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
-import { AppContext } from '../context/AppContext';
-import { graphqlService } from '../services/graphql';
-import { gaService } from '../services/gaService';
+import { AppContext } from 'context/AppContext';
+import { graphqlService } from 'services/graphql';
+import { gaService } from 'services/gaService';
 import { initApolloClient } from 'services/apolloService'
 import { withApollo } from 'components/withApollo'
 
@@ -55,8 +55,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 function Join() {
-  const [firstName, setFirstName] = useState<string>('');
-  const [lastName, setLastName] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
@@ -113,26 +112,14 @@ function Join() {
         </Collapse>
         <Grid item xs={12} className={classes.margin}>
           <TextField
-            id='firstname'
-            name='firstname'
-            label='First Name'
+            id='username'
+            name='username'
+            label='Username'
             variant='outlined'
             fullWidth
             autoComplete='on'
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={12} className={classes.margin}>
-          <TextField
-            id='lastname'
-            name='lastname'
-            label='Last Name'
-            variant='outlined'
-            fullWidth
-            autoComplete='on'
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           />
         </Grid>
         <Grid item xs={12} className={classes.margin}>
@@ -174,7 +161,7 @@ function Join() {
         <Grid item xs={12} className={classes.margin}>
           <Mutation
             mutation={graphqlService.REGISTER}
-            variables={{ firstName, lastName, email, password }}
+            variables={{ username, email, password }}
             onCompleted={(data: any) => {
               setLoading(false);
               onConfirm(data);
