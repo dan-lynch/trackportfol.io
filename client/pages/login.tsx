@@ -21,10 +21,10 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
-import { AppContext } from '../context/AppContext';
-import { graphqlService } from '../services/graphql';
-import { gaService } from '../services/gaService';
-import { userService } from '../services/userService';
+import { AppContext } from 'context/AppContext';
+import { graphqlService } from 'services/graphql';
+import { gaService } from 'services/gaService';
+import { userService } from 'services/userService';
 import { initApolloClient } from 'services/apolloService'
 import { withApollo } from 'components/withApollo'
 
