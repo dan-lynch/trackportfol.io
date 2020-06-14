@@ -1,78 +1,78 @@
-import { format } from 'd3-format';
-import { timeFormat } from 'd3-time-format';
-import * as React from 'react';
-import { Chart, ChartCanvas } from 'react-financial-charts';
-import { XAxis, YAxis } from 'react-financial-charts/lib/axes';
+import { format } from 'd3-format'
+import { timeFormat } from 'd3-time-format'
+import * as React from 'react'
+import { Chart, ChartCanvas } from 'react-financial-charts'
+import { XAxis, YAxis } from 'react-financial-charts/lib/axes'
 import {
   CrossHairCursor,
   EdgeIndicator,
   MouseCoordinateX,
   MouseCoordinateY,
-} from 'react-financial-charts/lib/coordinates';
-import { elderRay, ema } from 'react-financial-charts/lib/indicator';
-import { ZoomButtons } from 'react-financial-charts/lib/interactive';
-import { discontinuousTimeScaleProviderBuilder } from 'react-financial-charts/lib/scale';
-import { BarSeries, CandlestickSeries, ElderRaySeries, LineSeries } from 'react-financial-charts/lib/series';
-import { MovingAverageTooltip, OHLCTooltip, SingleValueTooltip } from 'react-financial-charts/lib/tooltip';
-import { withDeviceRatio } from 'react-financial-charts/lib/utils';
-import { lastVisibleItemBasedZoomAnchor } from 'react-financial-charts/lib/utils/zoomBehavior';
-import { withSize } from 'helpers/utils';
-import fetchStockData, { IOHLCData } from 'services/fetchStockData';
+} from 'react-financial-charts/lib/coordinates'
+import { elderRay, ema } from 'react-financial-charts/lib/indicator'
+import { ZoomButtons } from 'react-financial-charts/lib/interactive'
+import { discontinuousTimeScaleProviderBuilder } from 'react-financial-charts/lib/scale'
+import { BarSeries, CandlestickSeries, ElderRaySeries, LineSeries } from 'react-financial-charts/lib/series'
+import { MovingAverageTooltip, OHLCTooltip, SingleValueTooltip } from 'react-financial-charts/lib/tooltip'
+import { withDeviceRatio } from 'react-financial-charts/lib/utils'
+import { lastVisibleItemBasedZoomAnchor } from 'react-financial-charts/lib/utils/zoomBehavior'
+import { withSize } from 'helpers/utils'
+import fetchStockData, { IOHLCData } from 'services/fetchStockData'
 
 interface Props {
-  readonly data: IOHLCData[];
-  readonly height: number;
-  readonly dateTimeFormat?: string;
-  readonly width: number;
-  readonly ratio: number;
-  readonly stock: string;
+  readonly data: IOHLCData[]
+  readonly height: number
+  readonly dateTimeFormat?: string
+  readonly width: number
+  readonly ratio: number
+  readonly stock: string
 }
 
 class StockChart extends React.Component<Props> {
-  private readonly margin = { left: 0, right: 48, top: 0, bottom: 24 };
-  private readonly pricesDisplayFormat = format('.2f');
-  private readonly xScaleProvider = discontinuousTimeScaleProviderBuilder().inputDateAccessor((d: IOHLCData) => d.date);
+  private readonly margin = { left: 0, right: 48, top: 0, bottom: 24 }
+  private readonly pricesDisplayFormat = format('.2f')
+  private readonly xScaleProvider = discontinuousTimeScaleProviderBuilder().inputDateAccessor((d: IOHLCData) => d.date)
 
   public render() {
-    const { data: initialData, dateTimeFormat = '%d %b', height, ratio, width } = this.props;
+    const { data: initialData, dateTimeFormat = '%d %b', height, ratio, width } = this.props
 
     const ema12 = ema()
       .id(1)
       .options({ windowSize: 12 })
       .merge((d: any, c: any) => {
-        d.ema12 = c;
+        d.ema12 = c
       })
-      .accessor((d: any) => d.ema12);
+      .accessor((d: any) => d.ema12)
 
     const ema26 = ema()
       .id(2)
       .options({ windowSize: 26 })
       .merge((d: any, c: any) => {
-        d.ema26 = c;
+        d.ema26 = c
       })
-      .accessor((d: any) => d.ema26);
+      .accessor((d: any) => d.ema26)
 
-    const elder = elderRay();
+    const elder = elderRay()
 
-    const calculatedData = elder(ema26(ema12(initialData)));
+    const calculatedData = elder(ema26(ema12(initialData)))
 
-    const { margin, xScaleProvider } = this;
+    const { margin, xScaleProvider } = this
 
-    const { data, xScale, xAccessor, displayXAccessor } = xScaleProvider(calculatedData);
+    const { data, xScale, xAccessor, displayXAccessor } = xScaleProvider(calculatedData)
 
-    const start = xAccessor(data[data.length - 1]);
-    const end = xAccessor(data[Math.max(0, data.length - 100)]);
-    const xExtents = [start, end];
+    const start = xAccessor(data[data.length - 1])
+    const end = xAccessor(data[Math.max(0, data.length - 100)])
+    const xExtents = [start, end]
 
-    const gridHeight = height - margin.top - margin.bottom;
+    const gridHeight = height - margin.top - margin.bottom
 
-    const elderRayHeight = 100;
-    const elderRayOrigin = (_: number, h: number) => [0, h - elderRayHeight];
-    const barChartHeight = gridHeight / 4;
-    const barChartOrigin = (_: number, h: number) => [0, h - barChartHeight - elderRayHeight];
-    const chartHeight = gridHeight - elderRayHeight;
+    const elderRayHeight = 100
+    const elderRayOrigin = (_: number, h: number) => [0, h - elderRayHeight]
+    const barChartHeight = gridHeight / 4
+    const barChartOrigin = (_: number, h: number) => [0, h - barChartHeight - elderRayHeight]
+    const chartHeight = gridHeight - elderRayHeight
 
-    const timeDisplayFormat = timeFormat(dateTimeFormat);
+    const timeDisplayFormat = timeFormat(dateTimeFormat)
 
     return (
       <ChartCanvas
@@ -151,30 +151,30 @@ class StockChart extends React.Component<Props> {
         </Chart>
         <CrossHairCursor />
       </ChartCanvas>
-    );
+    )
   }
 
   private readonly barChartExtents = (data: IOHLCData) => {
-    return data.volume;
-  };
+    return data.volume
+  }
 
   private readonly candleChartExtents = (data: IOHLCData) => {
-    return [data.high, data.low];
-  };
+    return [data.high, data.low]
+  }
 
   private readonly yBarSeries = (data: IOHLCData) => {
-    return data.volume;
-  };
+    return data.volume
+  }
 
   private readonly yEdgeIndicator = (data: IOHLCData) => {
-    return data.close;
-  };
+    return data.close
+  }
 
   private readonly openCloseColor = (data: IOHLCData) => {
-    return data.close > data.open ? '#26a69a' : '#ef5350';
-  };
+    return data.close > data.open ? '#26a69a' : '#ef5350'
+  }
 }
 
-const withOHLCState = fetchStockData()(withSize(400)(withDeviceRatio()(StockChart)));
+const withOHLCState = fetchStockData()(withSize(400)(withDeviceRatio()(StockChart)))
 
-export default withOHLCState;
+export default withOHLCState

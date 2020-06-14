@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { Mutation } from '@apollo/react-components';
-import { Card, CardContent, Typography, IconButton, CircularProgress, TextField } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
-import DoneIcon from '@material-ui/icons/Done';
-import { graphqlService } from 'services/graphql';
-import { isNumeric } from 'helpers/misc';
+import React, { useState } from 'react'
+import { Mutation } from '@apollo/react-components'
+import { Card, CardContent, Typography, IconButton, CircularProgress, TextField } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
+import EditIcon from '@material-ui/icons/Edit'
+import DeleteIcon from '@material-ui/icons/Delete'
+import DoneIcon from '@material-ui/icons/Done'
+import { graphqlService } from 'services/graphql'
+import { isNumeric } from 'helpers/misc'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -46,20 +46,20 @@ const useStyles = makeStyles(() => ({
     margin: 0,
     marginTop: '0.5rem',
   },
-}));
+}))
 
 type Props = {
-  amount: string;
-  code: string;
-  description: string;
-  key: number;
-  userId: number;
-  instrumentId: number;
-  onUpdateSuccess: any;
-  onUpdateError: any;
-  onDeleteSuccess: any;
-  onDeleteError: any;
-};
+  amount: string
+  code: string
+  description: string
+  key: number
+  userId: number
+  instrumentId: number
+  onUpdateSuccess: any
+  onUpdateError: any
+  onDeleteSuccess: any
+  onDeleteError: any
+}
 
 export default function InstrumentView(props: Props) {
   const {
@@ -72,24 +72,25 @@ export default function InstrumentView(props: Props) {
     onUpdateError,
     onDeleteSuccess,
     onDeleteError,
-  } = props;
-  const [updateLoading, setUpdateLoading] = useState<boolean>(false);
-  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
-  const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [updateQuantity, setUpdateQuantity] = useState<number>(parseFloat(amount));
-  const classes = useStyles();
+  } = props
+  const classes = useStyles()
+
+  const [updateLoading, setUpdateLoading] = useState<boolean>(false)
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false)
+  const [isEditing, setIsEditing] = useState<boolean>(false)
+  const [updateQuantity, setUpdateQuantity] = useState<number>(parseFloat(amount))
 
   const InputProps = {
     className: classes.input,
-  };
+  }
 
   const updateState = () => {
-    setIsEditing((currentIsEditing) => !currentIsEditing);
-  };
+    setIsEditing((currentIsEditing) => !currentIsEditing)
+  }
 
   const changeUpdateQuantity = (quantity: any) => {
     if (isNumeric(quantity) || quantity === '') {
-      setUpdateQuantity(quantity);
+      setUpdateQuantity(quantity)
     }
   }
 
@@ -120,21 +121,21 @@ export default function InstrumentView(props: Props) {
               mutation={graphqlService.UPDATE_HOLDING}
               variables={{ userId, instrumentId, amount: updateQuantity }}
               onCompleted={(data: any) => {
-                setUpdateLoading(false);
-                setIsEditing(false);
-                onUpdateSuccess(data);
+                setUpdateLoading(false)
+                setIsEditing(false)
+                onUpdateSuccess(data)
               }}
               onError={(error: any) => {
-                setUpdateLoading(false);
-                onUpdateError(error);
+                setUpdateLoading(false)
+                onUpdateError(error)
               }}>
               {(mutation: any) => (
                 <IconButton
                   className={classes.button}
                   aria-label='Update Holding'
                   onClick={() => {
-                    setUpdateLoading(true);
-                    mutation();
+                    setUpdateLoading(true)
+                    mutation()
                   }}>
                   {updateLoading ? <CircularProgress size={16} /> : <DoneIcon />}
                 </IconButton>
@@ -149,20 +150,20 @@ export default function InstrumentView(props: Props) {
             mutation={graphqlService.DELETE_HOLDING}
             variables={{ userId, instrumentId }}
             onCompleted={(data: any) => {
-              setDeleteLoading(false);
-              onDeleteSuccess(data);
+              setDeleteLoading(false)
+              onDeleteSuccess(data)
             }}
             onError={(error: any) => {
-              setDeleteLoading(false);
-              onDeleteError(error);
+              setDeleteLoading(false)
+              onDeleteError(error)
             }}>
             {(mutation: any) => (
               <IconButton
                 className={classes.button}
                 aria-label='Delete Holding'
                 onClick={() => {
-                  setDeleteLoading(true);
-                  mutation();
+                  setDeleteLoading(true)
+                  mutation()
                 }}>
                 {deleteLoading ? <CircularProgress size={16} /> : <DeleteIcon />}
               </IconButton>
@@ -174,5 +175,5 @@ export default function InstrumentView(props: Props) {
         </Typography>
       </CardContent>
     </Card>
-  );
-};
+  )
+}

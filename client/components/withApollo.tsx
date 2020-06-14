@@ -13,8 +13,7 @@ export function withApollo(PageComponent: any) {
   }
 
   if (process.env.NODE_ENV !== 'production') {
-    const displayName =
-      PageComponent.displayName || PageComponent.name || 'Component'
+    const displayName = PageComponent.displayName || PageComponent.name || 'Component'
 
     WithApollo.displayName = `withApollo(${displayName})`
   }

@@ -2,7 +2,10 @@ import { gql } from '@apollo/client'
 
 export const SEARCH_INSTRUMENTS = gql`
   query allInstruments($search: String!, $firstLetter: String!) {
-    allInstruments(filter: {name: {includesInsensitive: $search}, or: {name: {startsWithInsensitive: $firstLetter}}}, first: 10) {
+    allInstruments(
+      filter: { name: { includesInsensitive: $search }, or: { name: { startsWithInsensitive: $firstLetter } } }
+      first: 10
+    ) {
       nodes {
         code
         description
@@ -10,4 +13,4 @@ export const SEARCH_INSTRUMENTS = gql`
       }
     }
   }
-`;
+`

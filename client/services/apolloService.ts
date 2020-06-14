@@ -1,12 +1,7 @@
-import {
-  ApolloClient,
-  InMemoryCache,
-  ApolloLink,
-  HttpLink,
-} from '@apollo/client'
+import { ApolloClient, InMemoryCache, ApolloLink, HttpLink } from '@apollo/client'
 import { onError } from '@apollo/link-error'
-import { setContext } from '@apollo/link-context';
-import { API_URL } from 'helpers/constants' 
+import { setContext } from '@apollo/link-context'
+import { API_URL } from 'helpers/constants'
 import { userService } from 'services/userService'
 
 global.fetch = require('node-fetch')
@@ -15,7 +10,7 @@ let globalApolloClient: any = null
 
 function createIsomorphLink() {
   return new HttpLink({
-    uri: API_URL
+    uri: API_URL,
   })
 }
 
@@ -31,8 +26,8 @@ const errorLink = onError(({ networkError, graphQLErrors }) => {
 })
 
 const authLink = setContext((_, { headers }) => {
-  const token = userService.token;
-  const authorization = token ? `Bearer ${token}` : null;
+  const token = userService.token
+  const authorization = token ? `Bearer ${token}` : null
   return token
     ? {
         headers: {
@@ -46,7 +41,6 @@ const authLink = setContext((_, { headers }) => {
         },
       }
 })
-
 
 const link = ApolloLink.from([errorLink, authLink, createIsomorphLink()])
 
