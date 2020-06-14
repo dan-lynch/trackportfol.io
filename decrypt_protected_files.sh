@@ -1,14 +1,14 @@
 gpg --quiet --batch --yes --decrypt --passphrase="$PASSPHRASE" \
---output backend/db/init/00-tables.sql backend/db/init/00-tables.sql.gpg
+--output db/init/00-tables.sql db/init/00-tables.sql.gpg
 
 gpg --quiet --batch --yes --decrypt --passphrase="$PASSPHRASE" \
---output backend/db/init/01-functions.sql backend/db/init/01-functions.sql.gpg
+--output db/init/01-functions.sql db/init/01-functions.sql.gpg
 
 gpg --quiet --batch --yes --decrypt --passphrase="$PASSPHRASE" \
---output backend/db/init/02-policies.sql backend/db/init/02-policies.sql.gpg
+--output db/init/02-policies.sql db/init/02-policies.sql.gpg
 
 gpg --quiet --batch --yes --decrypt --passphrase="$PASSPHRASE" \
---output backend/db/init/03-instruments.sql backend/db/init/03-instruments.sql.gpg
+--output db/init/03-instruments.sql db/init/03-instruments.sql.gpg
 
 gpg --quiet --batch --yes --decrypt --passphrase="$PASSPHRASE" \
 --output .env .env.gpg

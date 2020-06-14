@@ -2,7 +2,7 @@
 /client/coverage
 /client/build
 /client/.next
-/backend/graphql/node_modules
+/api/node_modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

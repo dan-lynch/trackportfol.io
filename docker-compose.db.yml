@@ -6,7 +6,7 @@ services:
     restart: always
     image: db
     build:
-      context: ./backend/db
+      context: ./db
     volumes:
       - db:/var/lib/postgresql/data
     env_file:

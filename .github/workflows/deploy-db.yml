@@ -3,7 +3,7 @@ name: Deploy DB
 on:
   push:
     paths:
-      - 'backend/db/**'
+      - 'db/**'
     branches:
       - master
 
