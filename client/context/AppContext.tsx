@@ -1,12 +1,11 @@
-import React from 'react';
-import { userService } from 'services/userService';
+import React from 'react'
+import { userService } from 'services/userService'
 
 export const ContextProvider = ({ children }: any) => {
-  const [signupEmail, setSignupEmail] = React.useState<string>('');
-  const [stock, setStock] = React.useState<string>('');
-  const [isDarkTheme, setIsDarkTheme] = React.useState<boolean>(false);
-  const [isLoggedIn, setIsLoggedIn] = React.useState<boolean>(false);
-
+  const [signupEmail, setSignupEmail] = React.useState<string>('')
+  const [stock, setStock] = React.useState<string>('')
+  const [isDarkTheme, setIsDarkTheme] = React.useState<boolean>(false)
+  const [isLoggedIn, setIsLoggedIn] = React.useState<boolean>(false)
 
   const contextProps: Partial<ContextProps> = {
     signupEmail,
@@ -18,25 +17,21 @@ export const ContextProvider = ({ children }: any) => {
     isLoggedIn,
     setIsLoggedIn,
     userService,
-  };
+  }
 
-  return (
-    <AppContext.Provider value={contextProps}>
-      {children}
-    </AppContext.Provider>
-  );
+  return <AppContext.Provider value={contextProps}>{children}</AppContext.Provider>
 }
 
 type ContextProps = {
-  signupEmail: string;
-  setSignupEmail: any;
-  stock: string;
-  setStock: any;
-  isDarkTheme: boolean;
-  setIsDarkTheme: any;
-  isLoggedIn: boolean;
-  setIsLoggedIn: any;
-  userService: any;
-};
+  signupEmail: string
+  setSignupEmail: any
+  stock: string
+  setStock: any
+  isDarkTheme: boolean
+  setIsDarkTheme: any
+  isLoggedIn: boolean
+  setIsLoggedIn: any
+  userService: any
+}
 
-export const AppContext = React.createContext<Partial<ContextProps>>({});
+export const AppContext = React.createContext<Partial<ContextProps>>({})

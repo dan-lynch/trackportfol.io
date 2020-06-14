@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from '@apollo/client'
 
 export const CREATE_HOLDING = gql`
   mutation createHolding($userId: Int!, $instrumentId: Int!, $amount: BigFloat!) {
@@ -18,4 +18,4 @@ export const CREATE_HOLDING = gql`
       }
     }
   }
-`;
+`

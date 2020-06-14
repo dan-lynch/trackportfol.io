@@ -1,5 +1,6 @@
-import React, { useContext, useState } from 'react';
-import { useRouter } from 'next/router';
+import React, { useContext, useState } from 'react'
+import { useRouter } from 'next/router'
+import { useMutation } from '@apollo/client'
 import {
   AppBar,
   Toolbar,
@@ -11,17 +12,19 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
-} from '@material-ui/core';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import DashboardIcon from '@material-ui/icons/Dashboard';
-import LogoutIcon from '@material-ui/icons/ExitToApp';
-import MenuIcon from '@material-ui/icons/Menu';
-import { makeStyles } from '@material-ui/core/styles';
-import BrightnessIcon from '@material-ui/icons/Brightness4';
-import { AppContext } from 'context/AppContext';
-import { userService } from 'services/userService';
+} from '@material-ui/core'
+import ToggleButton from '@material-ui/lab/ToggleButton'
+import DashboardIcon from '@material-ui/icons/Dashboard'
+import LogoutIcon from '@material-ui/icons/ExitToApp'
+import MenuIcon from '@material-ui/icons/Menu'
+import { makeStyles } from '@material-ui/core/styles'
+import BrightnessIcon from '@material-ui/icons/Brightness4'
+import { AppContext } from 'context/AppContext'
+import { userService } from 'services/userService'
+import { graphqlService } from 'services/graphql'
+import { gaService } from 'services/gaService'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     flexGrow: 1,
   },
@@ -35,23 +38,39 @@ const useStyles = makeStyles((theme) => ({
     width: 250,
   },
   brightness: {
-    marginTop: theme.spacing(1),
     width: '100%',
   },
-}));
+}))
 
 export default function LoggedInHeader() {
-  const router = useRouter();
-  const classes = useStyles();
-  const appContext = useContext(AppContext);
+  const router = useRouter()
+  const classes = useStyles()
+  const appContext = useContext(AppContext)
+  const [updateTheme] = useMutation(graphqlService.UPDATE_THEME)
 
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
+
+  const handleUpdateTheme = () => {
+    const currentTheme = appContext.isDarkTheme
+    updateUserTheme(!currentTheme)
+    appContext.setIsDarkTheme(!currentTheme)
+  }
+
+  const updateUserTheme = (darkTheme: boolean) => {
+    updateTheme({ variables: { userDarkTheme: darkTheme } }).then((response) => {
+      if (response.data.updateTheme.updatedTheme.success) {
+        gaService.themeUpdateSuccessEvent()
+      } else {
+        gaService.themeUpdateFailedEvent()
+      }
+    })
+  }
 
   const logout = () => {
-    userService.logout();
-    appContext.setIsLoggedIn(false);
-    router.push('/login');
-  };
+    userService.logout()
+    appContext.setIsLoggedIn(false)
+    router.push('/')
+  }
 
   return (
     <AppBar position='static'>
@@ -86,13 +105,16 @@ export default function LoggedInHeader() {
                 <ListItemText primary='Logout' />
               </ListItem>
             </List>
-            <ToggleButton value="check" selected={appContext.isDarkTheme} className={classes.brightness}
-              onChange={() => {appContext.setIsDarkTheme(!appContext.isDarkTheme);}}>
+            <ToggleButton
+              value='check'
+              selected={appContext.isDarkTheme}
+              className={classes.brightness}
+              onChange={handleUpdateTheme}>
               <BrightnessIcon />
             </ToggleButton>
           </div>
         </Drawer>
       </Toolbar>
     </AppBar>
-  );
+  )
 }

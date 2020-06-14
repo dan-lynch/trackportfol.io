@@ -1,22 +1,22 @@
-import React, { useEffect, useContext, useState } from 'react';
-import Router from 'next/router';
-import { useMutation } from '@apollo/client';
-import { Mutation } from '@apollo/react-components';
-import { Grid, Paper, Typography, TextField, Button, CircularProgress, Collapse } from '@material-ui/core';
-import { Alert, Skeleton } from '@material-ui/lab';
-import { makeStyles } from '@material-ui/core/styles';
-import Layout from 'components/Layout'
-import StockCharts from 'components/StockChart';
-import SearchStock from 'components/SearchStock';
-import InstrumentView from 'components/InstrumentView';
+import React, { useEffect, useContext, useState } from 'react'
+import Router from 'next/router'
+import { useMutation } from '@apollo/client'
+import { Mutation } from '@apollo/react-components'
+import { Grid, Paper, Typography, TextField, Button, CircularProgress, Collapse } from '@material-ui/core'
+import { Alert, Skeleton } from '@material-ui/lab'
+import { makeStyles } from '@material-ui/core/styles'
+import Layout from 'components/Layout/LoggedInLayout'
+import StockCharts from 'components/StockChart'
+import SearchStock from 'components/SearchStock'
+import InstrumentView from 'components/InstrumentView'
 import { withApollo } from 'components/withApollo'
-import { AppContext } from 'context/AppContext';
-import { graphqlService } from 'services/graphql';
-import { gaService } from 'services/gaService';
-import { userService } from 'services/userService';
+import { AppContext } from 'context/AppContext'
+import { graphqlService } from 'services/graphql'
+import { gaService } from 'services/gaService'
+import { userService } from 'services/userService'
 import { initApolloClient } from 'services/apolloService'
-import { Instrument, Holding } from 'helpers/types';
-import { isNumeric } from 'helpers/misc';
+import { Instrument, Holding } from 'helpers/types'
+import { isNumeric } from 'helpers/misc'
 
 const useStyles = makeStyles(() => ({
   paper: {
@@ -52,7 +52,7 @@ const useStyles = makeStyles(() => ({
   holdings: {
     paddingBottom: '1rem',
   },
-}));
+}))
 
 function Dashboard() {
   const [holdings, setHoldings] = useState<Holding[] | null>(null)
@@ -68,23 +68,24 @@ function Dashboard() {
 
   const classes = useStyles()
   const appContext = useContext(AppContext)
-  const [currentUser] = useMutation(graphqlService.CURRENT_USER);
+  const [currentUser] = useMutation(graphqlService.CURRENT_USER)
 
   useEffect(() => {
-    currentUser({ variables: { clientMutationId: 'trackportfol.io' } }).then(response => {
+    currentUser({ variables: { clientMutationId: 'trackportfol.io' } }).then((response) => {
       if (response.data.currentUser.user) {
         setHoldings(response.data.currentUser.user.holdingsByUserId.nodes)
         setUserId(response.data.currentUser.user.id)
-        appContext.setIsLoggedIn(true);
+        appContext.setIsDarkTheme(response.data.currentUser.user.darkTheme)
+        appContext.setIsLoggedIn(true)
         userService.storeUserData(response.data)
         setWelcomeMessage(`Welcome to your dashboard, ${response.data.currentUser.user.username}!`)
       } else {
         appContext.setIsLoggedIn(false)
         userService.logout()
-        Router.push('/login')
+        Router.push('/')
       }
-    });
-  }, []);
+    })
+  }, [])
 
   const processSearch = (searchQuery: Instrument | null) => {
     if (searchQuery && searchQuery.code) {
@@ -143,8 +144,8 @@ function Dashboard() {
   }
 
   return (
-  <Layout loggedIn={true} title="Dashboard | trackportfol.io">
-     <Grid container spacing={3}>
+    <Layout title='Dashboard | trackportfol.io'>
+      <Grid container spacing={3}>
         <Grid item xs={12} className={classes.welcome}>
           <Typography variant='subtitle1' className={classes.welcomeText}>
             {welcomeMessage}
@@ -171,7 +172,7 @@ function Dashboard() {
                       onUpdateSuccess={onUpdateSuccess}
                       onUpdateError={onUpdateError}
                     />
-                  );
+                  )
                 })
               ) : (
                 <Typography variant='body1'>You have no holdings.</Typography>
@@ -230,12 +231,12 @@ function Dashboard() {
                     mutation={graphqlService.CREATE_HOLDING}
                     variables={{ userId, instrumentId: instrumentIdToAdd, amount: quantityToAdd }}
                     onCompleted={(data: any) => {
-                      setLoading(false);
-                      onAddConfirm(data);
+                      setLoading(false)
+                      onAddConfirm(data)
                     }}
                     onError={(error: any) => {
-                      setLoading(false);
-                      onAddError(error);
+                      setLoading(false)
+                      onAddError(error)
                     }}>
                     {(mutation: any) => (
                       <Button
@@ -245,8 +246,8 @@ function Dashboard() {
                         variant='contained'
                         color='primary'
                         onClick={() => {
-                          setLoading(true);
-                          mutation();
+                          setLoading(true)
+                          mutation()
                         }}>
                         {loading ? <CircularProgress size={24} className={classes.loading} /> : 'Add'}
                       </Button>
@@ -273,8 +274,8 @@ function Dashboard() {
           </Paper>
         </Grid>
       </Grid>
-  </Layout>
-  );
+    </Layout>
+  )
 }
 
 export async function getServerSideProps() {

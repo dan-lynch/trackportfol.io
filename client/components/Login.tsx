@@ -1,8 +1,5 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { useRouter } from 'next/router'
-import { Mutation } from '@apollo/react-components';
-import Layout from 'components/Layout';
-import Link from 'components/Link';
+import React, { useState, useContext, useEffect } from 'react'
+import { Mutation } from '@apollo/react-components'
 import {
   Grid,
   Paper,
@@ -16,22 +13,20 @@ import {
   InputAdornment,
   OutlinedInput,
   IconButton,
-} from '@material-ui/core';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import { Alert } from '@material-ui/lab';
-import { makeStyles } from '@material-ui/core/styles';
-import { AppContext } from 'context/AppContext';
-import { graphqlService } from 'services/graphql';
-import { gaService } from 'services/gaService';
-import { userService } from 'services/userService';
-import { initApolloClient } from 'services/apolloService'
-import { withApollo } from 'components/withApollo'
+} from '@material-ui/core'
+import Visibility from '@material-ui/icons/Visibility'
+import VisibilityOff from '@material-ui/icons/VisibilityOff'
+import { Alert } from '@material-ui/lab'
+import { makeStyles } from '@material-ui/core/styles'
+import { AppContext } from 'context/AppContext'
+import { graphqlService } from 'services/graphql'
+import { gaService } from 'services/gaService'
+import { userService } from 'services/userService'
 
 const useStyles = makeStyles(() => ({
   root: {
     maxWidth: '32rem',
-    padding: '0.5rem 0',
+    padding: '1rem 0.5rem',
   },
   margin: {
     margin: '0 0.5rem',
@@ -53,60 +48,61 @@ const useStyles = makeStyles(() => ({
     width: '100%',
     margin: '0px 1rem',
   },
-}));
+}))
 
-function Login() {
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
-  const [failedMessage, setFailedMessage] = useState<boolean>(false);
-  const [registeredMessage, setRegisteredMessage] = useState<boolean>(false);
-  const [showPassword, setShowPassword] = useState<boolean>(false);
+type Props = {
+  switchToJoin: () => any
+}
 
-  const router = useRouter();
-  const classes = useStyles();
+export default function Login(props: Props) {
+  const { switchToJoin } = props
 
-  const appContext = useContext(AppContext);
+  const [email, setEmail] = useState<string>('')
+  const [password, setPassword] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false)
+  const [failedMessage, setFailedMessage] = useState<boolean>(false)
+  const [registeredMessage, setRegisteredMessage] = useState<boolean>(false)
+  const [showPassword, setShowPassword] = useState<boolean>(false)
+
+  const classes = useStyles()
+
+  const appContext = useContext(AppContext)
 
   async function onConfirm(data: any) {
-    const loginResult = await userService.login(data.authenticate);
+    const loginResult = await userService.login(data.authenticate)
     if (loginResult) {
-      appContext.setIsLoggedIn(true);
-      gaService.loginSuccessEvent();
-      window.location.replace('/dashboard');
+      appContext.setIsLoggedIn(true)
+      gaService.loginSuccessEvent()
+      window.location.replace('/dashboard')
     } else {
-      onError('Sign in failed');
+      onError('Sign in failed')
     }
   }
 
   async function onError(error: any) {
-    appContext.setIsLoggedIn(false);
-    gaService.loginFailedEvent();
-    setFailedMessage(true);
-    console.warn(error);
+    appContext.setIsLoggedIn(false)
+    gaService.loginFailedEvent()
+    setFailedMessage(true)
+    console.warn(error)
   }
 
   const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
+    setShowPassword(!showPassword)
+  }
 
   const handleMouseDownPassword = (event: any) => {
-    event.preventDefault();
-  };
+    event.preventDefault()
+  }
 
   useEffect(() => {
-    if (appContext.isLoggedIn) {
-      window.location.replace('/dashboard');
-    }
     if (appContext.signupEmail) {
-      setEmail(appContext.signupEmail);
-      setRegisteredMessage(true);
-      appContext.setSignupEmail('');
+      setEmail(appContext.signupEmail)
+      setRegisteredMessage(true)
+      appContext.setSignupEmail('')
     }
-  }, [router, appContext]);
+  }, [appContext])
 
   return (
-  <Layout loggedIn={false} title="Sign In | trackportfol.io">
     <Paper className={classes.root}>
       <Grid container spacing={3}>
         <Grid item xs={12} className={classes.margin}>
@@ -167,12 +163,12 @@ function Login() {
             mutation={graphqlService.LOGIN}
             variables={{ email, password }}
             onCompleted={(data: any) => {
-              setLoading(false);
-              onConfirm(data);
+              setLoading(false)
+              onConfirm(data)
             }}
             onError={(error: any) => {
-              setLoading(false);
-              onError(error);
+              setLoading(false)
+              onError(error)
             }}>
             {(mutation: any) => (
               <Button
@@ -182,8 +178,8 @@ function Login() {
                 fullWidth
                 color='primary'
                 onClick={() => {
-                  setLoading(true);
-                  mutation();
+                  setLoading(true)
+                  mutation()
                 }}>
                 {loading ? <CircularProgress size={24} className={classes.loading} /> : 'Sign in'}
               </Button>
@@ -192,23 +188,10 @@ function Login() {
         </Grid>
         <Grid item xs={12} className={classes.margin}>
           <Typography variant='body1' align='center'>
-            Don't have an account? <Link href='/join'>Sign up</Link>
+            Don't have an account? <Button color='primary' onClick={switchToJoin}>Sign up</Button>
           </Typography>
         </Grid>
       </Grid>
     </Paper>
-  </Layout>
-  );
+  )
 }
-
-export async function getStaticProps() {
-  const client = await initApolloClient({})
-  return {
-    unstable_revalidate: 300,
-    props: {
-      apolloStaticCache: client.cache.extract(),
-    },
-  }
-}
-
-export default withApollo(Login)
