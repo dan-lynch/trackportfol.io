@@ -9,7 +9,7 @@
 
 **Next.js** | **GraphQL** | **PostgreSQL** | **Docker**
 
-### Setup Local Frontend Environment
+### Setup Local Client
 
 *Prerequisites:* **Git**, **Yarn**
 
@@ -25,7 +25,7 @@ You can specify which **API** your local client uses by setting `NEXT_PUBLIC_SER
   - Local API (if you have one running, see below): `http://localhost:5433/graphql`
   - Production API: ` https://trackportfol.io/api`
 
-### Setup Local Backend Environment
+### Setup Local API
 
 *Prerequisites*: **Docker**, **docker-compose**
 

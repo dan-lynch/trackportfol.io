@@ -6,7 +6,7 @@ services:
     restart: always
     image: graphql
     build:
-      context: ./backend/graphql
+      context: ./api
     env_file:
       - .env
     ports:

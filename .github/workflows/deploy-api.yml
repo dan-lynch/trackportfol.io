@@ -3,13 +3,13 @@ name: Deploy API
 on:
   push:
     paths:
-      - 'backend/graphql/**'
-      - 'backend/db/**'
+      - 'api/**'
+      - 'db/**'
     branches:
       - master
 
 jobs:
-  deploy-graphql:
+  deploy-api:
     runs-on: ubuntu-latest
 
     steps:
