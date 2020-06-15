@@ -5,6 +5,7 @@ import Cookie from 'js-cookie'
 export type User = {
   userId: number
   username: string
+  darkTheme: boolean
 }
 
 export type Token = {
@@ -43,9 +44,9 @@ function logout() {
 }
 
 async function storeUserData(data: any) {
-  const { id, username } = data.currentUser.user
+  const { id, username, darkTheme } = data.currentUser.user
   if (id) {
-    const user: User = { userId: id, username }
+    const user: User = { userId: id, username, darkTheme }
     Cookie.set(USER, JSON.stringify(user))
     ReactGA.set({ userId: id })
     return user

@@ -71,7 +71,7 @@ function Dashboard() {
   const [currentUser] = useMutation(graphqlService.CURRENT_USER)
 
   useEffect(() => {
-    currentUser({ variables: { clientMutationId: 'trackportfol.io' } }).then((response) => {
+    currentUser({ variables: {} }).then((response) => {
       if (response.data.currentUser.user) {
         setHoldings(response.data.currentUser.user.holdingsByUserId.nodes)
         setUserId(response.data.currentUser.user.id)
