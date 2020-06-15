@@ -17,6 +17,7 @@ import ToggleButton from '@material-ui/lab/ToggleButton'
 import DashboardIcon from '@material-ui/icons/Dashboard'
 import LogoutIcon from '@material-ui/icons/ExitToApp'
 import MenuIcon from '@material-ui/icons/Menu'
+import PersonIcon from '@material-ui/icons/Person'
 import { makeStyles } from '@material-ui/core/styles'
 import BrightnessIcon from '@material-ui/icons/Brightness4'
 import { AppContext } from 'context/AppContext'
@@ -98,6 +99,12 @@ export default function LoggedInHeader() {
             </List>
             <Divider />
             <List>
+            <ListItem button onClick={() => router.push('/account')} key='account'>
+                <ListItemIcon>
+                  <PersonIcon />
+                </ListItemIcon>
+                <ListItemText primary='Account' />
+              </ListItem>
               <ListItem button onClick={logout} key='logout'>
                 <ListItemIcon>
                   <LogoutIcon />

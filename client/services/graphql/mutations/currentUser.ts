@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client'
 
 export const CURRENT_USER = gql`
-  mutation currentUser($clientMutationId: String!) {
-    currentUser(input: { clientMutationId: $clientMutationId }) {
+  mutation currentUser {
+    currentUser(input: {}) {
       user {
         id
         username
