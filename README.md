@@ -1,6 +1,6 @@
 ## trackportfol.io
 
-[Slack](https://trackportfolio.slack.com/)
+[Slack](https://join.slack.com/t/trackportfolio/shared_invite/zt-f9u10eup-d0uku08b85DKQRhCMOV_Kw)
 | [JIRA](https://lynchy.atlassian.net/browse/PT)
 
 ### Made with
@@ -29,7 +29,7 @@ You can specify which **API** your local client uses by setting `NEXT_PUBLIC_SER
 
 *Prerequisites*: **Docker**, **docker-compose**
 
-If you want a local **API** and **DB** running, you'll first need access to some protected files. Please message *Dan* on [Slack](https://trackportfolio.slack.com/) to get set up.
+If you want a local **API** and **DB** running, you'll first need access to some protected files. Please message *Dan* on [Slack](https://join.slack.com/t/trackportfolio/shared_invite/zt-f9u10eup-d0uku08b85DKQRhCMOV_Kw) to get set up.
 
 You'll then be able to start the backend services using Docker:
 
