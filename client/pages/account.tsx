@@ -127,6 +127,7 @@ function Account() {
               Your account
             </Typography>
           </Grid>
+          {username ? 
           <Grid item xs={12}>
             <Paper className={classes.paper}>
               <Grid container spacing={2}>
@@ -303,6 +304,7 @@ function Account() {
               </Grid>
             </Paper>
           </Grid>
+          : <></>}
         </Grid>
       </Container>
     </Layout>
