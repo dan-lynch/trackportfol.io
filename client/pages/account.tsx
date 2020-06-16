@@ -5,6 +5,7 @@ import { withApollo } from 'components/withApollo'
 import { initApolloClient } from 'services/apolloService'
 import { AppContext } from 'context/AppContext'
 import { Container, Typography, Grid, Paper, IconButton, CircularProgress, TextField, Box } from '@material-ui/core'
+import { Skeleton } from '@material-ui/lab'
 import { makeStyles, createStyles } from '@material-ui/core/styles'
 import EditIcon from '@material-ui/icons/Edit'
 import DoneIcon from '@material-ui/icons/Done'
@@ -304,7 +305,7 @@ function Account() {
               </Grid>
             </Paper>
           </Grid>
-          : <></>}
+          : <Skeleton variant="rect" width="100%" height="8rem" />}
         </Grid>
       </Container>
     </Layout>
