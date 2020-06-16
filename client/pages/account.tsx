@@ -29,6 +29,9 @@ const useStyles = makeStyles(() =>
       marginBottom: '0.375rem',
       marginLeft: '0.25rem',
     },
+    skeleton: {
+      paddingBottom: '1rem'
+    }
   })
 )
 
@@ -128,9 +131,10 @@ function Account() {
               Your account
             </Typography>
           </Grid>
-          {username ? 
           <Grid item xs={12}>
             <Paper className={classes.paper}>
+            {username ?
+            <>
               <Grid container spacing={2}>
                 <Grid item xs={4}>
                   <Typography>Username</Typography>
@@ -303,9 +307,10 @@ function Account() {
                   </Box>
                 </Grid>
               </Grid>
+              </>
+            : <><Skeleton className={classes.skeleton} /><Skeleton className={classes.skeleton} /><Skeleton className={classes.skeleton} /></>}
             </Paper>
-          </Grid>
-          : <Skeleton variant="rect" width="100%" height="8rem" />}
+        </Grid>
         </Grid>
       </Container>
     </Layout>
