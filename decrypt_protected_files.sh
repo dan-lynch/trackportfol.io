@@ -11,4 +11,7 @@ gpg --quiet --batch --yes --decrypt --passphrase="$PASSPHRASE" \
 --output db/init/03-instruments.sql db/init/03-instruments.sql.gpg
 
 gpg --quiet --batch --yes --decrypt --passphrase="$PASSPHRASE" \
+--output pyService.zip pyService.zip.gpg
+
+gpg --quiet --batch --yes --decrypt --passphrase="$PASSPHRASE" \
 --output .env .env.gpg
