@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) =>
       },
       '& .MuiButton-root': {
         margin: theme.spacing(1, 0),
-      }
+      },
     },
   })
 )
@@ -129,7 +129,7 @@ export default function Join(props: Props) {
             <TextField
               id='username'
               inputRef={register({
-                required: 'Please enter your desired username'
+                required: 'Please enter your desired username',
               })}
               name='username'
               label='Username'
@@ -147,8 +147,8 @@ export default function Join(props: Props) {
                 required: 'Please enter your email address',
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                  message: "Please enter a valid email address"
-                }
+                  message: "This doesn't look quite right. Please enter your email address.",
+                },
               })}
               name='email'
               label='Email Address'
@@ -165,8 +165,8 @@ export default function Join(props: Props) {
                 required: 'Please enter your password',
                 pattern: {
                   value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/i,
-                  message: "Password must have a minimum of eight characters, with at least one letter and one number"
-                }
+                  message: 'Password must have a minimum of eight characters, with at least one letter and one number',
+                },
               })}
               name='password'
               label='Password'
@@ -203,7 +203,10 @@ export default function Join(props: Props) {
         </Grid>
         <Grid item xs={12} className={classes.margin}>
           <Typography variant='body1' align='center'>
-            Already have an account? <Button color='primary' onClick={switchToLogin}>Sign in</Button>
+            Already have an account?{' '}
+            <Button color='primary' onClick={switchToLogin}>
+              Sign in
+            </Button>
           </Typography>
         </Grid>
       </Grid>
