@@ -66,7 +66,7 @@ function Home() {
           BackdropProps={{
             timeout: 500,
           }}>
-          <Fade in={loginModalOpen}>
+          <Fade in={loginModalOpen} disableStrictModeCompat={true}>
             <Login switchToJoin={switchToJoin} />
           </Fade>
         </Modal>
@@ -82,7 +82,7 @@ function Home() {
           BackdropProps={{
             timeout: 500,
           }}>
-          <Fade in={joinModalOpen}>
+          <Fade in={joinModalOpen} disableStrictModeCompat={true}>
             <Join switchToLogin={switchToLogin} />
           </Fade>
         </Modal>

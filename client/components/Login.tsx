@@ -1,54 +1,62 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { Mutation } from '@apollo/react-components'
+import { useMutation } from '@apollo/client'
 import {
   Grid,
   Paper,
   Typography,
   Button,
-  TextField,
   CircularProgress,
   Collapse,
-  FormControl,
-  InputLabel,
+  TextField,
   InputAdornment,
-  OutlinedInput,
   IconButton,
 } from '@material-ui/core'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
 import { Alert } from '@material-ui/lab'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles, createStyles } from '@material-ui/core/styles'
+import { useForm } from 'react-hook-form'
 import { AppContext } from 'context/AppContext'
 import { graphqlService } from 'services/graphql'
 import { gaService } from 'services/gaService'
 import { userService } from 'services/userService'
 
-const useStyles = makeStyles(() => ({
-  root: {
-    maxWidth: '32rem',
-    padding: '1rem 0.5rem',
-  },
-  margin: {
-    margin: '0 0.5rem',
-  },
-  end: {
-    alignItems: 'flex-end',
-    textAlign: 'end',
-  },
-  button: {
-    backgroundColor: 'black',
-    '&:hover': {
-      backgroundColor: 'black',
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    root: {
+      maxWidth: '32rem',
+      padding: '1rem 0.5rem',
     },
-  },
-  loading: {
-    color: 'white',
-  },
-  collapse: {
-    width: '100%',
-    margin: '0px 1rem',
-  },
-}))
+    margin: {
+      margin: '0 0.5rem',
+    },
+    end: {
+      alignItems: 'flex-end',
+      textAlign: 'end',
+    },
+    button: {
+      backgroundColor: 'black',
+      '&:hover': {
+        backgroundColor: 'black',
+      },
+    },
+    loading: {
+      color: 'white',
+    },
+    collapse: {
+      width: '100%',
+      margin: '0px 1rem',
+    },
+    form: {
+      '& .MuiTextField-root': {
+        margin: theme.spacing(1, 0),
+      },
+      '& .MuiButton-root': {
+        margin: theme.spacing(1, 0),
+      }
+    },
+  })
+)
 
 type Props = {
   switchToJoin: () => any
@@ -57,16 +65,30 @@ type Props = {
 export default function Login(props: Props) {
   const { switchToJoin } = props
 
-  const [email, setEmail] = useState<string>('')
-  const [password, setPassword] = useState<string>('')
+  const [defaultEmail, setDefaultEmail] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
   const [failedMessage, setFailedMessage] = useState<boolean>(false)
   const [registeredMessage, setRegisteredMessage] = useState<boolean>(false)
   const [showPassword, setShowPassword] = useState<boolean>(false)
 
   const classes = useStyles()
-
   const appContext = useContext(AppContext)
+  const [loginMutation] = useMutation(graphqlService.LOGIN)
+  const { register, handleSubmit, errors } = useForm()
+
+  const onSubmit = (values: any) => {
+    setLoading(true)
+    const { email, password } = values
+    loginMutation({ variables: { email, password } })
+      .then((response) => {
+        setLoading(false)
+        response.data.authenticate.jwtToken ? onConfirm(response.data) : onError('Sign in failed')
+      })
+      .catch(() => {
+        setLoading(false)
+        onError('Sign in failed')
+      })
+  }
 
   async function onConfirm(data: any) {
     const loginResult = await userService.login(data.authenticate)
@@ -79,11 +101,11 @@ export default function Login(props: Props) {
     }
   }
 
-  async function onError(error: any) {
+  async function onError(error?: any) {
     appContext.setIsLoggedIn(false)
     gaService.loginFailedEvent()
     setFailedMessage(true)
-    console.warn(error)
+    console.info(error)
   }
 
   const handleClickShowPassword = () => {
@@ -96,7 +118,7 @@ export default function Login(props: Props) {
 
   useEffect(() => {
     if (appContext.signupEmail) {
-      setEmail(appContext.signupEmail)
+      setDefaultEmail(appContext.signupEmail)
       setRegisteredMessage(true)
       appContext.setSignupEmail('')
     }
@@ -122,73 +144,64 @@ export default function Login(props: Props) {
             </Alert>
           </Grid>
         </Collapse>
-        <Grid item xs={12} className={classes.margin}>
-          <TextField
-            id='email'
-            name='email'
-            label='Email Address'
-            variant='outlined'
-            fullWidth
-            autoComplete='on'
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={12} className={classes.margin}>
-          <FormControl fullWidth variant='outlined'>
-            <InputLabel htmlFor='password'>Password</InputLabel>
-            <OutlinedInput
-              id='password'
-              type={showPassword ? 'text' : 'password'}
-              value={password}
+        <Grid item className={classes.margin}>
+          <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
+            <TextField
+              id='email'
+              inputRef={register({ required: true })}
+              name='email'
+              label='Email Address'
+              defaultValue={defaultEmail ? defaultEmail : ''}
+              variant='outlined'
               fullWidth
-              onChange={(e) => setPassword(e.target.value)}
-              endAdornment={
-                <InputAdornment position='end'>
-                  <IconButton
-                    aria-label='toggle password visibility'
-                    onClick={handleClickShowPassword}
-                    onMouseDown={handleMouseDownPassword}
-                    edge='end'>
-                    {showPassword ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
-                </InputAdornment>
-              }
-              labelWidth={70}
+              autoFocus
+              autoComplete='on'
+              autoCapitalize='off'
+              helperText={!!errors.email ? 'Please enter your email address' : ''}
+              error={!!errors.email}
             />
-          </FormControl>
-        </Grid>
-        <Grid item xs={12} className={classes.margin}>
-          <Mutation
-            mutation={graphqlService.LOGIN}
-            variables={{ email, password }}
-            onCompleted={(data: any) => {
-              setLoading(false)
-              onConfirm(data)
-            }}
-            onError={(error: any) => {
-              setLoading(false)
-              onError(error)
-            }}>
-            {(mutation: any) => (
-              <Button
-                className={classes.button}
-                aria-label='Sign in'
-                variant='contained'
-                fullWidth
-                color='primary'
-                onClick={() => {
-                  setLoading(true)
-                  mutation()
-                }}>
-                {loading ? <CircularProgress size={24} className={classes.loading} /> : 'Sign in'}
-              </Button>
-            )}
-          </Mutation>
+            <TextField
+              id='password'
+              inputRef={register({ required: true })}
+              name='password'
+              label='Password'
+              type={showPassword ? 'text' : 'password'}
+              variant='outlined'
+              fullWidth
+              autoComplete='off'
+              helperText={!!errors.email ? 'Please enter your password' : ''}
+              error={!!errors.email}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    <IconButton
+                      aria-label='toggle password visibility'
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      edge='end'>
+                      {showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <Button
+              type='submit'
+              className={classes.button}
+              aria-label='Sign in'
+              variant='contained'
+              fullWidth
+              color='primary'>
+              {loading ? <CircularProgress size={24} className={classes.loading} /> : 'Sign in'}
+            </Button>
+          </form>
         </Grid>
         <Grid item xs={12} className={classes.margin}>
           <Typography variant='body1' align='center'>
-            Don't have an account? <Button color='primary' onClick={switchToJoin}>Sign up</Button>
+            Don't have an account?
+            <Button color='primary' onClick={switchToJoin}>
+              Sign up
+            </Button>
           </Typography>
         </Grid>
       </Grid>
