@@ -1,53 +1,61 @@
 import React, { useState, useContext } from 'react'
-import { Mutation } from '@apollo/react-components'
+import { useMutation } from '@apollo/client'
 import {
   Grid,
   Paper,
   Typography,
   Button,
-  TextField,
   CircularProgress,
   Collapse,
-  FormControl,
-  InputLabel,
+  TextField,
   InputAdornment,
-  OutlinedInput,
   IconButton,
 } from '@material-ui/core'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
 import { Alert } from '@material-ui/lab'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles, createStyles } from '@material-ui/core/styles'
+import { useForm } from 'react-hook-form'
 import { AppContext } from 'context/AppContext'
 import { graphqlService } from 'services/graphql'
 import { gaService } from 'services/gaService'
 
-const useStyles = makeStyles(() => ({
-  root: {
-    maxWidth: '32rem',
-    padding: '1rem 0.5rem',
-  },
-  margin: {
-    margin: '0 0.5rem',
-  },
-  end: {
-    alignItems: 'flex-end',
-    textAlign: 'end',
-  },
-  button: {
-    backgroundColor: 'black',
-    '&:hover': {
-      backgroundColor: 'black',
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    root: {
+      maxWidth: '32rem',
+      padding: '1rem 0.5rem',
     },
-  },
-  loading: {
-    color: 'white',
-  },
-  collapse: {
-    width: '100%',
-    margin: '0px 1rem',
-  },
-}))
+    margin: {
+      margin: '0 0.5rem',
+    },
+    end: {
+      alignItems: 'flex-end',
+      textAlign: 'end',
+    },
+    button: {
+      backgroundColor: 'black',
+      '&:hover': {
+        backgroundColor: 'black',
+      },
+    },
+    loading: {
+      color: 'white',
+    },
+    collapse: {
+      width: '100%',
+      margin: '0px 1rem',
+    },
+    form: {
+      '& .MuiTextField-root': {
+        margin: theme.spacing(1, 0),
+      },
+      '& .MuiButton-root': {
+        margin: theme.spacing(1, 0),
+      }
+    },
+  })
+)
 
 type Props = {
   switchToLogin: () => any
@@ -58,27 +66,41 @@ export default function Join(props: Props) {
   const classes = useStyles()
   const appContext = useContext(AppContext)
 
-  const [username, setUsername] = useState<string>('')
-  const [email, setEmail] = useState<string>('')
-  const [password, setPassword] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
   const [failedMessage, setFailedMessage] = useState<boolean>(false)
   const [showPassword, setShowPassword] = useState<boolean>(false)
 
-  async function onConfirm(data: any) {
+  const [registerMutation] = useMutation(graphqlService.REGISTER)
+  const { register, handleSubmit, errors } = useForm()
+
+  const onSubmit = (values: any) => {
+    setLoading(true)
+    const { username, email, password } = values
+    registerMutation({ variables: { username, email, password } })
+      .then((response) => {
+        setLoading(false)
+        response.data.authenticate.jwtToken ? onConfirm(response.data, email) : onError('Register failed')
+      })
+      .catch(() => {
+        setLoading(false)
+        onError('Register failed')
+      })
+  }
+
+  async function onConfirm(data: any, email: string) {
     if (data.registerUser) {
       gaService.registerSuccessEvent()
       appContext.setSignupEmail(email)
       switchToLogin()
     } else {
-      onError('Sign in failed')
+      onError('Register failed')
     }
   }
 
-  async function onError(error: any) {
+  async function onError(error?: any) {
     gaService.registerFailedEvent()
     setFailedMessage(true)
-    console.warn(error)
+    console.info(error)
   }
 
   const handleClickShowPassword = () => {
@@ -98,85 +120,86 @@ export default function Join(props: Props) {
         <Collapse in={failedMessage} className={classes.collapse}>
           <Grid item xs={12} className={classes.margin}>
             <Alert severity='error' onClose={() => setFailedMessage(false)}>
-              Account was not created, please try again
+              Your account could not be created, please try again
             </Alert>
           </Grid>
         </Collapse>
         <Grid item xs={12} className={classes.margin}>
-          <TextField
-            id='username'
-            name='username'
-            label='Username'
-            variant='outlined'
-            fullWidth
-            autoComplete='on'
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={12} className={classes.margin}>
-          <TextField
-            id='email'
-            name='email'
-            label='Email Address'
-            variant='outlined'
-            fullWidth
-            autoComplete='on'
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={12} className={classes.margin}>
-          <FormControl fullWidth variant='outlined'>
-            <InputLabel htmlFor='password'>Password</InputLabel>
-            <OutlinedInput
-              id='password'
-              type={showPassword ? 'text' : 'password'}
-              value={password}
+          <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
+            <TextField
+              id='username'
+              inputRef={register({
+                required: 'Please enter your desired username'
+              })}
+              name='username'
+              label='Username'
+              variant='outlined'
               fullWidth
-              onChange={(e) => setPassword(e.target.value)}
-              endAdornment={
-                <InputAdornment position='end'>
-                  <IconButton
-                    aria-label='toggle password visibility'
-                    onClick={handleClickShowPassword}
-                    onMouseDown={handleMouseDownPassword}
-                    edge='end'>
-                    {showPassword ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
-                </InputAdornment>
-              }
-              labelWidth={70}
+              autoFocus
+              autoComplete='on'
+              autoCapitalize='off'
+              helperText={errors.username?.message}
+              error={!!errors.username}
             />
-          </FormControl>
-        </Grid>
-        <Grid item xs={12} className={classes.margin}>
-          <Mutation
-            mutation={graphqlService.REGISTER}
-            variables={{ username, email, password }}
-            onCompleted={(data: any) => {
-              setLoading(false)
-              onConfirm(data)
-            }}
-            onError={(error: any) => {
-              setLoading(false)
-              onError(error)
-            }}>
-            {(mutation: any) => (
-              <Button
-                className={classes.button}
-                aria-label='Create Account'
-                variant='contained'
-                fullWidth
-                color='primary'
-                onClick={() => {
-                  setLoading(true)
-                  mutation()
-                }}>
-                {loading ? <CircularProgress size={24} className={classes.loading} /> : 'Create Account'}
-              </Button>
-            )}
-          </Mutation>
+            <TextField
+              id='email'
+              inputRef={register({
+                required: 'Please enter your email address',
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                  message: "Please enter a valid email address"
+                }
+              })}
+              name='email'
+              label='Email Address'
+              variant='outlined'
+              fullWidth
+              autoComplete='on'
+              autoCapitalize='off'
+              helperText={errors.email?.message}
+              error={!!errors.email}
+            />
+            <TextField
+              id='password'
+              inputRef={register({
+                required: 'Please enter your password',
+                pattern: {
+                  value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/i,
+                  message: "Password must have a minimum of eight characters, with at least one letter and one number"
+                }
+              })}
+              name='password'
+              label='Password'
+              type={showPassword ? 'text' : 'password'}
+              variant='outlined'
+              fullWidth
+              autoComplete='off'
+              helperText={errors.password?.message}
+              error={!!errors.password}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    <IconButton
+                      aria-label='toggle password visibility'
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      edge='end'>
+                      {showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <Button
+              type='submit'
+              className={classes.button}
+              aria-label='Create Account'
+              variant='contained'
+              fullWidth
+              color='primary'>
+              {loading ? <CircularProgress size={24} className={classes.loading} /> : 'Create Account'}
+            </Button>
+          </form>
         </Grid>
         <Grid item xs={12} className={classes.margin}>
           <Typography variant='body1' align='center'>

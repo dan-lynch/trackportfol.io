@@ -144,11 +144,17 @@ export default function Login(props: Props) {
             </Alert>
           </Grid>
         </Collapse>
-        <Grid item className={classes.margin}>
+        <Grid item xs={12} className={classes.margin}>
           <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
             <TextField
               id='email'
-              inputRef={register({ required: true })}
+              inputRef={register({
+                required: 'Please enter your email address',
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                  message: "This doesn't look quite right. Please enter your email address."
+                }
+              })}
               name='email'
               label='Email Address'
               defaultValue={defaultEmail ? defaultEmail : ''}
@@ -157,20 +163,22 @@ export default function Login(props: Props) {
               autoFocus
               autoComplete='on'
               autoCapitalize='off'
-              helperText={!!errors.email ? 'Please enter your email address' : ''}
+              helperText={errors.email?.message}
               error={!!errors.email}
             />
             <TextField
               id='password'
-              inputRef={register({ required: true })}
+              inputRef={register({
+                required: 'Please enter your password',
+              })}
               name='password'
               label='Password'
               type={showPassword ? 'text' : 'password'}
               variant='outlined'
               fullWidth
               autoComplete='off'
-              helperText={!!errors.email ? 'Please enter your password' : ''}
-              error={!!errors.email}
+              helperText={errors.password?.message}
+              error={!!errors.password}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position='end'>
