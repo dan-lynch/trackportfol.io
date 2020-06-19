@@ -8,5 +8,6 @@ yarn-debug.log*
 yarn-error.log*
 
 *.sql
+/pyService
 pyService.zip
 .env
