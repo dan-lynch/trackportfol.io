@@ -79,7 +79,7 @@ export default function Join(props: Props) {
     registerMutation({ variables: { username, email, password } })
       .then((response) => {
         setLoading(false)
-        response.data.authenticate.jwtToken ? onConfirm(response.data, email) : onError('Register failed')
+        response.data.registerUser ? onConfirm(email) : onError('Register failed')
       })
       .catch(() => {
         setLoading(false)
@@ -87,14 +87,10 @@ export default function Join(props: Props) {
       })
   }
 
-  async function onConfirm(data: any, email: string) {
-    if (data.registerUser) {
-      gaService.registerSuccessEvent()
-      appContext.setSignupEmail(email)
-      switchToLogin()
-    } else {
-      onError('Register failed')
-    }
+  async function onConfirm(email: string) {
+    gaService.registerSuccessEvent()
+    appContext.setSignupEmail(email)
+    switchToLogin()
   }
 
   async function onError(error?: any) {
@@ -130,6 +126,10 @@ export default function Join(props: Props) {
               id='username'
               inputRef={register({
                 required: 'Please enter your desired username',
+                pattern: {
+                  value: /^[A-Z0-9.]{3,}$/i,
+                  message: 'Username must be at least three characters long, containing only letters (a-z), numbers (0-9), and periods (.)',
+                },
               })}
               name='username'
               label='Username'
@@ -162,10 +162,10 @@ export default function Join(props: Props) {
             <TextField
               id='password'
               inputRef={register({
-                required: 'Please enter your password',
+                required: 'Please enter your desired password',
                 pattern: {
-                  value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/i,
-                  message: 'Password must have a minimum of eight characters, with at least one letter and one number',
+                  value: /^.{6,}$/i,
+                  message: 'Password must be at least six characters long',
                 },
               })}
               name='password'

@@ -65,7 +65,6 @@ type Props = {
 export default function Login(props: Props) {
   const { switchToJoin } = props
 
-  const [defaultEmail, setDefaultEmail] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
   const [failedMessage, setFailedMessage] = useState<boolean>(false)
   const [registeredMessage, setRegisteredMessage] = useState<boolean>(false)
@@ -118,9 +117,7 @@ export default function Login(props: Props) {
 
   useEffect(() => {
     if (appContext.signupEmail) {
-      setDefaultEmail(appContext.signupEmail)
       setRegisteredMessage(true)
-      appContext.setSignupEmail('')
     }
   }, [appContext])
 
@@ -157,7 +154,7 @@ export default function Login(props: Props) {
               })}
               name='email'
               label='Email Address'
-              defaultValue={defaultEmail ? defaultEmail : ''}
+              defaultValue={!!appContext.signupEmail ? appContext.signupEmail : ''}
               variant='outlined'
               fullWidth
               autoFocus
