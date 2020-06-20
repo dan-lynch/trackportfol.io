@@ -4,7 +4,7 @@ import { userService } from 'services/userService'
 export const ContextProvider = ({ children }: any) => {
   const [signupEmail, setSignupEmail] = React.useState<string>('')
   const [stock, setStock] = React.useState<string>('')
-  const [isDarkTheme, setIsDarkTheme] = React.useState<boolean>(userService.loggedInUser?.darkTheme || false)
+  const [isDarkTheme, setIsDarkTheme] = React.useState<boolean>(userService.theme === 'dark' || false)
   const [isLoggedIn, setIsLoggedIn] = React.useState<boolean>(false)
 
   const contextProps: Partial<ContextProps> = {
