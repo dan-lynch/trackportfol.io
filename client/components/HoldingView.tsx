@@ -36,6 +36,7 @@ const useStyles = makeStyles(() => ({
   },
   button: {
     padding: '0.5rem',
+    marginRight: '0.5rem',
   },
   update: {
     marginLeft: '0.5rem',
@@ -61,7 +62,7 @@ type Props = {
   onDeleteError: any
 }
 
-export default function InstrumentView(props: Props) {
+export default function HoldingView(props: Props) {
   const {
     amount,
     code,

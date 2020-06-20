@@ -8,7 +8,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Layout from 'components/Layout/LoggedInLayout'
 import StockCharts from 'components/StockChart'
 import SearchStock from 'components/SearchStock'
-import InstrumentView from 'components/InstrumentView'
+import HoldingView from 'components/HoldingView'
 import { withApollo } from 'components/withApollo'
 import { AppContext } from 'context/AppContext'
 import { graphqlService } from 'services/graphql'
@@ -160,7 +160,7 @@ function Dashboard() {
               holdings && holdings.length > 0 ? (
                 holdings.map((holding: Holding) => {
                   return (
-                    <InstrumentView
+                    <HoldingView
                       key={holding.instrumentByInstrumentId.id}
                       amount={holding.amount}
                       code={holding.instrumentByInstrumentId.code}
