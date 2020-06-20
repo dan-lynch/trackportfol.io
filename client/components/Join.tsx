@@ -19,6 +19,7 @@ import { useForm } from 'react-hook-form'
 import { AppContext } from 'context/AppContext'
 import { graphqlService } from 'services/graphql'
 import { gaService } from 'services/gaService'
+import { userService } from 'services/userService'
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -96,6 +97,8 @@ export default function Join(props: Props) {
   async function onError(error?: any) {
     gaService.registerFailedEvent()
     setFailedMessage(true)
+    appContext.setIsLoggedIn(false)
+    userService.logout()
     console.info(error)
   }
 
