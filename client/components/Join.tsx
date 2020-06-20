@@ -13,13 +13,13 @@ import {
 } from '@material-ui/core'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
-import { Alert } from '@material-ui/lab'
 import { makeStyles, createStyles } from '@material-ui/core/styles'
 import { useForm } from 'react-hook-form'
 import { AppContext } from 'context/AppContext'
 import { graphqlService } from 'services/graphql'
 import { gaService } from 'services/gaService'
 import { userService } from 'services/userService'
+import NotificationComponent, { Notification } from 'components/Notification'
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -67,15 +67,16 @@ export default function Join(props: Props) {
   const classes = useStyles()
   const appContext = useContext(AppContext)
 
-  const [loading, setLoading] = useState<boolean>(false)
-  const [failedMessage, setFailedMessage] = useState<boolean>(false)
+  const [notification, setNotification] = useState<Notification>({show: false})
   const [showPassword, setShowPassword] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
 
   const [registerMutation] = useMutation(graphqlService.REGISTER)
   const { register, handleSubmit, errors } = useForm()
 
   const onSubmit = (values: any) => {
     setLoading(true)
+    setNotification({show: false})
     const { username, email, password } = values
     registerMutation({ variables: { username, email, password } })
       .then((response) => {
@@ -96,7 +97,7 @@ export default function Join(props: Props) {
 
   async function onError(error?: any) {
     gaService.registerFailedEvent()
-    setFailedMessage(true)
+    setNotification({show: true, message: 'Your account could not be created, please reload the page and try again', type: 'error'})
     appContext.setIsLoggedIn(false)
     userService.logout()
     console.info(error)
@@ -116,11 +117,13 @@ export default function Join(props: Props) {
         <Grid item xs={12} className={classes.margin}>
           <Typography variant='h5'>Create your account</Typography>
         </Grid>
-        <Collapse in={failedMessage} className={classes.collapse}>
+        <Collapse in={notification.show} className={classes.collapse}>
           <Grid item xs={12} className={classes.margin}>
-            <Alert severity='error' onClose={() => setFailedMessage(false)}>
-              Your account could not be created, please try again
-            </Alert>
+            <NotificationComponent
+              message={notification.message}
+              type={notification.type}
+              onClose={() => setNotification({show: false})}
+            />
           </Grid>
         </Collapse>
         <Grid item xs={12} className={classes.margin}>

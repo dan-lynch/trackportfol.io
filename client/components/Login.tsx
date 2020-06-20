@@ -13,13 +13,13 @@ import {
 } from '@material-ui/core'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
-import { Alert } from '@material-ui/lab'
 import { makeStyles, createStyles } from '@material-ui/core/styles'
 import { useForm } from 'react-hook-form'
 import { AppContext } from 'context/AppContext'
 import { graphqlService } from 'services/graphql'
 import { gaService } from 'services/gaService'
 import { userService } from 'services/userService'
+import NotificationComponent, { Notification } from 'components/Notification'
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -65,10 +65,9 @@ type Props = {
 export default function Login(props: Props) {
   const { switchToJoin } = props
 
-  const [loading, setLoading] = useState<boolean>(false)
-  const [failedMessage, setFailedMessage] = useState<boolean>(false)
-  const [registeredMessage, setRegisteredMessage] = useState<boolean>(false)
+  const [notification, setNotification] = useState<Notification>({show: false})
   const [showPassword, setShowPassword] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
 
   const classes = useStyles()
   const appContext = useContext(AppContext)
@@ -77,6 +76,7 @@ export default function Login(props: Props) {
 
   const onSubmit = (values: any) => {
     setLoading(true)
+    setNotification({show: false})
     const { email, password } = values
     loginMutation({ variables: { email, password } })
       .then((response) => {
@@ -104,7 +104,7 @@ export default function Login(props: Props) {
     appContext.setIsLoggedIn(false)
     userService.logout()
     gaService.loginFailedEvent()
-    setFailedMessage(true)
+    setNotification({show: true, message: 'Sign in unsuccessful, please try again', type: 'error'})
     console.info(error)
   }
 
@@ -118,9 +118,9 @@ export default function Login(props: Props) {
 
   useEffect(() => {
     if (appContext.signupEmail) {
-      setRegisteredMessage(true)
+      setNotification({show: true, message: 'Account created successfully! You can now sign in', type: 'success'})
     }
-  }, [appContext])
+  }, [])
 
   return (
     <Paper className={classes.root}>
@@ -128,18 +128,13 @@ export default function Login(props: Props) {
         <Grid item xs={12} className={classes.margin}>
           <Typography variant='h5'>Sign in</Typography>
         </Grid>
-        <Collapse in={failedMessage} className={classes.collapse}>
+        <Collapse in={notification.show} className={classes.collapse}>
           <Grid item xs={12} className={classes.margin}>
-            <Alert severity='error' onClose={() => setFailedMessage(false)}>
-              Sign in unsuccessful, please try again
-            </Alert>
-          </Grid>
-        </Collapse>
-        <Collapse in={registeredMessage} className={classes.collapse}>
-          <Grid item xs={12} className={classes.margin}>
-            <Alert severity='success' onClose={() => setRegisteredMessage(false)}>
-              Account created successfully! You can now sign in
-            </Alert>
+            <NotificationComponent
+              message={notification.message}
+              type={notification.type}
+              onClose={() => setNotification({show: false})}
+            />
           </Grid>
         </Collapse>
         <Grid item xs={12} className={classes.margin}>
