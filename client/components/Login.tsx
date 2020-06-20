@@ -102,6 +102,7 @@ export default function Login(props: Props) {
 
   async function onError(error?: any) {
     appContext.setIsLoggedIn(false)
+    userService.logout()
     gaService.loginFailedEvent()
     setFailedMessage(true)
     console.info(error)

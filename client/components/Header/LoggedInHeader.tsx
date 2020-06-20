@@ -53,11 +53,12 @@ export default function LoggedInHeader() {
 
   const handleUpdateTheme = () => {
     const currentTheme = appContext.isDarkTheme
-    updateUserTheme(!currentTheme)
     appContext.setIsDarkTheme(!currentTheme)
+    userService.updateTheme(!currentTheme)
+    storeUserTheme(!currentTheme)
   }
 
-  const updateUserTheme = (darkTheme: boolean) => {
+  const storeUserTheme = (darkTheme: boolean) => {
     updateTheme({ variables: { userDarkTheme: darkTheme } }).then((response) => {
       if (response.data.updateTheme.updatedTheme.success) {
         gaService.themeUpdateSuccessEvent()
