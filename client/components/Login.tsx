@@ -76,7 +76,7 @@ export default function Login(props: Props) {
 
   const onSubmit = (values: any) => {
     setLoading(true)
-    setNotification({show: false})
+    setNotification({show: false, type: notification.type})
     const { email, password } = values
     loginMutation({ variables: { email, password } })
       .then((response) => {
@@ -133,7 +133,7 @@ export default function Login(props: Props) {
             <NotificationComponent
               message={notification.message}
               type={notification.type}
-              onClose={() => setNotification({show: false})}
+              onClose={() => setNotification({show: false, type: notification.type})}
             />
           </Grid>
         </Collapse>

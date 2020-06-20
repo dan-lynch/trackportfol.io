@@ -76,7 +76,7 @@ export default function Join(props: Props) {
 
   const onSubmit = (values: any) => {
     setLoading(true)
-    setNotification({show: false})
+    setNotification({show: false, type: notification.type})
     const { username, email, password } = values
     registerMutation({ variables: { username, email, password } })
       .then((response) => {
@@ -122,7 +122,7 @@ export default function Join(props: Props) {
             <NotificationComponent
               message={notification.message}
               type={notification.type}
-              onClose={() => setNotification({show: false})}
+              onClose={() => setNotification({show: false, type: notification.type})}
             />
           </Grid>
         </Collapse>

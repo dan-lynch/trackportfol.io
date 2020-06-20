@@ -3,13 +3,14 @@ import Router from 'next/router'
 import { useMutation } from '@apollo/client'
 import { Mutation } from '@apollo/react-components'
 import { Grid, Paper, Typography, TextField, Button, CircularProgress, Collapse } from '@material-ui/core'
-import { Alert, Skeleton } from '@material-ui/lab'
+import { Skeleton } from '@material-ui/lab'
 import { makeStyles } from '@material-ui/core/styles'
 import Layout from 'components/Layout/LoggedInLayout'
 import StockCharts from 'components/StockChart'
 import SearchStock from 'components/SearchStock'
 import HoldingView from 'components/HoldingView'
 import { withApollo } from 'components/withApollo'
+import NotificationComponent, { Notification } from 'components/Notification'
 import { AppContext } from 'context/AppContext'
 import { graphqlService } from 'services/graphql'
 import { gaService } from 'services/gaService'
@@ -61,10 +62,9 @@ function Dashboard() {
   const [instrumentIdToAdd, setInstrumentIdToAdd] = useState<number | null>(null)
   const [quantityToAdd, setQuantityToAdd] = useState<number | undefined>(0.0)
   const [userId, setUserId] = useState<number | null>(null)
-  const [loading, setLoading] = useState<boolean>(false)
-  const [successMessage, setSuccessMessage] = useState<boolean>(false)
-  const [failedMessage, setFailedMessage] = useState<boolean>(false)
   const [welcomeMessage, setWelcomeMessage] = useState<string | null>(null)
+  const [notification, setNotification] = useState<Notification>({ show: false })
+  const [loading, setLoading] = useState<boolean>(false)
 
   const classes = useStyles()
   const appContext = useContext(AppContext)
@@ -114,13 +114,12 @@ function Dashboard() {
     setInstrumentToAdd(null)
     setInstrumentIdToAdd(null)
     setQuantityToAdd(0.0)
-    setSuccessMessage(true)
+    setNotification({ show: true, message: 'Holding added successfully', type: 'success' })
   }
 
-  const onAddError = (error: any) => {
+  const onAddError = () => {
     gaService.addInstrumentFailedEvent()
-    setFailedMessage(true)
-    console.warn(error)
+    setNotification({ show: true, message: 'Failed to add holding', type: 'error' })
   }
 
   const onUpdateSuccess = (data: any) => {
@@ -193,18 +192,13 @@ function Dashboard() {
                 Add holding
               </Typography>
             </Grid>
-            <Collapse in={successMessage}>
+            <Collapse in={notification.show} className={classes.collapse}>
               <Grid item xs={12}>
-                <Alert severity='success' onClose={() => setSuccessMessage(false)} className={classes.collapse}>
-                  Holding added successfully
-                </Alert>
-              </Grid>
-            </Collapse>
-            <Collapse in={failedMessage}>
-              <Grid item xs={12}>
-                <Alert severity='error' onClose={() => setFailedMessage(false)} className={classes.collapse}>
-                  Failed to add holding
-                </Alert>
+                <NotificationComponent
+                  message={notification.message}
+                  type={notification.type}
+                  onClose={() => setNotification({ show: false, type: notification.type })}
+                />
               </Grid>
             </Collapse>
             {userId ? (
@@ -234,9 +228,9 @@ function Dashboard() {
                       setLoading(false)
                       onAddConfirm(data)
                     }}
-                    onError={(error: any) => {
+                    onError={() => {
                       setLoading(false)
-                      onAddError(error)
+                      onAddError()
                     }}>
                     {(mutation: any) => (
                       <Button
