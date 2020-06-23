@@ -10,9 +10,10 @@ export const CURRENT_USER = gql`
         holdingsByUserId {
           nodes {
             instrumentByInstrumentId {
+              id
               code
               description
-              id
+              latestPrice
             }
             createdAt
             amount
