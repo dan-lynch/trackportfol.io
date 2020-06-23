@@ -11,6 +11,7 @@ export const CREATE_HOLDING = gql`
               id
               code
               description
+              latestPrice
             }
             instrumentId
           }

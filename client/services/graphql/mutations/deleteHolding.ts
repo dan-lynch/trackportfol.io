@@ -10,9 +10,10 @@ export const DELETE_HOLDING = gql`
           nodes {
             amount
             instrumentByInstrumentId {
+              id
               code
               description
-              id
+              latestPrice
             }
           }
         }

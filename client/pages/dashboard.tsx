@@ -5,6 +5,7 @@ import { Mutation } from '@apollo/react-components'
 import { Grid, Paper, Typography, TextField, Button, CircularProgress, Collapse } from '@material-ui/core'
 import { Skeleton } from '@material-ui/lab'
 import { makeStyles } from '@material-ui/core/styles'
+import NumberFormat from 'react-number-format'
 import Layout from 'components/Layout/LoggedInLayout'
 import StockCharts from 'components/StockChart'
 import SearchStock from 'components/SearchStock'
@@ -53,10 +54,14 @@ const useStyles = makeStyles(() => ({
   holdings: {
     paddingBottom: '1rem',
   },
+  padding: {
+    paddingBottom: '1rem'
+  }
 }))
 
 function Dashboard() {
   const [holdings, setHoldings] = useState<Holding[] | null>(null)
+  const [totalValue, setTotalValue] = useState<number | null>(null)
   const [searchInstrument, setSearchInstrument] = useState<Instrument | null>(null)
   const [instrumentToAdd, setInstrumentToAdd] = useState<Instrument | null>(null)
   const [instrumentIdToAdd, setInstrumentIdToAdd] = useState<number | null>(null)
@@ -73,7 +78,7 @@ function Dashboard() {
   useEffect(() => {
     currentUser({ variables: {} }).then((response) => {
       if (response.data.currentUser.user) {
-        setHoldings(response.data.currentUser.user.holdingsByUserId.nodes)
+        refreshHoldings(response.data.currentUser.user.holdingsByUserId.nodes)
         setUserId(response.data.currentUser.user.id)
         appContext.setIsDarkTheme(response.data.currentUser.user.darkTheme)
         appContext.setIsLoggedIn(true)
@@ -110,7 +115,7 @@ function Dashboard() {
 
   const onAddConfirm = (data: any) => {
     gaService.addInstrumentSuccessEvent()
-    setHoldings(data.createHolding.userByUserId.holdingsByUserId.nodes)
+    refreshHoldings(data.createHolding.userByUserId.holdingsByUserId.nodes)
     setInstrumentToAdd(null)
     setInstrumentIdToAdd(null)
     setQuantityToAdd(0.0)
@@ -122,24 +127,17 @@ function Dashboard() {
     setNotification({ show: true, message: 'Failed to add holding', type: 'error' })
   }
 
-  const onUpdateSuccess = (data: any) => {
-    gaService.updateInstrumentSuccessEvent()
-    setHoldings(data.updateHoldingByUserIdAndInstrumentId.userByUserId.holdingsByUserId.nodes)
+  const refreshHoldings = (holdings: any) => {
+    setHoldings(holdings)
+    calculateTotalHoldings(holdings)
   }
 
-  const onUpdateError = (error: any) => {
-    gaService.updateInstrumentFailedEvent()
-    console.warn(error)
-  }
-
-  const onDeleteSuccess = (data: any) => {
-    gaService.deleteInstrumentSuccessEvent()
-    setHoldings(data.deleteHoldingByUserIdAndInstrumentId.userByUserId.holdingsByUserId.nodes)
-  }
-
-  const onDeleteError = (error: any) => {
-    gaService.deleteInstrumentFailedEvent()
-    console.warn(error)
+  const calculateTotalHoldings = (holdings: Holding[]) => {
+    let total: number = 0
+    holdings.forEach((holding) => {
+      total += parseFloat(holding.instrumentByInstrumentId.latestPrice) * parseFloat(holding.amount)
+    })
+    setTotalValue(total)
   }
 
   return (
@@ -150,11 +148,26 @@ function Dashboard() {
             {welcomeMessage}
           </Typography>
         </Grid>
-        <Grid item sm={6} xs={12}>
+        <Grid item md={6} xs={12}>
           <Paper className={classes.paper}>
             <Typography variant='h6' className={classes.holdings}>
               Your holdings
             </Typography>
+            {totalValue ? (
+              <React.Fragment>
+              <Typography>Total portfolio value:</Typography>
+              <Typography variant='button' className={classes.padding}>
+                <NumberFormat
+                  value={totalValue || 0}
+                  displayType={'text'}
+                  thousandSeparator={true}
+                  prefix={'$'}
+                  decimalScale={2}
+                  fixedDecimalScale={true}
+                />
+              </Typography>
+              </React.Fragment>) :
+              <Skeleton variant='text' />}
             {userId ? (
               holdings && holdings.length > 0 ? (
                 holdings.map((holding: Holding) => {
@@ -163,13 +176,10 @@ function Dashboard() {
                       key={holding.instrumentByInstrumentId.id}
                       amount={holding.amount}
                       code={holding.instrumentByInstrumentId.code}
-                      description={holding.instrumentByInstrumentId.description}
+                      price={holding.instrumentByInstrumentId.latestPrice}
                       userId={userId}
                       instrumentId={holding.instrumentByInstrumentId.id}
-                      onDeleteSuccess={onDeleteSuccess}
-                      onDeleteError={onDeleteError}
-                      onUpdateSuccess={onUpdateSuccess}
-                      onUpdateError={onUpdateError}
+                      refreshHoldings={refreshHoldings}
                     />
                   )
                 })
@@ -185,7 +195,7 @@ function Dashboard() {
             )}
           </Paper>
         </Grid>
-        <Grid item sm={6} xs={12}>
+        <Grid item md={6} xs={12}>
           <Paper className={classes.paper}>
             <Grid item xs={12}>
               <Typography variant='h6' className={classes.subtitle}>
@@ -254,7 +264,7 @@ function Dashboard() {
             )}
           </Paper>
           <Paper className={classes.paper}>
-            <Grid item xs={12}>
+            <Grid item xs={12} className={classes.padding}>
               <Typography variant='h6' className={classes.subtitle}>
                 View stockchart
               </Typography>

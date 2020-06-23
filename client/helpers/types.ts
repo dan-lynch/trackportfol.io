@@ -5,17 +5,14 @@ export enum Status {
 }
 
 export type Instrument = {
+  id: number
   code: string
   description: string
-  id: number
+  latestPrice: string
 }
 
 export type Holding = {
   amount: string
   createdAt: string
-  instrumentByInstrumentId: {
-    code: string
-    description: string
-    id: number
-  }
+  instrumentByInstrumentId: Instrument
 }
