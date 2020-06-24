@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react'
 import Router from 'next/router'
-import { useMutation } from '@apollo/client'
+import { useMutation, useSubscription } from '@apollo/client'
 import { Mutation } from '@apollo/react-components'
 import { Grid, Paper, Typography, TextField, Button, CircularProgress, Collapse } from '@material-ui/core'
 import { Skeleton } from '@material-ui/lab'
@@ -55,8 +55,8 @@ const useStyles = makeStyles(() => ({
     paddingBottom: '1rem',
   },
   padding: {
-    paddingBottom: '1rem'
-  }
+    paddingBottom: '1rem',
+  },
 }))
 
 function Dashboard() {
@@ -69,11 +69,12 @@ function Dashboard() {
   const [userId, setUserId] = useState<number | null>(null)
   const [welcomeMessage, setWelcomeMessage] = useState<string | null>(null)
   const [notification, setNotification] = useState<Notification>({ show: false })
-  const [loading, setLoading] = useState<boolean>(false)
+  const [createHoldingLoading, setCreateHoldingLoading] = useState<boolean>(false)
 
   const classes = useStyles()
   const appContext = useContext(AppContext)
   const [currentUser] = useMutation(graphqlService.CURRENT_USER)
+  const { loading, error, data } = useSubscription(graphqlService.CURRENT_USER_UPDATED, { variables: {} })
 
   useEffect(() => {
     currentUser({ variables: {} }).then((response) => {
@@ -91,6 +92,10 @@ function Dashboard() {
       }
     })
   }, [])
+
+  useEffect(() => {
+    console.log('loading:', loading, 'data:', data, 'error:', error)
+  }, [loading, data, error])
 
   const processSearch = (searchQuery: Instrument | null) => {
     if (searchQuery && searchQuery.code) {
@@ -155,19 +160,21 @@ function Dashboard() {
             </Typography>
             {totalValue ? (
               <React.Fragment>
-              <Typography>Total portfolio value:</Typography>
-              <Typography variant='button' className={classes.padding}>
-                <NumberFormat
-                  value={totalValue || 0}
-                  displayType={'text'}
-                  thousandSeparator={true}
-                  prefix={'$'}
-                  decimalScale={2}
-                  fixedDecimalScale={true}
-                />
-              </Typography>
-              </React.Fragment>) :
-              <Skeleton variant='text' />}
+                <Typography>Total portfolio value:</Typography>
+                <Typography variant='button' className={classes.padding}>
+                  <NumberFormat
+                    value={totalValue || 0}
+                    displayType={'text'}
+                    thousandSeparator={true}
+                    prefix={'$'}
+                    decimalScale={2}
+                    fixedDecimalScale={true}
+                  />
+                </Typography>
+              </React.Fragment>
+            ) : (
+              <Skeleton variant='text' />
+            )}
             {userId ? (
               holdings && holdings.length > 0 ? (
                 holdings.map((holding: Holding) => {
@@ -235,11 +242,11 @@ function Dashboard() {
                     mutation={graphqlService.CREATE_HOLDING}
                     variables={{ userId, instrumentId: instrumentIdToAdd, amount: quantityToAdd }}
                     onCompleted={(data: any) => {
-                      setLoading(false)
+                      setCreateHoldingLoading(false)
                       onAddConfirm(data)
                     }}
                     onError={() => {
-                      setLoading(false)
+                      setCreateHoldingLoading(false)
                       onAddError()
                     }}>
                     {(mutation: any) => (
@@ -250,10 +257,10 @@ function Dashboard() {
                         variant='contained'
                         color='primary'
                         onClick={() => {
-                          setLoading(true)
+                          setCreateHoldingLoading(true)
                           mutation()
                         }}>
-                        {loading ? <CircularProgress size={24} className={classes.loading} /> : 'Add'}
+                        {createHoldingLoading ? <CircularProgress size={24} className={classes.loading} /> : 'Add'}
                       </Button>
                     )}
                   </Mutation>

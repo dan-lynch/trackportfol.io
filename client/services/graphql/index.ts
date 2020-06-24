@@ -11,11 +11,15 @@ import {
   UPDATE_USER_EMAIL,
   UPDATE_USER_PASSWORD
 } from 'services/graphql/mutations'
+
 import {
   ALL_INSTRUMENTS, 
   SEARCH_INSTRUMENTS,
 } from 'services/graphql/queries'
 
+import {
+  CURRENT_USER_UPDATED
+} from 'services/graphql/subscriptions'
 
 export const graphqlService = {
   LOGIN, 
@@ -30,5 +34,6 @@ export const graphqlService = {
   GET_USER_EMAIL,
   UPDATE_USERNAME,
   UPDATE_USER_EMAIL,
-  UPDATE_USER_PASSWORD
+  UPDATE_USER_PASSWORD,
+  CURRENT_USER_UPDATED
 };
