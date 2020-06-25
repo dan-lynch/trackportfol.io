@@ -13,6 +13,7 @@
     "express": "^4.17.1",
     "graphile-utils": "^4.7.0",
     "graphql": "^14.6.0",
+    "graphql-subscriptions": "^1.1.0",
     "helmet": "^3.23.2",
     "postgraphile": "^4.7.0",
     "postgraphile-plugin-connection-filter": "^2.0.0",

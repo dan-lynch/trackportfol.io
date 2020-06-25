@@ -1,4 +1,17 @@
 const { makeExtendSchemaPlugin, gql, embed } = require("graphile-utils");
+const { PubSub } = require("graphql-subscriptions");
+
+const pubSub = new PubSub();
+let count = 0;
+function emit() {
+  count++;
+  console.log('emit called');
+  pubSub.publish('eventName', count);
+  setTimeout(() => {
+    emit();
+  }, 1000);
+}
+emit();
 
 const currentUserTopicFromContext = (_args, context, _resolveInfo) => {
   if (context.jwtClaims.user_id) {
@@ -11,34 +24,23 @@ const currentUserTopicFromContext = (_args, context, _resolveInfo) => {
 module.exports = makeExtendSchemaPlugin(({ pgSql: sql }) => ({
   typeDefs: gql`
     type UserSubscriptionPayload {
-      # This is populated by our resolver below
       user: User
-
-      # This is returned directly from the PostgreSQL subscription payload (JSON object)
       event: String
     }
 
     extend type Subscription {
-      """
-      Triggered when the current user's data changes:
-
-      - direct modifications to the user
-      - when their organization membership changes
-      """
       currentUserUpdated: UserSubscriptionPayload @pgSubscription(topic: ${embed(
         currentUserTopicFromContext
       )})
+    }
+
+    extend type Subscription {
+      testSubscription: Int
     }
   `,
 
   resolvers: {
     UserSubscriptionPayload: {
-      // This method finds the user from the database based on the event
-      // published by PostgreSQL.
-      //
-      // In a future release, we hope to enable you to replace this entire
-      // method with a small schema directive above, should you so desire. It's
-      // mostly boilerplate.
       async user(
         event,
         _args,
@@ -54,6 +56,22 @@ module.exports = makeExtendSchemaPlugin(({ pgSql: sql }) => ({
           }
         );
         return rows[0];
+      },
+    },
+    Subscription: {
+      testSubscription: {
+        subscribe: () => pubSub.asyncIterator('eventName'),
+        resolve: d => {
+          console.log(d);
+          return d;
+        },
+      },
+      currentUserUpdated: {
+        subscribe: (event) => pubSub.asyncIterator('eventName'),
+        resolve: d => {
+          console.log(d);
+          return d;
+        },
       },
     },
   },
