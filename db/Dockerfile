@@ -13,7 +13,6 @@ RUN git clone https://github.com/eulerto/wal2json -b master --single-branch \
     && make && make install \
     && cd / \
     && rm -rf wal2json
-
 FROM postgres:12
 COPY --from=build /usr/lib/postgresql/$PG_MAJOR/lib/wal2json.so /usr/lib/postgresql/$PG_MAJOR/lib/
 COPY ./init/ /docker-entrypoint-initdb.d/
