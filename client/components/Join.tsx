@@ -71,7 +71,7 @@ export default function Join(props: Props) {
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
 
-  const [registerMutation] = useMutation(graphqlService.REGISTER)
+  const [registerMutation] = useMutation(graphqlService.REGISTER_USER)
   const { register, handleSubmit, errors } = useForm()
 
   const onSubmit = (values: any) => {
@@ -79,13 +79,13 @@ export default function Join(props: Props) {
     setNotification({show: false, type: notification.type})
     const { username, email, password } = values
     registerMutation({ variables: { username, email, password } })
-      .then((response) => {
+      .then((response: any) => {
         setLoading(false)
-        response.data.registerUser ? onConfirm(email) : onError('Register failed')
+        response.data.registerUser ? onConfirm(email) : onError()
       })
       .catch(() => {
         setLoading(false)
-        onError('Register failed')
+        onError()
       })
   }
 
@@ -95,12 +95,11 @@ export default function Join(props: Props) {
     switchToLogin()
   }
 
-  async function onError(error?: any) {
-    gaService.registerFailedEvent()
-    setNotification({show: true, message: 'Your account could not be created, please reload the page and try again', type: 'error'})
+  async function onError() {
     appContext.setIsLoggedIn(false)
     userService.logout()
-    console.info(error)
+    gaService.registerFailedEvent()
+    setNotification({show: true, message: 'Your account could not be created, please reload the page and try again', type: 'error'})
   }
 
   const handleClickShowPassword = () => {

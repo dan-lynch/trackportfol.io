@@ -1,8 +1,9 @@
 const express = require("express")
 const compression = require('compression')
 const helmet = require('helmet')
-const { postgraphile } = require("postgraphile")
+const { postgraphile, makePluginHook } = require("postgraphile")
 const ConnectionFilterPlugin = require("postgraphile-plugin-connection-filter");
+const SubscriptionsPlugin = require("@graphile/subscriptions-lds");
 
 const app = express()
 
@@ -15,8 +16,9 @@ app.use(
     process.env.DATABASE_URL,
     "public",
     {
-    appendPlugins: [ConnectionFilterPlugin],
-    subscriptions: true,
+    ownerConnectionString: process.env.ROOT_DATABASE_URL,
+    appendPlugins: [ConnectionFilterPlugin, SubscriptionsPlugin.default],
+    live: true,
     retryOnInitFail: true,
     dynamicJson: true,
     setofFunctionsContainNulls: false,

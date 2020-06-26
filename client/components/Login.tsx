@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { useMutation } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client'
 import {
   Grid,
   Paper,
@@ -67,45 +67,35 @@ export default function Login(props: Props) {
 
   const [notification, setNotification] = useState<Notification>({show: false})
   const [showPassword, setShowPassword] = useState<boolean>(false)
-  const [loading, setLoading] = useState<boolean>(false)
 
   const classes = useStyles()
   const appContext = useContext(AppContext)
-  const [loginMutation] = useMutation(graphqlService.LOGIN)
   const { register, handleSubmit, errors } = useForm()
 
+  const [authenticate, { loading, data }] = useLazyQuery(graphqlService.AUTHENTICATE)
+
   const onSubmit = (values: any) => {
-    setLoading(true)
     setNotification({show: false, type: notification.type})
     const { email, password } = values
-    loginMutation({ variables: { email, password } })
-      .then((response) => {
-        setLoading(false)
-        response.data.authenticate.jwtToken ? onConfirm(response.data) : onError('Sign in failed')
-      })
-      .catch(() => {
-        setLoading(false)
-        onError('Sign in failed')
-      })
+    authenticate({ variables: { email: email, password: password } })
   }
 
-  async function onConfirm(data: any) {
+  const onConfirm = async (data: any) => {
     const loginResult = await userService.login(data.authenticate)
     if (loginResult) {
       appContext.setIsLoggedIn(true)
       gaService.loginSuccessEvent()
       window.location.replace('/dashboard')
     } else {
-      onError('Sign in failed')
+      onError()
     }
   }
 
-  async function onError(error?: any) {
+  const onError = () => {
     appContext.setIsLoggedIn(false)
     userService.logout()
     gaService.loginFailedEvent()
     setNotification({show: true, message: 'Sign in unsuccessful, please try again', type: 'error'})
-    console.info(error)
   }
 
   const handleClickShowPassword = () => {
@@ -115,6 +105,12 @@ export default function Login(props: Props) {
   const handleMouseDownPassword = (event: any) => {
     event.preventDefault()
   }
+
+  useEffect(() => {
+    if (data) {
+    data.authenticate ? onConfirm(data) : onError()
+    }
+  }, [data])
 
   useEffect(() => {
     if (appContext.signupEmail) {

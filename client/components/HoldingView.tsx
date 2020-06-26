@@ -103,11 +103,10 @@ type Props = {
   price: string
   userId: number
   instrumentId: number
-  refreshHoldings: any
 }
 
 export default function HoldingView(props: Props) {
-  const { amount, code, price, userId, instrumentId, refreshHoldings } = props
+  const { amount, code, price, userId, instrumentId } = props
   const classes = useStyles()
 
   const [notification, setNotification] = useState<Notification>({ show: false })
@@ -122,10 +121,9 @@ export default function HoldingView(props: Props) {
   const handleUpdateHolding = () => {
     setUpdateLoading(true)
     updateHolding({ variables: { userId, instrumentId, amount: updateQuantity } })
-      .then((response) => {
+      .then(() => {
         setUpdateLoading(false)
         setIsEditing(false)
-        refreshHoldings(response.data.updateHoldingByUserIdAndInstrumentId.userByUserId.holdingsByUserId.nodes)
         gaService.updateInstrumentSuccessEvent()
         setNotification({ show: true, message: 'Holding updated successfully', type: 'success' })
       })
@@ -140,20 +138,9 @@ export default function HoldingView(props: Props) {
   const handleDeleteHolding = () => {
     setDeleteLoading(true)
     deleteHolding({ variables: { userId, instrumentId } })
-      .then((response) => {
-        if (
-          response.data.deleteHoldingByUserIdAndInstrumentId &&
-          response.data.deleteHoldingByUserIdAndInstrumentId.userByUserId
-        ) {
+      .then(() => {
           setDeleteLoading(false)
-          refreshHoldings(response.data.deleteHoldingByUserIdAndInstrumentId.userByUserId.holdingsByUserId.nodes)
           gaService.deleteInstrumentSuccessEvent()
-          setNotification({ show: true, message: 'Holding deleted successfully', type: 'success' })
-        } else {
-          setDeleteLoading(false)
-          gaService.deleteInstrumentFailedEvent()
-          setNotification({ show: true, message: 'Failed to delete holding', type: 'error' })
-        }
       })
       .catch(() => {
         setDeleteLoading(false)
