@@ -3,12 +3,9 @@ const compression = require('compression')
 const helmet = require('helmet')
 const { postgraphile, makePluginHook } = require("postgraphile")
 const ConnectionFilterPlugin = require("postgraphile-plugin-connection-filter");
-const SubscriptionsPlugin = require("./SubscriptionsPlugin"); 
-const { default: PgPubSub } = require("@graphile/pg-pubsub");
+const SubscriptionsPlugin = require("@graphile/subscriptions-lds");
 
 const app = express()
-
-const pubSubHook = makePluginHook([PgPubSub]);
 
 app.use(helmet())
 
@@ -19,9 +16,9 @@ app.use(
     process.env.DATABASE_URL,
     "public",
     {
-    pubSubHook,
-    appendPlugins: [ConnectionFilterPlugin, SubscriptionsPlugin],
-    subscriptions: true,
+    ownerConnectionString: process.env.ROOT_DATABASE_URL,
+    appendPlugins: [ConnectionFilterPlugin, SubscriptionsPlugin.default],
+    live: true,
     retryOnInitFail: true,
     dynamicJson: true,
     setofFunctionsContainNulls: false,

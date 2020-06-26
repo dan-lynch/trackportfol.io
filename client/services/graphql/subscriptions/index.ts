@@ -1,3 +1,3 @@
-import { CURRENT_USER_UPDATED } from './currentUserUpdated'
+import { SUBSCRIBE_CURRENT_USER } from './subscribeCurrentUser'
 
-export { CURRENT_USER_UPDATED }
+export { SUBSCRIBE_CURRENT_USER }

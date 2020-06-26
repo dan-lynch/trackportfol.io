@@ -47,7 +47,7 @@
   dependencies:
     cross-fetch "3.0.4"
 
-"@apollo/client@^3.0.0-beta.23", "@apollo/client@^3.0.0-beta.24", "@apollo/client@^3.0.0-rc.8":
+"@apollo/client@^3.0.0-beta.23", "@apollo/client@^3.0.0-rc.8":
   version "3.0.0-rc.8"
   resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.0.0-rc.8.tgz#70643547ed8bb10d1d96f64320c3510a57f0cf6a"
   integrity sha512-8Sw4Htao2mZb4vERbvMj9GOf4x/+CLYNuF5gULY7TtMWG4ZANLxbe1DeFCicxVo2xRVQ960nf5vVJhxKcjDOQA==
@@ -85,23 +85,6 @@
   dependencies:
     "@apollo/client" "^3.0.0-beta.23"
     tslib "^1.9.3"
-
-"@apollo/react-common@^4.0.0-beta.1":
-  version "4.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@apollo/react-common/-/react-common-4.0.0-beta.1.tgz#f28cb717829c93320fa5faa96b31dc9ca1eb492c"
-  integrity sha512-q/6p+w3f9P8/MWIS2ZxG66+EgF25f+AgYHSn/uUjtGk8TF1Gf/2wTdjXcYhxMH9h3iAKqz7s8s5kJiGJpB7ZJA==
-  dependencies:
-    "@apollo/client" "^3.0.0-beta.24"
-
-"@apollo/react-components@^4.0.0-beta.1":
-  version "4.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@apollo/react-components/-/react-components-4.0.0-beta.1.tgz#632082c668f4f6e0e91940277ffc420929c75114"
-  integrity sha512-DUf6EH6EiJHNDWXqqaLunA3LX/9h/MqUT0N4IaqZ8VoDx7mQHovisMz7UZJ1tfgqGt4vxJ6n3BYTBkcCxp/O6A==
-  dependencies:
-    "@apollo/react-common" "^4.0.0-beta.1"
-    prop-types "^15.7.2"
-    ts-invariant "^0.4.4"
-    tslib "^1.10.0"
 
 "@babel/code-frame@7.8.3":
   version "7.8.3"

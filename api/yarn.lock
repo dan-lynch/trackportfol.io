@@ -2,20 +2,29 @@
 # yarn lockfile v1
 
 
+"@graphile/lds@4.7.0":
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/@graphile/lds/-/lds-4.7.0.tgz#575d9f873adecbd5467f7214d5c57dc528e60170"
+  integrity sha512-tWklRO5hEEVhkqQMA6PEVY23P05l/V1zXWKstGJTINsbJ+DA9oe1jHQEWaxYa8MUA+Eenc+r9LXrCe0N6nWTwA==
+  dependencies:
+    "@types/pg" "^7.4.14"
+    "@types/ws" "^6.0.1"
+    pg ">=6.1.0 <9"
+    ws "^7.0.0"
+
 "@graphile/lru@4.5.0":
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/@graphile/lru/-/lru-4.5.0.tgz#e8fe036d322dfe1715675aab171979981e28ac9e"
   integrity sha512-OoIgewLowjegJzz3tpcRE5LpQKqsap1ETFaZtC1r9p36h5ieUJnWTxCTpB7XIsU9muMTt7MMt8x0E5apS47QIQ==
 
-"@graphile/pg-pubsub@^4.7.0":
+"@graphile/subscriptions-lds@^4.7.0":
   version "4.7.0"
-  resolved "https://registry.yarnpkg.com/@graphile/pg-pubsub/-/pg-pubsub-4.7.0.tgz#d0a116404d84de0f5542a55c203a7e5cfb5f8c57"
-  integrity sha512-QQvZkA6KkwTLuyGCZzlapU9BCQLxY/TqnfHQZkMjKdiU5vhTP37iCS+elVYowpLEaXp36tc3HTPjvVnUvi8Hzg==
+  resolved "https://registry.yarnpkg.com/@graphile/subscriptions-lds/-/subscriptions-lds-4.7.0.tgz#20ad605240f61a29dfc1d54d240195b7073bddcd"
+  integrity sha512-OrvODxheM5C7J+l2Hj4Hm9GO1/oLJ1DVQ6iN7InFJOKbCs6UClKRh0rNuN9O3bglmEgWx37XN+sgJROqMgrptg==
   dependencies:
-    "@types/debug" "^4.1.4"
-    "@types/pg" "^7.4.14"
-    debug "^4.1.1"
-    graphql-subscriptions "^1.1.0"
+    "@graphile/lds" "4.7.0"
+    "@types/ws" "^6.0.1"
+    ws "^7.0.0"
 
 "@types/accepts@*":
   version "1.3.5"
@@ -53,11 +62,6 @@
     "@types/express" "*"
     "@types/keygrip" "*"
     "@types/node" "*"
-
-"@types/debug@^4.1.4":
-  version "4.1.5"
-  resolved "https://registry.yarnpkg.com/@types/debug/-/debug-4.1.5.tgz#b14efa8852b7768d898906613c23f688713e02cd"
-  integrity sha512-Q1y515GcOdTHgagaVFhHnIFQ38ygs/kmxdNpvpou+raI9UO3YZcHDngBSYKQklcKlvA7iuQlmIKbzvmxcOE9CQ==
 
 "@types/express-serve-static-core@*":
   version "4.17.8"
@@ -525,7 +529,7 @@ graphql-subscriptions@^1.1.0:
   dependencies:
     iterall "^1.2.1"
 
-"graphql@>=0.9 <0.14 || ^14.0.2", "graphql@^0.6.0 || ^0.7.0 || ^0.8.0-b || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.2", graphql@^14.6.0:
+"graphql@>=0.9 <0.14 || ^14.0.2", "graphql@^0.6.0 || ^0.7.0 || ^0.8.0-b || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.2":
   version "14.6.0"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-14.6.0.tgz#57822297111e874ea12f5cd4419616930cd83e49"
   integrity sha512-VKzfvHEKybTKjQVpTFrA5yUq2S9ihcZvfJAtsDBBCuV6wauPu1xl/f9ehgVf0FcEJJs4vz6ysb/ZMkGigQZseg==
@@ -1146,6 +1150,11 @@ ws@^6.1.3:
   integrity sha512-GIyAXC2cB7LjvpgMt9EKS2ldqr0MTrORaleiOno6TweZ6r3TKtoFQWay/2PceJ3RuBasOHzXNn5Lrw1X0bEjqA==
   dependencies:
     async-limiter "~1.0.0"
+
+ws@^7.0.0:
+  version "7.3.0"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-7.3.0.tgz#4b2f7f219b3d3737bc1a2fbf145d825b94d38ffd"
+  integrity sha512-iFtXzngZVXPGgpTlP1rBqsUK82p9tKqsWRPg5L56egiljujJT3vGAYnHANvFxBieXrTFavhzhxW52jnaWV+w2w==
 
 x-xss-protection@1.3.0:
   version "1.3.0"

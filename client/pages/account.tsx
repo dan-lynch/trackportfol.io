@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react'
 import Router from 'next/router'
-import { useMutation } from '@apollo/client'
+import { useQuery, useMutation } from '@apollo/client'
 import { withApollo } from 'components/withApollo'
 import { initApolloClient } from 'services/apolloService'
 import { AppContext } from 'context/AppContext'
@@ -54,8 +54,13 @@ function Account() {
   const classes = useStyles()
   const appContext = useContext(AppContext)
 
-  const [currentUser] = useMutation(graphqlService.CURRENT_USER)
-  const [userEmail] = useMutation(graphqlService.GET_USER_EMAIL)
+  const accountQueries = () => {
+    const currentUser = useQuery(graphqlService.CURRENT_USER)
+    const userEmail = useQuery(graphqlService.GET_USER_EMAIL)
+    return [currentUser, userEmail];
+  }
+
+  const [currentUser, userEmail] = accountQueries()
   const [updateUsername] = useMutation(graphqlService.UPDATE_USERNAME)
   const [updateUserEmail] = useMutation(graphqlService.UPDATE_USER_EMAIL)
   const [updateUserPassword] = useMutation(graphqlService.UPDATE_USER_PASSWORD)
@@ -153,23 +158,22 @@ function Account() {
   }
 
   useEffect(() => {
-    currentUser({ variables: {} }).then((response) => {
-      if (response.data.currentUser.user) {
-        setUsername(response.data.currentUser.user.username)
-        appContext.setIsLoggedIn(true)
-        userService.storeUserData(response.data)
-      } else {
-        appContext.setIsLoggedIn(false)
-        userService.logout()
-        Router.push('/')
-      }
-    })
-    userEmail({ variables: {} }).then((response) => {
-      if (response.data.getUserEmail.userEmail.email) {
-        setEmail(response.data.getUserEmail.userEmail.email)
-      }
-    })
-  }, [])
+    if (currentUser.data && !currentUser.error) {
+      setUsername(currentUser.data.currentUser.username)
+      appContext.setIsLoggedIn(true)
+      userService.storeUserData(currentUser.data)
+    } else if (currentUser.data && currentUser.error) {
+      appContext.setIsLoggedIn(false)
+      userService.logout()
+      Router.push('/')
+    }
+  }, [currentUser])
+
+  useEffect(() => {
+    if (userEmail.data && !currentUser.error) {
+      setEmail(userEmail.data.getUserEmail.email)
+    }
+  }, [userEmail])
 
   return (
     <Layout title='Account | trackportfol.io'>

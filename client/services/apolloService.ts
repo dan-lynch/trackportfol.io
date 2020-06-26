@@ -24,7 +24,7 @@ const wsLinkwithAuth = (token: string) =>
     options: {
       reconnect: true,
       connectionParams: {
-        authToken: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     },
   })
