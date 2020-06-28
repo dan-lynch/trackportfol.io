@@ -1,4 +1,5 @@
 import React, { useEffect, useContext } from 'react'
+import Router from 'next/router'
 import { withApollo } from 'components/withApollo'
 import { initApolloClient } from 'services/apolloService'
 import { AppContext } from 'context/AppContext'
@@ -42,7 +43,7 @@ function Home() {
 
   useEffect(() => {
     if (appContext.isLoggedIn) {
-      window.location.replace('/dashboard')
+      Router.push('/dashboard')
     }
   }, [appContext])
 
