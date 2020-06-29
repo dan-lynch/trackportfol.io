@@ -4,8 +4,8 @@ on:
   push:
     paths:
       - 'client/**'
-    branches:
-      - master
+    # branches:
+    #   - master
 
 jobs:
   build-and-deploy-client:
