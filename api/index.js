@@ -24,7 +24,7 @@ app.use(
     setofFunctionsContainNulls: false,
     ignoreRBAC: false,
     ignoreIndexes: false,
-    graphiql: true,
+    graphiql: false, // set to true for local development only
     enhanceGraphiql: true,
     pgDefaultRole: process.env.DEFAULT_ROLE,
     jwtSecret: process.env.JWT_SECRET,

@@ -1,17 +1,43 @@
-import { ApolloClient, InMemoryCache, ApolloLink, HttpLink } from '@apollo/client'
+import { ApolloClient, InMemoryCache, ApolloLink, HttpLink, split, OperationVariables } from '@apollo/client'
+import { WebSocketLink } from '@apollo/link-ws'
 import { onError } from '@apollo/link-error'
 import { setContext } from '@apollo/link-context'
-import { API_URL, TOKEN } from 'helpers/constants'
+import { getMainDefinition } from 'apollo-utilities'
+import { API_URL, WS_URL, TOKEN } from 'helpers/constants'
 import Cookie from 'js-cookie'
 
 global.fetch = require('node-fetch')
 
 let globalApolloClient: any = null
 
+const wsLinkwithoutAuth = () =>
+  new WebSocketLink({
+    uri: WS_URL,
+    options: {
+      reconnect: true,
+    },
+  })
+
+const wsLinkwithAuth = (token: string) =>
+  new WebSocketLink({
+    uri: WS_URL,
+    options: {
+      reconnect: true,
+      connectionParams: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  })
+
 function createIsomorphLink() {
   return new HttpLink({
     uri: API_URL,
   })
+}
+
+function createWebSocketLink() {
+  const token = Cookie.getJSON(TOKEN)
+  return token ? wsLinkwithAuth(token) : wsLinkwithoutAuth()
 }
 
 const errorLink = onError(({ networkError, graphQLErrors }) => {
@@ -45,8 +71,20 @@ const httpLink = ApolloLink.from([errorLink, authLink, createIsomorphLink()])
 
 export function createApolloClient(initialState = {}) {
   const ssrMode = typeof window === 'undefined'
-  const link = httpLink
   const cache = new InMemoryCache().restore(initialState)
+
+  const link = ssrMode
+  ? httpLink
+  : process.browser
+  ? split(
+      ({ query }: any) => {
+        const { kind, operation }: OperationVariables = getMainDefinition(query)
+        return kind === 'OperationDefinition' && operation === 'subscription'
+      },
+      createWebSocketLink(),
+      httpLink
+    )
+  : httpLink
 
   return new ApolloClient({
     ssrMode,

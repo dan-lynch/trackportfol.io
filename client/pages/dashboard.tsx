@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react'
 import Router from 'next/router'
-import { useMutation, useQuery } from '@apollo/client'
+import { useMutation, useSubscription } from '@apollo/client'
 import { Grid, Paper, Typography, TextField, Button, CircularProgress, Collapse } from '@material-ui/core'
 import { Skeleton } from '@material-ui/lab'
 import { makeStyles } from '@material-ui/core/styles'
@@ -75,9 +75,8 @@ function Dashboard() {
   const classes = useStyles()
   const appContext = useContext(AppContext)
 
-  const { error, data } = useQuery(graphqlService.CURRENT_USER, { 
-    variables: {},
-    pollInterval: 500,
+  const { error, data } = useSubscription(graphqlService.SUBSCRIBE_CURRENT_USER, { 
+    variables: {}
   })
 
   const handleCreateHolding = () => {
