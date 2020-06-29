@@ -8,6 +8,7 @@ import { makeStyles, createStyles } from '@material-ui/core/styles'
 import Layout from 'components/Layout/LoggedOutLayout'
 import Login from 'components/Login'
 import Join from 'components/Join'
+import { userService } from 'services/userService'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -42,7 +43,7 @@ function Home() {
   }
 
   useEffect(() => {
-    if (appContext.isLoggedIn) {
+    if (!!userService.loggedInUser) {
       Router.push('/dashboard')
     }
   }, [appContext])
