@@ -1,5 +1,4 @@
 import React, { useState, useContext, useEffect } from 'react'
-import Router from 'next/router'
 import { useLazyQuery } from '@apollo/client'
 import {
   Grid,
@@ -86,7 +85,7 @@ export default function Login(props: Props) {
     if (loginResult) {
       appContext.setIsLoggedIn(true)
       gaService.loginSuccessEvent()
-      Router.push('/dashboard')
+      window.location.replace('/dashboard')
     } else {
       onError()
     }

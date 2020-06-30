@@ -18,6 +18,8 @@ import { userService } from 'services/userService'
 import { initApolloClient } from 'services/apolloService'
 import { Instrument, Holding } from 'helpers/types'
 import { isNumeric } from 'helpers/misc'
+import Cookie from 'js-cookie'
+import { TOKEN } from 'helpers/constants'
 
 const useStyles = makeStyles(() => ({
   paper: {
@@ -113,6 +115,13 @@ function Dashboard() {
       }
     }
   }, [data])
+
+  
+  useEffect(() => {
+    if (!Cookie.getJSON(TOKEN)) {
+      Router.push('/')
+    }
+  }, [])
 
   const processSearch = (searchQuery: Instrument | null) => {
     if (searchQuery && searchQuery.code) {
