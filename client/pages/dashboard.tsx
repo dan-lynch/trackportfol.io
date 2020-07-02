@@ -77,8 +77,8 @@ function Dashboard() {
   const classes = useStyles()
   const appContext = useContext(AppContext)
 
-  const { error, data } = useSubscription(graphqlService.SUBSCRIBE_CURRENT_USER, { 
-    variables: {}
+  const { error, data } = useSubscription(graphqlService.SUBSCRIBE_CURRENT_USER, {
+    variables: {},
   })
 
   const handleCreateHolding = () => {
@@ -99,27 +99,34 @@ function Dashboard() {
       })
   }
 
+  const logoutUser = () => {
+    appContext.setIsLoggedIn(false)
+    userService.logout()
+    Router.push('/')
+  }
+
   useEffect(() => {
-    if (data) {
-      if (error) {
-        appContext.setIsLoggedIn(false)
-        userService.logout()
-        Router.push('/')
-      } else {
-        refreshHoldings(data.currentUser.holdingsByUserId.nodes)
-        setUserId(data.currentUser.id)
-        appContext.setIsDarkTheme(data.currentUser.darkTheme)
-        appContext.setIsLoggedIn(true)
-        userService.storeUserData(data)
-        setWelcomeMessage(`Welcome to your dashboard, ${data.currentUser.username}!`)
-      }
+    if (data && !error) {
+      refreshHoldings(data.currentUser.holdingsByUserId.nodes)
+      setUserId(data.currentUser.id)
+      appContext.setIsDarkTheme(data.currentUser.darkTheme)
+      appContext.setIsLoggedIn(true)
+      userService.storeUserData(data)
+      setWelcomeMessage(`Welcome to your dashboard, ${data.currentUser.username}!`)
     }
   }, [data])
 
-  
+  useEffect(() => {
+    if (error) {
+      if (error.message === 'jwt malformed' || error.message === 'jwt expired') {
+        logoutUser()
+      }
+    }
+  }, [error])
+
   useEffect(() => {
     if (!Cookie.getJSON(TOKEN)) {
-      Router.push('/')
+      logoutUser()
     }
   }, [])
 

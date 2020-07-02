@@ -57,7 +57,7 @@ function Account() {
   const accountQueries = () => {
     const currentUser = useQuery(graphqlService.CURRENT_USER)
     const userEmail = useQuery(graphqlService.GET_USER_EMAIL)
-    return [currentUser, userEmail];
+    return [currentUser, userEmail]
   }
 
   const [currentUser, userEmail] = accountQueries()
