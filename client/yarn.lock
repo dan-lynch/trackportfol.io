@@ -5040,10 +5040,10 @@ react-financial-charts@^0.5.1:
     prop-types "^15.7.2"
     save-svg-as-png "^1.4.14"
 
-react-ga@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/react-ga/-/react-ga-3.0.0.tgz#4d665389cf0c489c36c5fdf97722a7e53efdfc5b"
-  integrity sha512-IKqqCtSMe0IfSRNvbHAiwXwIXbuza4VvHvB/2N3hEiMFGSjv8fNI6obPH6bkDdIjDpwzbUqKs8895OxBckWJ2g==
+react-ga@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/react-ga/-/react-ga-3.1.1.tgz#3adcaa96e223d4eb530dab96b0ceac9a511d7be9"
+  integrity sha512-JYvbpgCEvy7XS0LioWZ5A2B2JHs7htnop4L2HtifkY5wu/LAnSnXtQp6D0xr9ieMtlWUKSaahNWSZ5fnhWW8Xg==
 
 react-hook-form@^6.0.1:
   version "6.0.1"
