@@ -91,6 +91,27 @@ const themeUpdateFailedEvent = () => {
   })
 }
 
+const resetPasswordRequestEvent = () => {
+  ReactGA.event({
+    category: 'Account',
+    action: 'User requested a password reset email',
+  })
+}
+
+const resetPasswordSuccessEvent = () => {
+  ReactGA.event({
+    category: 'Account',
+    action: 'User has successfully reset their password',
+  })
+}
+
+const resetPasswordFailedEvent = () => {
+  ReactGA.event({
+    category: 'Account',
+    action: 'User failed to reset their password password',
+  })
+}
+
 export const gaService = {
   loginSuccessEvent,
   loginFailedEvent,
@@ -104,5 +125,8 @@ export const gaService = {
   deleteInstrumentFailedEvent,
   viewStockchartEvent,
   themeUpdateSuccessEvent,
-  themeUpdateFailedEvent
+  themeUpdateFailedEvent,
+  resetPasswordRequestEvent,
+  resetPasswordSuccessEvent,
+  resetPasswordFailedEvent
 }

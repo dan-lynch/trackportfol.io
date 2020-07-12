@@ -18,12 +18,12 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 type Props = {
-  handleOpenLogin: () => any
-  handleOpenJoin: () => any
+  openLogin: () => any
+  openJoin: () => any
 }
 
 export default function LoggedOutHeader(props: Props) {
-  const { handleOpenLogin, handleOpenJoin } = props
+  const { openLogin, openJoin } = props
 
   const classes = useStyles()
 
@@ -34,10 +34,10 @@ export default function LoggedOutHeader(props: Props) {
           <Typography variant='h6' className={classes.title}>
             trackportfol.io
           </Typography>
-          <Button color='inherit' onClick={handleOpenLogin}>
+          <Button color='inherit' onClick={openLogin}>
             Sign in
           </Button>
-          <Button color='inherit' onClick={handleOpenJoin}>
+          <Button color='inherit' onClick={openJoin}>
             Sign up
           </Button>
         </Toolbar>

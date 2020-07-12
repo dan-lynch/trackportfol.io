@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useContext } from 'react'
 import { withApollo } from 'components/withApollo'
 import { initApolloClient } from 'services/apolloService'
 import { Container, Typography, Box, Modal, Backdrop, Fade } from '@material-ui/core'
@@ -6,8 +6,11 @@ import { makeStyles, createStyles } from '@material-ui/core/styles'
 import Layout from 'components/Layout/LoggedOutLayout'
 import Login from 'components/Login'
 import Join from 'components/Join'
+import ForgotPass from 'components/ForgotPass'
 import Cookie from 'js-cookie'
 import { TOKEN } from 'helpers/constants'
+import { ModalOptions } from 'helpers/types'
+import { AppContext } from 'context/AppContext'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -21,24 +24,14 @@ const useStyles = makeStyles(() =>
 
 function Home() {
   const classes = useStyles()
+  const appContext = useContext(AppContext)
 
-  const [loginModalOpen, setLoginModalOpen] = React.useState<boolean>(false)
-  const [joinModalOpen, setJoinModalOpen] = React.useState<boolean>(false)
+  const [currentModal, setCurrentModal] = React.useState<ModalOptions>(ModalOptions.None)
 
-  const handleOpenLoginModal = () => setLoginModalOpen(true)
-  const handleCloseLoginModal = () => setLoginModalOpen(false)
-  const handleOpenJoinModal = () => setJoinModalOpen(true)
-  const handleCloseJoinModal = () => setJoinModalOpen(false)
-
-  const switchToJoin = () => {
-    setLoginModalOpen(false)
-    setJoinModalOpen(true)
-  }
-
-  const switchToLogin = () => {
-    setJoinModalOpen(false)
-    setLoginModalOpen(true)
-  }
+  const openLoginModal = () => setCurrentModal(ModalOptions.Login)
+  const openJoinModal = () => setCurrentModal(ModalOptions.Join)
+  const openForgotPassModal = () => setCurrentModal(ModalOptions.ForgotPass)
+  const closeModal = () => setCurrentModal(ModalOptions.None)
 
   useEffect(() => {
     if (Cookie.getJSON(TOKEN)) {
@@ -46,8 +39,14 @@ function Home() {
     }
   }, [])
 
+  useEffect(() => {
+    if (appContext.resetPassSuccess) {
+      openLoginModal()
+    }
+  }, [])  
+
   return (
-    <Layout title='Home | trackportfol.io' handleOpenLogin={handleOpenLoginModal} handleOpenJoin={handleOpenJoinModal}>
+    <Layout title='Home | trackportfol.io' openLogin={openLoginModal} openJoin={openJoinModal}>
       <Container maxWidth='sm'>
         <Box my={4}>
           <Typography variant='h4' component='h1' gutterBottom>
@@ -59,15 +58,15 @@ function Home() {
           aria-describedby='Sign in to trackportfol.io'
           className={classes.modal}
           disablePortal
-          open={loginModalOpen}
-          onClose={handleCloseLoginModal}
+          open={currentModal === ModalOptions.Login}
+          onClose={closeModal}
           closeAfterTransition
           BackdropComponent={Backdrop}
           BackdropProps={{
             timeout: 500,
           }}>
-          <Fade in={loginModalOpen} disableStrictModeCompat={true}>
-            <Login switchToJoin={switchToJoin} />
+          <Fade in={currentModal === ModalOptions.Login} disableStrictModeCompat={true}>
+            <Login openJoin={openJoinModal} openForgotPass={openForgotPassModal} />
           </Fade>
         </Modal>
         <Modal
@@ -75,15 +74,31 @@ function Home() {
           aria-describedby='Sign up to trackportfol.io'
           className={classes.modal}
           disablePortal
-          open={joinModalOpen}
-          onClose={handleCloseJoinModal}
+          open={currentModal === ModalOptions.Join}
+          onClose={closeModal}
           closeAfterTransition
           BackdropComponent={Backdrop}
           BackdropProps={{
             timeout: 500,
           }}>
-          <Fade in={joinModalOpen} disableStrictModeCompat={true}>
-            <Join switchToLogin={switchToLogin} />
+          <Fade in={currentModal === ModalOptions.Join} disableStrictModeCompat={true}>
+            <Join openLogin={openLoginModal} />
+          </Fade>
+        </Modal>
+        <Modal
+          aria-labelledby='Forgot password modal'
+          aria-describedby='Forgot password for trackportfol.io'
+          className={classes.modal}
+          disablePortal
+          open={currentModal === ModalOptions.ForgotPass}
+          onClose={closeModal}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 500,
+          }}>
+          <Fade in={currentModal === ModalOptions.ForgotPass} disableStrictModeCompat={true}>
+            <ForgotPass />
           </Fade>
         </Modal>
       </Container>

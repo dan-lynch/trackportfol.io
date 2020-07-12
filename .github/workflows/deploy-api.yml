@@ -39,3 +39,4 @@ jobs:
             env PASSPHRASE="$PROTECTED_FILES_PASSPHRASE" sh ./decrypt_protected_files.sh
             docker-compose -f docker-compose.api.yml down
             docker-compose -f docker-compose.api.yml up -d --build
+            docker system prune --force

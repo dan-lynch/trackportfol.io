@@ -157,21 +157,27 @@ function Account() {
     setNewPassword('')
   }
 
+  const logoutUser = () => {
+    appContext.setIsLoggedIn(false)
+    userService.logout()
+    Router.push('/')
+  }
+
   useEffect(() => {
     if (currentUser.data && !currentUser.error) {
       setUsername(currentUser.data.currentUser.username)
       appContext.setIsLoggedIn(true)
       userService.storeUserData(currentUser.data)
     } else if (currentUser.data && currentUser.error) {
-      appContext.setIsLoggedIn(false)
-      userService.logout()
-      Router.push('/')
+      logoutUser()
     }
   }, [currentUser])
 
   useEffect(() => {
-    if (userEmail.data && !currentUser.error) {
+    if (userEmail.data) {
+      userEmail.data.getUserEmail?.email && !currentUser.error ?
       setEmail(userEmail.data.getUserEmail.email)
+    : logoutUser()
     }
   }, [userEmail])
 
