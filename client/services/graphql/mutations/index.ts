@@ -6,6 +6,8 @@ import { UPDATE_THEME } from './updateTheme'
 import { UPDATE_USERNAME } from './updateUsername'
 import { UPDATE_USER_EMAIL } from './updateUserEmail'
 import { UPDATE_USER_PASSWORD } from './updateUserPassword'
+import { FORGOT_PASSWORD } from './forgotPassword'
+import { RESET_PASSWORD } from './resetPassword'
 
 export {
   REGISTER_USER,
@@ -15,5 +17,7 @@ export {
   UPDATE_THEME,
   UPDATE_USERNAME,
   UPDATE_USER_EMAIL,
-  UPDATE_USER_PASSWORD
+  UPDATE_USER_PASSWORD,
+  FORGOT_PASSWORD,
+  RESET_PASSWORD
 }

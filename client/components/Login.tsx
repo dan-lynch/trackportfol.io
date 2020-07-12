@@ -10,6 +10,7 @@ import {
   TextField,
   InputAdornment,
   IconButton,
+  Link,
 } from '@material-ui/core'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
@@ -59,13 +60,14 @@ const useStyles = makeStyles((theme) =>
 )
 
 type Props = {
-  switchToJoin: () => any
+  openJoin: () => any
+  openForgotPass: () => any
 }
 
 export default function Login(props: Props) {
-  const { switchToJoin } = props
+  const { openJoin, openForgotPass } = props
 
-  const [notification, setNotification] = useState<Notification>({show: false})
+  const [notification, setNotification] = useState<Notification>({ show: false })
   const [showPassword, setShowPassword] = useState<boolean>(false)
 
   const classes = useStyles()
@@ -75,7 +77,7 @@ export default function Login(props: Props) {
   const [authenticate, { loading, data }] = useLazyQuery(graphqlService.AUTHENTICATE)
 
   const onSubmit = (values: any) => {
-    setNotification({show: false, type: notification.type})
+    setNotification({ show: false, type: notification.type })
     const { email, password } = values
     authenticate({ variables: { email: email, password: password } })
   }
@@ -95,7 +97,7 @@ export default function Login(props: Props) {
     appContext.setIsLoggedIn(false)
     userService.logout()
     gaService.loginFailedEvent()
-    setNotification({show: true, message: 'Sign in unsuccessful, please try again', type: 'error'})
+    setNotification({ show: true, message: 'Sign in unsuccessful, please try again', type: 'error' })
   }
 
   const handleClickShowPassword = () => {
@@ -108,13 +110,20 @@ export default function Login(props: Props) {
 
   useEffect(() => {
     if (data) {
-    data.authenticate ? onConfirm(data) : onError()
+      data.authenticate ? onConfirm(data) : onError()
     }
   }, [data])
 
   useEffect(() => {
     if (appContext.signupEmail) {
-      setNotification({show: true, message: 'Account created successfully! You can now sign in', type: 'success'})
+      setNotification({ show: true, message: 'Account created successfully! You can now sign in', type: 'success' })
+    }
+  }, [])
+
+  useEffect(() => {
+    if (appContext.resetPassSuccess) {
+      setNotification({ show: true, message: 'Password updated successfully! You can now sign in', type: 'success' })
+      appContext.setResetPassSuccess(false)
     }
   }, [])
 
@@ -129,7 +138,7 @@ export default function Login(props: Props) {
             <NotificationComponent
               message={notification.message}
               type={notification.type}
-              onClose={() => setNotification({show: false, type: notification.type})}
+              onClose={() => setNotification({ show: false, type: notification.type })}
             />
           </Grid>
         </Collapse>
@@ -182,6 +191,11 @@ export default function Login(props: Props) {
                 ),
               }}
             />
+            <Typography align='right'>
+              <Link type='button' component='button' variant='body2' onClick={openForgotPass}>
+                Forgot password?
+              </Link>
+            </Typography>
             <Button
               type='submit'
               className={classes.button}
@@ -196,7 +210,7 @@ export default function Login(props: Props) {
         <Grid item xs={12} className={classes.margin}>
           <Typography variant='body1' align='center'>
             Don't have an account?
-            <Button color='primary' onClick={switchToJoin}>
+            <Button color='primary' onClick={openJoin}>
               Sign up
             </Button>
           </Typography>

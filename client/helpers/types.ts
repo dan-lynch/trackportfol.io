@@ -16,3 +16,10 @@ export type Holding = {
   createdAt: string
   instrumentByInstrumentId: Instrument
 }
+
+export enum ModalOptions {
+  None,
+  Login,
+  Join,
+  ForgotPass,
+}

@@ -59,11 +59,11 @@ const useStyles = makeStyles((theme) =>
 )
 
 type Props = {
-  switchToLogin: () => any
+  openLogin: () => any
 }
 
 export default function Join(props: Props) {
-  const { switchToLogin } = props
+  const { openLogin } = props
   const classes = useStyles()
   const appContext = useContext(AppContext)
 
@@ -92,7 +92,7 @@ export default function Join(props: Props) {
   async function onConfirm(email: string) {
     gaService.registerSuccessEvent()
     appContext.setSignupEmail(email)
-    switchToLogin()
+    openLogin()
   }
 
   async function onError() {
@@ -209,7 +209,7 @@ export default function Join(props: Props) {
         <Grid item xs={12} className={classes.margin}>
           <Typography variant='body1' align='center'>
             Already have an account?{' '}
-            <Button color='primary' onClick={switchToLogin}>
+            <Button color='primary' onClick={openLogin}>
               Sign in
             </Button>
           </Typography>

@@ -14,17 +14,17 @@ const useStyles = makeStyles(() => ({
 type Props = {
   children?: any
   title?: string
-  handleOpenLogin: () => any
-  handleOpenJoin: () => any
+  openLogin: () => any
+  openJoin: () => any
 }
 
 export default function Layout(props: Props) {
-  const { children, handleOpenLogin, handleOpenJoin } = props
+  const { children, openLogin, openJoin } = props
   const classes = useStyles()
 
   return (
     <React.Fragment>
-      <LoggedOutHeader handleOpenLogin={handleOpenLogin} handleOpenJoin={handleOpenJoin} />
+      <LoggedOutHeader openLogin={openLogin} openJoin={openJoin} />
       <Container maxWidth='xl' className={classes.root}>
         {children}
       </Container>
