@@ -5,21 +5,13 @@ on:
     paths:
       - 'api/**'
       - 'db/**'
-    branches:
-      - master
+      - 'client/**'
 
 jobs:
   deploy-api:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Use Node.js 13.10
-        uses: actions/setup-node@v1
-        with:
-          node-version: "13.10"
-
       - name: Deploy API changes to server
         uses: appleboy/ssh-action@master
         env:
@@ -33,9 +25,4 @@ jobs:
           port: ${{ secrets.PROD_PORT }}
           envs: GIT_USERNAME, GIT_TOKEN, PROTECTED_FILES_PASSPHRASE
           script: |
-            cd trackportfol.io
-            git fetch --all
-            git reset --hard origin/master
-            env PASSPHRASE="$PROTECTED_FILES_PASSPHRASE" sh ./decrypt_protected_files.sh
-            docker-compose -f docker-compose.api.yml down
-            docker-compose -f docker-compose.api.yml up -d --build
+            docker system prune --force
