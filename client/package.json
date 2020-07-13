@@ -33,7 +33,7 @@
     "react-hook-form": "^6.0.2",
     "react-number-format": "^4.4.1",
     "react-virtualized-auto-sizer": "^1.0.2",
-    "subscriptions-transport-ws": "^0.9.16",
+    "subscriptions-transport-ws": "^0.9.17",
     "typeface-roboto": "^0.0.75"
   },
   "devDependencies": {
