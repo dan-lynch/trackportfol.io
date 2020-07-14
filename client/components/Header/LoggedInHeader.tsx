@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useMutation } from '@apollo/client'
 import {
@@ -25,7 +26,7 @@ import { userService } from 'services/userService'
 import { graphqlService } from 'services/graphql'
 import { gaService } from 'services/gaService'
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
@@ -36,8 +37,14 @@ const useStyles = makeStyles(() => ({
     flexGrow: 1,
   },
   logo: {
-    maxWidth: '11rem',
     marginTop: '0.4rem',
+    cursor: 'pointer',
+    [theme.breakpoints.down('md')]: {
+      maxWidth: '9rem',
+    },
+    [theme.breakpoints.up('lg')]: {
+      maxWidth: '9rem',
+    },
   },
   menu: {
     width: 250,
@@ -82,7 +89,9 @@ export default function LoggedInHeader() {
     <AppBar position='static'>
       <Toolbar>
         <div className={classes.title}>
-          <img className={classes.logo} src='/logo.svg' alt='trackportfol.io logo'></img>
+          <Link href='/'>
+            <img src='/logo.svg' alt='trackportfol.io logo' className={classes.logo} />
+          </Link>
         </div>
         <Button onClick={() => setIsMenuOpen(true)}>
           <MenuIcon className={classes.menuButton} />

@@ -31,13 +31,7 @@ const useStyles = makeStyles((theme) =>
       alignItems: 'flex-end',
       textAlign: 'end',
     },
-    button: {
-      backgroundColor: 'black',
-      '&:hover': {
-        backgroundColor: 'black',
-      },
-    },
-    loading: {
+    white: {
       color: 'white',
     },
     form: {
@@ -180,25 +174,24 @@ export default function Login(props: Props) {
             }}
           />
           <Typography align='right'>
-            <Link type='button' component='button' variant='body2' onClick={openForgotPassForm}>
+            <Link type='button' className={appContext.isDarkTheme ? classes.white : ''} component='button' variant='body2' onClick={openForgotPassForm}>
               Forgot password?
             </Link>
           </Typography>
           <Button
             type='submit'
-            className={classes.button}
             aria-label='Sign in'
-            variant='contained'
             fullWidth
-            color='primary'>
-            {loading ? <CircularProgress size={24} className={classes.loading} /> : 'Sign in'}
+            variant={appContext.isDarkTheme ? 'outlined' : 'contained'}
+            color='secondary'>
+            {loading ? <CircularProgress size={24} className={classes.white} /> : 'Sign in'}
           </Button>
         </form>
       </Grid>
       <Grid item xs={12}>
         <Typography variant='body1' align='center'>
           Don't have an account?
-          <Button color='primary' onClick={openSignupForm}>
+          <Button color='secondary' onClick={openSignupForm}>
             Sign up
           </Button>
         </Typography>

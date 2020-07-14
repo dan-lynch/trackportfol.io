@@ -1,4 +1,5 @@
 import React from 'react'
+import Link from 'next/link'
 import { AppBar, Toolbar, Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 
@@ -13,13 +14,14 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   logo: {
+    marginTop: '0.4rem',
+    cursor: 'pointer',
     [theme.breakpoints.down('md')]: {
       maxWidth: '9rem',
     },
     [theme.breakpoints.up('lg')]: {
       maxWidth: '9rem',
     },
-    marginTop: '0.4rem',
   },
   signup: {
     lineHeight: 'initial',
@@ -40,13 +42,15 @@ export default function LoggedOutHeader(props: Props) {
     <React.Fragment>
       <AppBar position='static'>
         <Toolbar>
-          <div className={classes.title}>
-            <img className={classes.logo} src='/logo.svg' alt='trackportfol.io logo'></img>
-          </div>
+        <div className={classes.title}>
+          <Link href='/'>
+            <img src='/logo.svg' alt='trackportfol.io logo' className={classes.logo} />
+          </Link>
+        </div>
           <Button color='inherit' onClick={openLogin}>
             Login
           </Button>
-          <Button className={classes.signup} variant='outlined' color='inherit' onClick={openJoin}>
+          <Button className={classes.signup} variant='outlined' color='secondary' onClick={openJoin}>
             Sign up
           </Button>
         </Toolbar>

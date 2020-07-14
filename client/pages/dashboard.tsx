@@ -254,7 +254,7 @@ function Dashboard() {
                     className={classes.button}
                     aria-label='Add Holding'
                     fullWidth
-                    variant='contained'
+                    variant={appContext.isDarkTheme ? 'outlined' : 'contained'}
                     color='secondary'
                     onClick={handleCreateHolding}>
                     {createHoldingLoading ? <CircularProgress size={24} className={classes.loading} /> : 'Add'}

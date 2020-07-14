@@ -13,7 +13,8 @@ import {
   Button,
   CircularProgress,
   InputAdornment,
-  IconButton
+  IconButton,
+  Box
 } from '@material-ui/core'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
@@ -39,11 +40,6 @@ const useStyles = makeStyles((theme) =>
     },
     resetpassword: {
       padding: '1rem 0 0 1rem !important',
-    },
-    button: {
-      padding: '0.25rem',
-      marginBottom: '0.375rem',
-      marginLeft: '0.25rem',
     },
     loading: {
       color: 'white',
@@ -119,12 +115,12 @@ function ResetPassword() {
   return (
     <Layout title='Reset Password | trackportfol.io' openLogin={openLoginModal} openJoin={openSignupModal}>
       <Container maxWidth='sm'>
+        <Box my={2}>
+          <Typography variant='h4' component='h4' gutterBottom>
+          Reset Password
+          </Typography>
+          </Box>
         <Grid container spacing={3}>
-          <Grid item xs={12} className={classes.resetpassword}>
-            <Typography variant='h4' component='h4' gutterBottom>
-              Reset Password
-            </Typography>
-          </Grid>
           <Collapse in={notification.show} className={classes.collapse}>
             <Grid item xs={12}>
               <NotificationComponent
@@ -171,11 +167,10 @@ function ResetPassword() {
                 />
                 <Button
                   type='submit'
-                  className={classes.button}
                   aria-label='Update password'
-                  variant='contained'
                   fullWidth
-                  color='primary'>
+                  variant={appContext.isDarkTheme ? 'outlined' : 'contained'}
+                  color='secondary'>
                   {loading ? <CircularProgress size={24} className={classes.loading} /> : 'Update password'}
                 </Button>
               </form>

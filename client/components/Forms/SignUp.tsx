@@ -30,12 +30,6 @@ const useStyles = makeStyles((theme) =>
       alignItems: 'flex-end',
       textAlign: 'end',
     },
-    button: {
-      backgroundColor: 'black',
-      '&:hover': {
-        backgroundColor: 'black',
-      },
-    },
     loading: {
       color: 'white',
     },
@@ -190,11 +184,10 @@ export default function SignUp(props: Props) {
           />
           <Button
             type='submit'
-            className={classes.button}
             aria-label='Create Account'
-            variant='contained'
             fullWidth
-            color='primary'>
+            variant={appContext.isDarkTheme ? 'outlined' : 'contained'}
+            color='secondary'>
             {loading ? <CircularProgress size={24} className={classes.loading} /> : 'Create Account'}
           </Button>
         </form>
@@ -202,7 +195,7 @@ export default function SignUp(props: Props) {
       <Grid item xs={12}>
         <Typography variant='body1' align='center'>
           Already have an account?{' '}
-          <Button color='primary' onClick={openLoginForm}>
+          <Button color='secondary' onClick={openLoginForm}>
             Sign in
           </Button>
         </Typography>

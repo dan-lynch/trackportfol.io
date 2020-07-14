@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { useMutation } from '@apollo/client'
 import { withApollo } from 'components/withApollo'
 import { initApolloClient } from 'services/apolloService'
@@ -8,6 +8,7 @@ import NotificationComponent, { Notification } from 'components/Notification'
 import { graphqlService } from 'services/graphql'
 import { useForm } from 'react-hook-form'
 import { gaService } from 'services/gaService'
+import { AppContext } from 'context/AppContext'
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -22,11 +23,6 @@ const useStyles = makeStyles((theme) =>
     },
     forgotpassword: {
       padding: '1rem 0 0 1rem !important',
-    },
-    button: {
-      padding: '0.25rem',
-      marginBottom: '0.375rem',
-      marginLeft: '0.25rem',
     },
     loading: {
       color: 'white',
@@ -47,6 +43,7 @@ const useStyles = makeStyles((theme) =>
 
 function ForgotPass() {
   const classes = useStyles()
+  const appContext = useContext(AppContext)
 
   const [notification, setNotification] = useState<Notification>({ show: false })
   const [loading, setLoading] = useState<boolean>(false)
@@ -116,11 +113,10 @@ function ForgotPass() {
           />
           <Button
             type='submit'
-            className={classes.button}
             aria-label='Send password reset email'
-            variant='contained'
             fullWidth
-            color='primary'>
+            variant={appContext.isDarkTheme ? 'outlined' : 'contained'}
+            color='secondary'>
             {loading ? <CircularProgress size={24} className={classes.loading} /> : 'Send password reset email'}
           </Button>
         </form>
