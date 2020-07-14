@@ -41,10 +41,6 @@ const useStyles = makeStyles(() => ({
   },
   button: {
     alignSelf: 'center',
-    backgroundColor: 'black',
-    '&:hover': {
-      backgroundColor: 'black',
-    },
   },
   loading: {
     color: 'white',
@@ -259,7 +255,7 @@ function Dashboard() {
                     aria-label='Add Holding'
                     fullWidth
                     variant='contained'
-                    color='primary'
+                    color='secondary'
                     onClick={handleCreateHolding}>
                     {createHoldingLoading ? <CircularProgress size={24} className={classes.loading} /> : 'Add'}
                   </Button>

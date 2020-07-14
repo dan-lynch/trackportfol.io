@@ -1,35 +1,21 @@
-import React, { useEffect, useContext } from 'react'
+import React, { useEffect } from 'react'
 import { withApollo } from 'components/withApollo'
 import { initApolloClient } from 'services/apolloService'
-import { Container, Typography, Box, Modal, Backdrop, Fade } from '@material-ui/core'
-import { makeStyles, createStyles } from '@material-ui/core/styles'
+import { Container, Typography, Box } from '@material-ui/core'
 import Layout from 'components/Layout/LoggedOutLayout'
-import Login from 'components/Login'
-import Join from 'components/Join'
-import ForgotPass from 'components/ForgotPass'
+import Modal from 'components/Modal'
+import LoginForm from 'components/Forms/Login'
+import SignUpForm from 'components/Forms/SignUp'
+import ForgotPassForm from 'components/Forms/ForgotPass'
 import Cookie from 'js-cookie'
 import { TOKEN } from 'helpers/constants'
 import { ModalOptions } from 'helpers/types'
-import { AppContext } from 'context/AppContext'
-
-const useStyles = makeStyles(() =>
-  createStyles({
-    modal: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-  })
-)
 
 function Home() {
-  const classes = useStyles()
-  const appContext = useContext(AppContext)
 
   const [currentModal, setCurrentModal] = React.useState<ModalOptions>(ModalOptions.None)
-
   const openLoginModal = () => setCurrentModal(ModalOptions.Login)
-  const openJoinModal = () => setCurrentModal(ModalOptions.Join)
+  const openSignupModal = () => setCurrentModal(ModalOptions.SignUp)
   const openForgotPassModal = () => setCurrentModal(ModalOptions.ForgotPass)
   const closeModal = () => setCurrentModal(ModalOptions.None)
 
@@ -39,14 +25,8 @@ function Home() {
     }
   }, [])
 
-  useEffect(() => {
-    if (appContext.resetPassSuccess) {
-      openLoginModal()
-    }
-  }, [])  
-
   return (
-    <Layout title='Home | trackportfol.io' openLogin={openLoginModal} openJoin={openJoinModal}>
+    <Layout title='Home | trackportfol.io' openLogin={openLoginModal} openJoin={openSignupModal}>
       <Container maxWidth='sm'>
         <Box my={4}>
           <Typography variant='h4' component='h1' gutterBottom>
@@ -54,52 +34,28 @@ function Home() {
           </Typography>
         </Box>
         <Modal
-          aria-labelledby='Sign in modal'
-          aria-describedby='Sign in to trackportfol.io'
-          className={classes.modal}
-          disablePortal
           open={currentModal === ModalOptions.Login}
           onClose={closeModal}
-          closeAfterTransition
-          BackdropComponent={Backdrop}
-          BackdropProps={{
-            timeout: 500,
-          }}>
-          <Fade in={currentModal === ModalOptions.Login} disableStrictModeCompat={true}>
-            <Login openJoin={openJoinModal} openForgotPass={openForgotPassModal} />
-          </Fade>
+          label='Log in form'
+          title='Log in'
+          titleId='log-in'>
+          <LoginForm openSignupForm={openSignupModal} openForgotPassForm={openForgotPassModal} />
         </Modal>
         <Modal
-          aria-labelledby='Sign up modal'
-          aria-describedby='Sign up to trackportfol.io'
-          className={classes.modal}
-          disablePortal
-          open={currentModal === ModalOptions.Join}
+          open={currentModal === ModalOptions.SignUp}
           onClose={closeModal}
-          closeAfterTransition
-          BackdropComponent={Backdrop}
-          BackdropProps={{
-            timeout: 500,
-          }}>
-          <Fade in={currentModal === ModalOptions.Join} disableStrictModeCompat={true}>
-            <Join openLogin={openLoginModal} />
-          </Fade>
+          label='Create your account form'
+          title='Create your account'
+          titleId='create-your-account'>
+          <SignUpForm openLoginForm={openLoginModal} />
         </Modal>
         <Modal
-          aria-labelledby='Forgot password modal'
-          aria-describedby='Forgot password for trackportfol.io'
-          className={classes.modal}
-          disablePortal
           open={currentModal === ModalOptions.ForgotPass}
           onClose={closeModal}
-          closeAfterTransition
-          BackdropComponent={Backdrop}
-          BackdropProps={{
-            timeout: 500,
-          }}>
-          <Fade in={currentModal === ModalOptions.ForgotPass} disableStrictModeCompat={true}>
-            <ForgotPass />
-          </Fade>
+          label='Forgot password form'
+          title='Forgot password'
+          titleId='forgot-password'>
+          <ForgotPassForm />
         </Modal>
       </Container>
     </Layout>

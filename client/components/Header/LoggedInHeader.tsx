@@ -35,6 +35,10 @@ const useStyles = makeStyles(() => ({
   title: {
     flexGrow: 1,
   },
+  logo: {
+    maxWidth: '11rem',
+    marginTop: '0.4rem',
+  },
   menu: {
     width: 250,
   },
@@ -77,9 +81,9 @@ export default function LoggedInHeader() {
   return (
     <AppBar position='static'>
       <Toolbar>
-        <Typography variant='h6' className={classes.title}>
-          trackportfol.io
-        </Typography>
+        <div className={classes.title}>
+          <img className={classes.logo} src='/logo.svg' alt='trackportfol.io logo'></img>
+        </div>
         <Button onClick={() => setIsMenuOpen(true)}>
           <MenuIcon className={classes.menuButton} />
           <Typography variant='srOnly'>Menu</Typography>
@@ -100,7 +104,7 @@ export default function LoggedInHeader() {
             </List>
             <Divider />
             <List>
-            <ListItem button onClick={() => router.push('/account')} key='account'>
+              <ListItem button onClick={() => router.push('/account')} key='account'>
                 <ListItemIcon>
                   <PersonIcon />
                 </ListItemIcon>

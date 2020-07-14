@@ -1,5 +1,5 @@
 import React from 'react'
-import { AppBar, Toolbar, Typography, Button } from '@material-ui/core'
+import { AppBar, Toolbar, Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles((theme) => ({
@@ -12,9 +12,18 @@ const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
   },
-  menu: {
-    width: 250,
+  logo: {
+    [theme.breakpoints.down('md')]: {
+      maxWidth: '9rem',
+    },
+    [theme.breakpoints.up('lg')]: {
+      maxWidth: '9rem',
+    },
+    marginTop: '0.4rem',
   },
+  signup: {
+    lineHeight: 'initial',
+  }
 }))
 
 type Props = {
@@ -31,13 +40,13 @@ export default function LoggedOutHeader(props: Props) {
     <React.Fragment>
       <AppBar position='static'>
         <Toolbar>
-          <Typography variant='h6' className={classes.title}>
-            trackportfol.io
-          </Typography>
+          <div className={classes.title}>
+            <img className={classes.logo} src='/logo.svg' alt='trackportfol.io logo'></img>
+          </div>
           <Button color='inherit' onClick={openLogin}>
-            Sign in
+            Login
           </Button>
-          <Button color='inherit' onClick={openJoin}>
+          <Button className={classes.signup} variant='outlined' color='inherit' onClick={openJoin}>
             Sign up
           </Button>
         </Toolbar>
