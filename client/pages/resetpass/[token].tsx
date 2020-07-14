@@ -13,17 +13,22 @@ import {
   Button,
   CircularProgress,
   InputAdornment,
-  IconButton,
+  IconButton
 } from '@material-ui/core'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
 import { makeStyles, createStyles } from '@material-ui/core/styles'
-import Layout from 'components/Layout/LoggedInLayout'
+import Layout from 'components/Layout/LoggedOutLayout'
 import NotificationComponent, { Notification } from 'components/Notification'
 import { graphqlService } from 'services/graphql'
 import { useForm } from 'react-hook-form'
 import { gaService } from 'services/gaService'
 import { AppContext } from 'context/AppContext'
+import { ModalOptions } from 'helpers/types'
+import Modal from 'components/Modal'
+import LoginForm from 'components/Forms/Login'
+import SignUpForm from 'components/Forms/SignUp'
+import ForgotPassForm from 'components/Forms/ForgotPass'
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -70,6 +75,12 @@ function ResetPassword() {
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
 
+  const [currentModal, setCurrentModal] = React.useState<ModalOptions>(ModalOptions.None)
+  const openLoginModal = () => setCurrentModal(ModalOptions.Login)
+  const openSignupModal = () => setCurrentModal(ModalOptions.SignUp)
+  const openForgotPassModal = () => setCurrentModal(ModalOptions.ForgotPass)
+  const closeModal = () => setCurrentModal(ModalOptions.None)
+
   const { token } = router.query
 
   const [resetPasswordMutation] = useMutation(graphqlService.RESET_PASSWORD)
@@ -84,7 +95,7 @@ function ResetPassword() {
         appContext.setResetPassSuccess(true)
         setLoading(false)
         gaService.resetPasswordSuccessEvent()
-        router.push('/')
+        openLoginModal()
       })
       .catch(() => {
         setLoading(false)
@@ -106,7 +117,7 @@ function ResetPassword() {
   }
 
   return (
-    <Layout title='Reset Password | trackportfol.io'>
+    <Layout title='Reset Password | trackportfol.io' openLogin={openLoginModal} openJoin={openSignupModal}>
       <Container maxWidth='sm'>
         <Grid container spacing={3}>
           <Grid item xs={12} className={classes.resetpassword}>
@@ -171,6 +182,30 @@ function ResetPassword() {
             </Paper>
           </Grid>
         </Grid>
+        <Modal
+          open={currentModal === ModalOptions.Login}
+          onClose={closeModal}
+          label='Log in form'
+          title='Log in'
+          titleId='log-in'>
+          <LoginForm openSignupForm={openSignupModal} openForgotPassForm={openForgotPassModal} />
+        </Modal>
+        <Modal
+          open={currentModal === ModalOptions.SignUp}
+          onClose={closeModal}
+          label='Create your account form'
+          title='Create your account'
+          titleId='create-your-account'>
+          <SignUpForm openLoginForm={openLoginModal} />
+        </Modal>
+        <Modal
+          open={currentModal === ModalOptions.ForgotPass}
+          onClose={closeModal}
+          label='Forgot password form'
+          title='Forgot password'
+          titleId='forgot-password'>
+          <ForgotPassForm />
+        </Modal>
       </Container>
     </Layout>
   )

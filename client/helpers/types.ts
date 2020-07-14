@@ -20,6 +20,6 @@ export type Holding = {
 export enum ModalOptions {
   None,
   Login,
-  Join,
+  SignUp,
   ForgotPass,
 }
