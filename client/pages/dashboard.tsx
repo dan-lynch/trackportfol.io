@@ -91,7 +91,7 @@ function Dashboard() {
       .catch(() => {
         setCreateHoldingLoading(false)
         gaService.addInstrumentFailedEvent()
-        setNotification({ show: true, message: 'Failed to add holding', type: 'error' })
+        setNotification({ show: true, message: 'Could not add holding, please refresh the page or try again later', type: 'error' })
       })
   }
 

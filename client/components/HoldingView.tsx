@@ -131,7 +131,7 @@ export default function HoldingView(props: Props) {
         setUpdateLoading(false)
         setIsEditing(false)
         gaService.updateInstrumentFailedEvent()
-        setNotification({ show: true, message: 'Failed to update holding!', type: 'error' })
+        setNotification({ show: true, message: 'Could not update holding, please refresh the page or try again later', type: 'error' })
       })
   }
 
@@ -145,7 +145,7 @@ export default function HoldingView(props: Props) {
       .catch(() => {
         setDeleteLoading(false)
         gaService.deleteInstrumentFailedEvent()
-        setNotification({ show: true, message: 'Failed to delete holding', type: 'error' })
+        setNotification({ show: true, message: 'Could not delete holding, please refresh the page or try again later', type: 'error' })
       })
   }
 
