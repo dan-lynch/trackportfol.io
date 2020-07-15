@@ -23,3 +23,10 @@ export enum ModalOptions {
   SignUp,
   ForgotPass,
 }
+
+export enum AccountModalOptions {
+  None,
+  Username,
+  Email,
+  Password
+}

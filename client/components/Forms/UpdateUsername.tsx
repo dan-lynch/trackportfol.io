@@ -1,7 +1,5 @@
 import React, { useState, useContext } from 'react'
 import { useMutation } from '@apollo/client'
-import { withApollo } from 'components/withApollo'
-import { initApolloClient } from 'services/apolloService'
 import { Typography, Grid, Collapse, TextField, Button, CircularProgress } from '@material-ui/core'
 import { makeStyles, createStyles } from '@material-ui/core/styles'
 import NotificationComponent, { Notification } from 'components/Notification'
@@ -12,23 +10,8 @@ import { AppContext } from 'context/AppContext'
 
 const useStyles = makeStyles((theme) =>
   createStyles({
-    root: {
-      maxWidth: '32rem',
-      padding: '1rem 0.5rem',
-    },
-    paper: {
-      padding: '1rem',
-      flex: '1 0 auto',
-      marginBottom: '1.5rem',
-    },
-    forgotpassword: {
-      padding: '1rem 0 0 1rem !important',
-    },
     loading: {
       color: 'white',
-    },
-    skeleton: {
-      paddingBottom: '1rem',
     },
     form: {
       '& .MuiTextField-root': {
@@ -41,39 +24,50 @@ const useStyles = makeStyles((theme) =>
   })
 )
 
-function ForgotPass() {
+type Props = {
+    currentUsername: string
+    usernameUpdated: any
+  }
+
+export default function UpdateUsername(props: Props) {
+  const { currentUsername, usernameUpdated } = props
   const classes = useStyles()
   const appContext = useContext(AppContext)
+
+  const [updateUsernameMutation] = useMutation(graphqlService.UPDATE_USERNAME)
 
   const [notification, setNotification] = useState<Notification>({ show: false })
   const [loading, setLoading] = useState<boolean>(false)
 
-  const [forgotPasswordMutation] = useMutation(graphqlService.FORGOT_PASSWORD)
   const { register, handleSubmit, errors } = useForm()
 
   const onSubmit = (values: any) => {
     setLoading(true)
     setNotification({ show: false, type: notification.type })
-    const { emailInput } = values
-    forgotPasswordMutation({ variables: { emailInput } })
-      .then(() => {
-        setLoading(false)
-        gaService.resetPasswordRequestEvent()
-        setNotification({
-          show: true,
-          message: 'If a user exists with this email address, an email has been sent with a password reset link',
-          type: 'success',
-        })
+    const { username } = values
+    updateUsernameMutation({ variables: { newUsername: username } })
+      .then((response) => {
+        if (response.data.updateUsername.updatedUsername.success) {
+          setLoading(false)
+          gaService.usernameUpdatedSuccessEvent()
+          usernameUpdated(response.data.updateUsername.updatedUsername.updatedUsername)
+        } else {
+          updateUsernameFailed()
+        }
       })
       .catch(() => {
-        setLoading(false)
-        gaService.resetPasswordRequestEvent()
-        setNotification({
-          show: true,
-          message: 'If a user exists with this email address, an email has been sent with a password reset link',
-          type: 'success',
-        })
+        updateUsernameFailed()
       })
+  }
+
+  const updateUsernameFailed = () => {
+    setLoading(false)
+    gaService.usernameUpdatedFailedEvent()
+    setNotification({
+      show: true,
+      message: 'Could not update username (may already be taken), please choose another username or try again later',
+      type: 'error',
+    })
   }
 
   return (
@@ -89,50 +83,39 @@ function ForgotPass() {
       </Collapse>
       <Grid item xs={12}>
         <Typography>
-          If you have forgotten your password, please enter your email address and we will send you a password reset
-          link.
+          To change your username, enter your desired new username below and click submit.
         </Typography>
         <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
           <TextField
-            id='emailInput'
+            id='username'
             inputRef={register({
-              required: 'Enter your email address',
+              required: 'Please enter your desired username',
               pattern: {
-                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                message: "This doesn't look quite right, please enter your email address",
+                value: /^[A-Z0-9.]{3,}$/i,
+                message:
+                  'Username must be at least three characters long, containing only letters (a-z), numbers (0-9), and periods (.)',
               },
             })}
-            name='emailInput'
-            label='Email Address'
+            name='username'
+            label='New Username'
             variant='outlined'
             fullWidth
+            placeholder={currentUsername}
             autoComplete='on'
             autoCapitalize='off'
-            helperText={errors.emailInput?.message}
-            error={!!errors.emailInput}
+            helperText={errors.username?.message}
+            error={!!errors.username}
           />
           <Button
             type='submit'
-            aria-label='Send password reset email'
+            aria-label='Update username'
             fullWidth
             variant={appContext.isDarkTheme ? 'outlined' : 'contained'}
             color='secondary'>
-            {loading ? <CircularProgress size={24} className={classes.loading} /> : 'Send password reset email'}
+            {loading ? <CircularProgress size={24} className={classes.loading} /> : 'Submit'}
           </Button>
         </form>
       </Grid>
     </React.Fragment>
   )
 }
-
-export async function getStaticProps() {
-  const client = await initApolloClient({})
-  return {
-    unstable_revalidate: 300,
-    props: {
-      apolloStaticCache: client.cache.extract(),
-    },
-  }
-}
-
-export default withApollo(ForgotPass)

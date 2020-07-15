@@ -98,7 +98,7 @@ function ResetPassword() {
         gaService.resetPasswordFailedEvent()
         setNotification({
           show: true,
-          message: 'We were unable to update your password. Please try again later or contact support for help',
+          message: 'Could not update password, please refresh the page or try again later',
           type: 'error',
         })
       })

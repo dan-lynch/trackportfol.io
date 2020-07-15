@@ -132,7 +132,7 @@ export default function Login(props: Props) {
               required: 'Please enter your email address',
               pattern: {
                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                message: "This doesn't look quite right. Please enter your email address.",
+                message: "This doesn't look quite right, please enter your email address.",
               },
             })}
             name='email'
