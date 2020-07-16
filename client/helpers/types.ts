@@ -12,6 +12,7 @@ export type Instrument = {
 }
 
 export type Holding = {
+  id: number
   amount: string
   createdAt: string
   instrumentByInstrumentId: Instrument

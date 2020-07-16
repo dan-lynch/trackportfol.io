@@ -8,14 +8,16 @@ export const CURRENT_USER = gql`
       darkTheme
       holdingsByUserId {
         nodes {
+          id
+          amount
+          createdAt
+          instrumentId
           instrumentByInstrumentId {
             id
             code
             description
             latestPrice
           }
-          createdAt
-          amount
         }
         totalCount
       }

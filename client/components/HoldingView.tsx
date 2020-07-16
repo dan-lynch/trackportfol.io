@@ -101,12 +101,11 @@ type Props = {
   amount: string
   code: string
   price: string
-  userId: number
-  instrumentId: number
+  id: number
 }
 
 export default function HoldingView(props: Props) {
-  const { amount, code, price, userId, instrumentId } = props
+  const { amount, code, price, id } = props
   const classes = useStyles()
 
   const [notification, setNotification] = useState<Notification>({ show: false })
@@ -120,7 +119,7 @@ export default function HoldingView(props: Props) {
 
   const handleUpdateHolding = () => {
     setUpdateLoading(true)
-    updateHolding({ variables: { userId, instrumentId, amount: updateQuantity } })
+    updateHolding({ variables: { id, amount: updateQuantity } })
       .then(() => {
         setUpdateLoading(false)
         setIsEditing(false)
@@ -137,7 +136,7 @@ export default function HoldingView(props: Props) {
 
   const handleDeleteHolding = () => {
     setDeleteLoading(true)
-    deleteHolding({ variables: { userId, instrumentId } })
+    deleteHolding({ variables: { id } })
       .then(() => {
           setDeleteLoading(false)
           gaService.deleteInstrumentSuccessEvent()
