@@ -6,14 +6,16 @@ export const CREATE_HOLDING = gql`
       userByUserId {
         holdingsByUserId {
           nodes {
+            id
             amount
+            createdAt
+            instrumentId
             instrumentByInstrumentId {
               id
               code
               description
               latestPrice
             }
-            instrumentId
           }
         }
       }

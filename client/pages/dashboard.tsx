@@ -91,7 +91,11 @@ function Dashboard() {
       .catch(() => {
         setCreateHoldingLoading(false)
         gaService.addInstrumentFailedEvent()
-        setNotification({ show: true, message: 'Could not add holding, please refresh the page or try again later', type: 'error' })
+        setNotification({
+          show: true,
+          message: 'Could not add holding, please refresh the page or try again later',
+          type: 'error',
+        })
       })
   }
 
@@ -193,12 +197,11 @@ function Dashboard() {
                 holdings.map((holding: Holding) => {
                   return (
                     <HoldingView
-                      key={holding.instrumentByInstrumentId.id}
+                      id={holding.id}
                       amount={holding.amount}
+                      key={holding.instrumentByInstrumentId.id}
                       code={holding.instrumentByInstrumentId.code}
                       price={holding.instrumentByInstrumentId.latestPrice}
-                      userId={userId}
-                      instrumentId={holding.instrumentByInstrumentId.id}
                     />
                   )
                 })
