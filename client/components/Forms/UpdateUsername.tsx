@@ -65,7 +65,7 @@ export default function UpdateUsername(props: Props) {
     gaService.usernameUpdatedFailedEvent()
     setNotification({
       show: true,
-      message: 'Could not update username (may already be taken), please choose another username or try again later',
+      message: 'Could not change username (may already be taken), please choose another username or try again later',
       type: 'error',
     })
   }
@@ -108,7 +108,7 @@ export default function UpdateUsername(props: Props) {
           />
           <Button
             type='submit'
-            aria-label='Update username'
+            aria-label='Change username'
             fullWidth
             variant={appContext.isDarkTheme ? 'outlined' : 'contained'}
             color='secondary'>

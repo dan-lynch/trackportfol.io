@@ -115,14 +115,14 @@ const resetPasswordFailedEvent = () => {
 const usernameUpdatedSuccessEvent = () => {
   ReactGA.event({
     category: 'Account',
-    action: 'User successfully updated username',
+    action: 'User successfully changed username',
   })
 }
 
 const usernameUpdatedFailedEvent = () => {
   ReactGA.event({
     category: 'Account',
-    action: 'User failed to update username',
+    action: 'User failed to changed username',
   })
 }
 
@@ -143,14 +143,14 @@ const emailUpdatedFailedEvent = () => {
 const passwordUpdatedSuccessEvent = () => {
   ReactGA.event({
     category: 'Account',
-    action: 'User successfully updated password',
+    action: 'User successfully changed password',
   })
 }
 
 const passwordUpdatedFailedEvent = () => {
   ReactGA.event({
     category: 'Account',
-    action: 'User failed to update password',
+    action: 'User failed to change password',
   })
 }
 

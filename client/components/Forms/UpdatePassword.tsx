@@ -160,7 +160,7 @@ export default function UpdatePassword(props: Props) {
           />
           <Button
             type='submit'
-            aria-label='Update password'
+            aria-label='Change password'
             fullWidth
             variant={appContext.isDarkTheme ? 'outlined' : 'contained'}
             color='secondary'>

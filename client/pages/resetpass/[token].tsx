@@ -98,7 +98,7 @@ function ResetPassword() {
         gaService.resetPasswordFailedEvent()
         setNotification({
           show: true,
-          message: 'Could not update password, please refresh the page or try again later',
+          message: 'Could not change password, please refresh the page or try again later',
           type: 'error',
         })
       })
@@ -167,11 +167,11 @@ function ResetPassword() {
                 />
                 <Button
                   type='submit'
-                  aria-label='Update password'
+                  aria-label='Change password'
                   fullWidth
                   variant={appContext.isDarkTheme ? 'outlined' : 'contained'}
                   color='secondary'>
-                  {loading ? <CircularProgress size={24} className={classes.loading} /> : 'Update password'}
+                  {loading ? <CircularProgress size={24} className={classes.loading} /> : 'Change password'}
                 </Button>
               </form>
             </Paper>
