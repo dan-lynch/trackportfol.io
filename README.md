@@ -53,3 +53,5 @@ Run one of the following commands for a local dockerised client:
 - Production mode (uses yarn build with an nginx server): `docker-compose -f docker-compose.client.prod.yml up -d`
 
 3) View app at [http://localhost:3001/](http://localhost:3001/) (Dev) or [http://localhost:3000/](http://localhost:3000/) (Prod)
+
+<img src="https://i.imgur.com/rqUAKIT.png" alt="Tech Stack" width="347" height="198">
