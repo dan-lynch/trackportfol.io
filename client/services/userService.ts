@@ -33,13 +33,9 @@ export const userService = {
   }
 }
 
-async function login(data: any) {
-  if (data.jwtToken) {
-    Cookie.set(TOKEN, data.jwtToken)
-    return true
-  } else {
-    return false
-  }
+async function login(jwtToken: string) {
+  Cookie.set(TOKEN, jwtToken)
+  return true
 }
 
 function logout() {
@@ -49,7 +45,7 @@ function logout() {
 }
 
 async function storeUserData(data: any) {
-  const { id, username, darkTheme } = data.currentUser.user
+  const { id, username, darkTheme } = data.currentUser
   if (id) {
     const user: User = { userId: id, username }
     Cookie.set(USER, JSON.stringify(user))

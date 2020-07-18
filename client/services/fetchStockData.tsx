@@ -78,13 +78,13 @@ function fetchStockData() {
               this.setState({ data: parsedData })
             } else {
               this.setState({
-                message: `Failed to fetch data for ${this.context.stock}`,
+                message: `Could not fetch data for ${this.context.stock}`,
               })
             }
           })
         } catch (error) {
           this.setState({
-            message: `Failed to fetch data for ${this.context.stock}`,
+            message: `Could not fetch data for ${this.context.stock}`,
           })
         }
       }

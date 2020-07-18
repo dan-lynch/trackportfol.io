@@ -73,14 +73,14 @@ const deleteInstrumentFailedEvent = () => {
 const viewStockchartEvent = () => {
   ReactGA.event({
     category: 'Stockchart',
-    action: 'User searched a stock and loaded a stockchart',
+    action: 'User viewed a stockchart',
   })
 }
 
 const themeUpdateSuccessEvent = () => {
   ReactGA.event({
     category: 'Theme',
-    action: 'User successfully updated their theme',
+    action: 'User successfully updated theme',
   })
 }
 
@@ -88,6 +88,69 @@ const themeUpdateFailedEvent = () => {
   ReactGA.event({
     category: 'Theme',
     action: 'User failed to update theme',
+  })
+}
+
+const resetPasswordRequestEvent = () => {
+  ReactGA.event({
+    category: 'Account',
+    action: 'User requested password reset email',
+  })
+}
+
+const resetPasswordSuccessEvent = () => {
+  ReactGA.event({
+    category: 'Account',
+    action: 'User successfully reset password',
+  })
+}
+
+const resetPasswordFailedEvent = () => {
+  ReactGA.event({
+    category: 'Account',
+    action: 'User failed to reset password',
+  })
+}
+
+const usernameUpdatedSuccessEvent = () => {
+  ReactGA.event({
+    category: 'Account',
+    action: 'User successfully updated username',
+  })
+}
+
+const usernameUpdatedFailedEvent = () => {
+  ReactGA.event({
+    category: 'Account',
+    action: 'User failed to update username',
+  })
+}
+
+const emailUpdatedSuccessEvent = () => {
+  ReactGA.event({
+    category: 'Account',
+    action: 'User successfully updated email',
+  })
+}
+
+const emailUpdatedFailedEvent = () => {
+  ReactGA.event({
+    category: 'Account',
+    action: 'User failed to update email',
+  })
+}
+
+const passwordUpdatedSuccessEvent = () => {
+  ReactGA.event({
+    category: 'Account',
+    action: 'User successfully updated password',
+  })
+}
+
+const passwordUpdatedFailedEvent = () => {
+  ReactGA.event({
+    category: 'Account',
+    action: 'User failed to update password',
   })
 }
 
@@ -104,5 +167,14 @@ export const gaService = {
   deleteInstrumentFailedEvent,
   viewStockchartEvent,
   themeUpdateSuccessEvent,
-  themeUpdateFailedEvent
+  themeUpdateFailedEvent,
+  resetPasswordRequestEvent,
+  resetPasswordSuccessEvent,
+  resetPasswordFailedEvent,
+  usernameUpdatedSuccessEvent,
+  usernameUpdatedFailedEvent,
+  emailUpdatedSuccessEvent,
+  emailUpdatedFailedEvent,
+  passwordUpdatedSuccessEvent,
+  passwordUpdatedFailedEvent
 }

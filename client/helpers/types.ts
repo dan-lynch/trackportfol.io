@@ -12,7 +12,22 @@ export type Instrument = {
 }
 
 export type Holding = {
+  id: number
   amount: string
   createdAt: string
   instrumentByInstrumentId: Instrument
+}
+
+export enum ModalOptions {
+  None,
+  Login,
+  SignUp,
+  ForgotPass,
+}
+
+export enum AccountModalOptions {
+  None,
+  Username,
+  Email,
+  Password
 }

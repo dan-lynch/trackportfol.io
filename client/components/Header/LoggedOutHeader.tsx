@@ -1,5 +1,6 @@
 import React from 'react'
-import { AppBar, Toolbar, Typography, Button } from '@material-ui/core'
+import Link from 'next/link'
+import { AppBar, Toolbar, Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles((theme) => ({
@@ -12,18 +13,28 @@ const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
   },
-  menu: {
-    width: 250,
+  logo: {
+    marginTop: '0.4rem',
+    cursor: 'pointer',
+    [theme.breakpoints.down('md')]: {
+      maxWidth: '9rem',
+    },
+    [theme.breakpoints.up('lg')]: {
+      maxWidth: '9rem',
+    },
   },
+  signup: {
+    lineHeight: 'initial',
+  }
 }))
 
 type Props = {
-  handleOpenLogin: () => any
-  handleOpenJoin: () => any
+  openLogin: () => any
+  openJoin: () => any
 }
 
 export default function LoggedOutHeader(props: Props) {
-  const { handleOpenLogin, handleOpenJoin } = props
+  const { openLogin, openJoin } = props
 
   const classes = useStyles()
 
@@ -31,13 +42,15 @@ export default function LoggedOutHeader(props: Props) {
     <React.Fragment>
       <AppBar position='static'>
         <Toolbar>
-          <Typography variant='h6' className={classes.title}>
-            trackportfol.io
-          </Typography>
-          <Button color='inherit' onClick={handleOpenLogin}>
-            Sign in
+        <div className={classes.title}>
+          <Link href='/'>
+            <img src='/logo.svg' alt='trackportfol.io logo' className={classes.logo} />
+          </Link>
+        </div>
+          <Button color='inherit' onClick={openLogin}>
+            Login
           </Button>
-          <Button color='inherit' onClick={handleOpenJoin}>
+          <Button className={classes.signup} variant='outlined' color='secondary' onClick={openJoin}>
             Sign up
           </Button>
         </Toolbar>

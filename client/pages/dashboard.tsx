@@ -1,7 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react'
 import Router from 'next/router'
 import { useMutation, useSubscription } from '@apollo/client'
-import { Mutation } from '@apollo/react-components'
 import { Grid, Paper, Typography, TextField, Button, CircularProgress, Collapse } from '@material-ui/core'
 import { Skeleton } from '@material-ui/lab'
 import { makeStyles } from '@material-ui/core/styles'
@@ -19,6 +18,8 @@ import { userService } from 'services/userService'
 import { initApolloClient } from 'services/apolloService'
 import { Instrument, Holding } from 'helpers/types'
 import { isNumeric } from 'helpers/misc'
+import Cookie from 'js-cookie'
+import { TOKEN, DISMISS_UPDATE } from 'helpers/constants'
 
 const useStyles = makeStyles(() => ({
   paper: {
@@ -40,10 +41,6 @@ const useStyles = makeStyles(() => ({
   },
   button: {
     alignSelf: 'center',
-    backgroundColor: 'black',
-    '&:hover': {
-      backgroundColor: 'black',
-    },
   },
   loading: {
     color: 'white',
@@ -57,6 +54,10 @@ const useStyles = makeStyles(() => ({
   padding: {
     paddingBottom: '1rem',
   },
+  update: {
+    width: '100%',
+    margin: '0.5rem 0.75rem'
+  }
 }))
 
 function Dashboard() {
@@ -71,31 +72,83 @@ function Dashboard() {
   const [notification, setNotification] = useState<Notification>({ show: false })
   const [createHoldingLoading, setCreateHoldingLoading] = useState<boolean>(false)
 
+  const [dashboardUpdate, setDashboardUpdate] = useState<Notification>({ show: false })
+
+  const dismissDashboardUpdate = () => {
+    setDashboardUpdate({ show: false, type: dashboardUpdate.type })
+    Cookie.set(DISMISS_UPDATE, 'true')
+  }
+
+  const [createHolding] = useMutation(graphqlService.CREATE_HOLDING)
+
   const classes = useStyles()
   const appContext = useContext(AppContext)
-  const [currentUser] = useMutation(graphqlService.CURRENT_USER)
-  const { loading, error, data } = useSubscription(graphqlService.CURRENT_USER_UPDATED, { variables: {} })
+
+  const { error, data } = useSubscription(graphqlService.SUBSCRIBE_CURRENT_USER, {
+    variables: {},
+  })
+
+  const handleCreateHolding = () => {
+    setCreateHoldingLoading(true)
+    createHolding({ variables: { userId, instrumentId: instrumentIdToAdd, amount: quantityToAdd } })
+      .then(() => {
+        setCreateHoldingLoading(false)
+        setInstrumentToAdd(null)
+        setInstrumentIdToAdd(null)
+        setQuantityToAdd(0.0)
+        gaService.addInstrumentSuccessEvent()
+        setNotification({ show: true, message: 'Holding added successfully', type: 'success' })
+      })
+      .catch(() => {
+        setCreateHoldingLoading(false)
+        gaService.addInstrumentFailedEvent()
+        setNotification({
+          show: true,
+          message: 'Could not add holding, please refresh the page or try again later',
+          type: 'error',
+        })
+      })
+  }
+
+  const logoutUser = () => {
+    appContext.setIsLoggedIn(false)
+    userService.logout()
+    Router.push('/')
+  }
 
   useEffect(() => {
-    currentUser({ variables: {} }).then((response) => {
-      if (response.data.currentUser.user) {
-        refreshHoldings(response.data.currentUser.user.holdingsByUserId.nodes)
-        setUserId(response.data.currentUser.user.id)
-        appContext.setIsDarkTheme(response.data.currentUser.user.darkTheme)
-        appContext.setIsLoggedIn(true)
-        userService.storeUserData(response.data)
-        setWelcomeMessage(`Welcome to your dashboard, ${response.data.currentUser.user.username}!`)
-      } else {
-        appContext.setIsLoggedIn(false)
-        userService.logout()
-        Router.push('/')
+    if (data && !error) {
+      refreshHoldings(data.currentUser.holdingsByUserId.nodes)
+      setUserId(data.currentUser.id)
+      appContext.setIsDarkTheme(data.currentUser.darkTheme)
+      appContext.setIsLoggedIn(true)
+      userService.storeUserData(data)
+      setWelcomeMessage(`Welcome to your dashboard, ${data.currentUser.username}!`)
+    }
+  }, [data])
+
+  useEffect(() => {
+    if (error) {
+      if (error.message === 'jwt malformed' || error.message === 'jwt expired') {
+        logoutUser()
       }
-    })
-  }, [])
+    }
+  }, [error])
 
   useEffect(() => {
-    console.log('loading:', loading, 'data:', data, 'error:', error)
-  }, [loading, data, error])
+    if (!Cookie.getJSON(TOKEN)) {
+      logoutUser()
+    }
+
+    if (!Cookie.getJSON(DISMISS_UPDATE)) {
+      setDashboardUpdate({
+        show: true,
+        message:
+          "Major dashboard changes coming soon - we're rebuilding the dashboard to support historical prices, so you can track your portfolio over time!",
+        type: 'info',
+      })
+    }
+  }, [])
 
   const processSearch = (searchQuery: Instrument | null) => {
     if (searchQuery && searchQuery.code) {
@@ -116,20 +169,6 @@ function Dashboard() {
     if (isNumeric(quantity) || quantity === '') {
       setQuantityToAdd(quantity)
     }
-  }
-
-  const onAddConfirm = (data: any) => {
-    gaService.addInstrumentSuccessEvent()
-    refreshHoldings(data.createHolding.userByUserId.holdingsByUserId.nodes)
-    setInstrumentToAdd(null)
-    setInstrumentIdToAdd(null)
-    setQuantityToAdd(0.0)
-    setNotification({ show: true, message: 'Holding added successfully', type: 'success' })
-  }
-
-  const onAddError = () => {
-    gaService.addInstrumentFailedEvent()
-    setNotification({ show: true, message: 'Failed to add holding', type: 'error' })
   }
 
   const refreshHoldings = (holdings: any) => {
@@ -153,12 +192,21 @@ function Dashboard() {
             {welcomeMessage}
           </Typography>
         </Grid>
+        <Collapse in={dashboardUpdate.show} className={classes.update}>
+          <Grid item xs={12}>
+            <NotificationComponent
+              message={dashboardUpdate.message}
+              type={dashboardUpdate.type}
+              onClose={dismissDashboardUpdate}
+            />
+          </Grid>
+        </Collapse>
         <Grid item md={6} xs={12}>
           <Paper className={classes.paper}>
             <Typography variant='h6' className={classes.holdings}>
               Your holdings
             </Typography>
-            {totalValue ? (
+            {!!totalValue && (
               <React.Fragment>
                 <Typography>Total portfolio value:</Typography>
                 <Typography variant='button' className={classes.padding}>
@@ -172,21 +220,17 @@ function Dashboard() {
                   />
                 </Typography>
               </React.Fragment>
-            ) : (
-              <Skeleton variant='text' />
             )}
             {userId ? (
               holdings && holdings.length > 0 ? (
                 holdings.map((holding: Holding) => {
                   return (
                     <HoldingView
-                      key={holding.instrumentByInstrumentId.id}
+                      id={holding.id}
                       amount={holding.amount}
+                      key={holding.instrumentByInstrumentId.id}
                       code={holding.instrumentByInstrumentId.code}
                       price={holding.instrumentByInstrumentId.latestPrice}
-                      userId={userId}
-                      instrumentId={holding.instrumentByInstrumentId.id}
-                      refreshHoldings={refreshHoldings}
                     />
                   )
                 })
@@ -238,32 +282,15 @@ function Dashboard() {
                   />
                 </Grid>
                 <Grid item xs={12} lg={2} className={classes.flex}>
-                  <Mutation
-                    mutation={graphqlService.CREATE_HOLDING}
-                    variables={{ userId, instrumentId: instrumentIdToAdd, amount: quantityToAdd }}
-                    onCompleted={(data: any) => {
-                      setCreateHoldingLoading(false)
-                      onAddConfirm(data)
-                    }}
-                    onError={() => {
-                      setCreateHoldingLoading(false)
-                      onAddError()
-                    }}>
-                    {(mutation: any) => (
-                      <Button
-                        className={classes.button}
-                        aria-label='Add Holding'
-                        fullWidth
-                        variant='contained'
-                        color='primary'
-                        onClick={() => {
-                          setCreateHoldingLoading(true)
-                          mutation()
-                        }}>
-                        {createHoldingLoading ? <CircularProgress size={24} className={classes.loading} /> : 'Add'}
-                      </Button>
-                    )}
-                  </Mutation>
+                  <Button
+                    className={classes.button}
+                    aria-label='Add Holding'
+                    fullWidth
+                    variant={appContext.isDarkTheme ? 'outlined' : 'contained'}
+                    color='secondary'
+                    onClick={handleCreateHolding}>
+                    {createHoldingLoading ? <CircularProgress size={24} className={classes.loading} /> : 'Add'}
+                  </Button>
                 </Grid>
               </Grid>
             ) : (

@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useMutation } from '@apollo/client'
 import {
@@ -25,7 +26,7 @@ import { userService } from 'services/userService'
 import { graphqlService } from 'services/graphql'
 import { gaService } from 'services/gaService'
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
@@ -34,6 +35,16 @@ const useStyles = makeStyles(() => ({
   },
   title: {
     flexGrow: 1,
+  },
+  logo: {
+    marginTop: '0.4rem',
+    cursor: 'pointer',
+    [theme.breakpoints.down('md')]: {
+      maxWidth: '9rem',
+    },
+    [theme.breakpoints.up('lg')]: {
+      maxWidth: '9rem',
+    },
   },
   menu: {
     width: 250,
@@ -77,9 +88,11 @@ export default function LoggedInHeader() {
   return (
     <AppBar position='static'>
       <Toolbar>
-        <Typography variant='h6' className={classes.title}>
-          trackportfol.io
-        </Typography>
+        <div className={classes.title}>
+          <Link href='/'>
+            <img src='/logo.svg' alt='trackportfol.io logo' className={classes.logo} />
+          </Link>
+        </div>
         <Button onClick={() => setIsMenuOpen(true)}>
           <MenuIcon className={classes.menuButton} />
           <Typography variant='srOnly'>Menu</Typography>
@@ -100,7 +113,7 @@ export default function LoggedInHeader() {
             </List>
             <Divider />
             <List>
-            <ListItem button onClick={() => router.push('/account')} key='account'>
+              <ListItem button onClick={() => router.push('/account')} key='account'>
                 <ListItemIcon>
                   <PersonIcon />
                 </ListItemIcon>

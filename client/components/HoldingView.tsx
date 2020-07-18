@@ -101,13 +101,11 @@ type Props = {
   amount: string
   code: string
   price: string
-  userId: number
-  instrumentId: number
-  refreshHoldings: any
+  id: number
 }
 
 export default function HoldingView(props: Props) {
-  const { amount, code, price, userId, instrumentId, refreshHoldings } = props
+  const { amount, code, price, id } = props
   const classes = useStyles()
 
   const [notification, setNotification] = useState<Notification>({ show: false })
@@ -121,11 +119,10 @@ export default function HoldingView(props: Props) {
 
   const handleUpdateHolding = () => {
     setUpdateLoading(true)
-    updateHolding({ variables: { userId, instrumentId, amount: updateQuantity } })
-      .then((response) => {
+    updateHolding({ variables: { id, amount: updateQuantity } })
+      .then(() => {
         setUpdateLoading(false)
         setIsEditing(false)
-        refreshHoldings(response.data.updateHoldingByUserIdAndInstrumentId.userByUserId.holdingsByUserId.nodes)
         gaService.updateInstrumentSuccessEvent()
         setNotification({ show: true, message: 'Holding updated successfully', type: 'success' })
       })
@@ -133,32 +130,21 @@ export default function HoldingView(props: Props) {
         setUpdateLoading(false)
         setIsEditing(false)
         gaService.updateInstrumentFailedEvent()
-        setNotification({ show: true, message: 'Failed to update holding!', type: 'error' })
+        setNotification({ show: true, message: 'Could not update holding, please refresh the page or try again later', type: 'error' })
       })
   }
 
   const handleDeleteHolding = () => {
     setDeleteLoading(true)
-    deleteHolding({ variables: { userId, instrumentId } })
-      .then((response) => {
-        if (
-          response.data.deleteHoldingByUserIdAndInstrumentId &&
-          response.data.deleteHoldingByUserIdAndInstrumentId.userByUserId
-        ) {
+    deleteHolding({ variables: { id } })
+      .then(() => {
           setDeleteLoading(false)
-          refreshHoldings(response.data.deleteHoldingByUserIdAndInstrumentId.userByUserId.holdingsByUserId.nodes)
           gaService.deleteInstrumentSuccessEvent()
-          setNotification({ show: true, message: 'Holding deleted successfully', type: 'success' })
-        } else {
-          setDeleteLoading(false)
-          gaService.deleteInstrumentFailedEvent()
-          setNotification({ show: true, message: 'Failed to delete holding', type: 'error' })
-        }
       })
       .catch(() => {
         setDeleteLoading(false)
         gaService.deleteInstrumentFailedEvent()
-        setNotification({ show: true, message: 'Failed to delete holding', type: 'error' })
+        setNotification({ show: true, message: 'Could not delete holding, please refresh the page or try again later', type: 'error' })
       })
   }
 
@@ -188,7 +174,7 @@ export default function HoldingView(props: Props) {
           <Grid container spacing={0}>
             <Grid item xs={4} md={2}>
               <Typography variant='h5' className={classes.code}>
-                {code}
+                {code.replace('-USD','')}
               </Typography>
             </Grid>
             <Grid item xs={8} md={5} className={classes.amount}>
