@@ -25,7 +25,7 @@ const useStyles = makeStyles(() => ({
   link: {
     textDecoration: 'underline',
     cursor: 'pointer',
-  }
+  },
 }))
 
 function Home() {
@@ -45,34 +45,32 @@ function Home() {
 
   return (
     <Layout title='Home | trackportfol.io' openLogin={openLoginModal} openJoin={openSignupModal}>
-      <Container maxWidth='sm'>
+      <Container maxWidth='md'>
         <Box my={2}>
           <Typography variant='h4' component='h1' gutterBottom>
             Easily track your portfolio
           </Typography>
           <Paper className={classes.paper}>
             <Typography variant='body1'>
-            <span className={classes.link} onClick={openSignupModal}>Sign up</span> for your <strong>free</strong> account today and begin tracking your financial portfolio.
-              <br /><br />
-              We currently support over 8,000 stocks and ETF's, with always up-to-date prices.
+              <span className={classes.link} onClick={openSignupModal}>
+                Sign up
+              </span>{' '}
+              for your <strong>free</strong> account today and begin tracking your financial portfolio!
+              <br />
+              <br /> We already support <strong>8,000+</strong> US stocks and ETF's, along with 100+ Crypto coins and
+              all NZX (NZSX) companies.
             </Typography>
           </Paper>
           <Alert variant='outlined' severity='info' className={classes.message}>
-            We're still early in the development stage, so expect lots of exciting changes over the coming weeks and
-            months.
+            We're still building our platform, so expect lots of exciting changes soon!
             <br />
             <br />
             <strong>Upcoming features:</strong>
             <br />
-            - Choose your local currency
+            - Support different currencies
             <br />
-            - Add crypto and international stocks
-            <br />
-            - Watchlist and improved dashboard
-            <br />
-            - Detailed info for stocks
-            <br />
-            - Overview of market <br />
+            - Revamped dashboard and more stocks!
+            <br />- Mobile app
           </Alert>
         </Box>
         <Modal

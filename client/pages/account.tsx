@@ -48,6 +48,9 @@ const useStyles = makeStyles(() =>
       width: '100%',
       margin: '0px 1rem',
     },
+    subtitle: {
+      paddingTop: '0.25rem',
+    }
   })
 )
 
@@ -114,7 +117,7 @@ function Account() {
 
   return (
     <Layout title='Account | trackportfol.io'>
-      <Container maxWidth='sm'>
+      <Container maxWidth='md'>
         <Grid container spacing={3}>
           <Grid item xs={12} className={classes.account}>
             <Typography variant='h4' component='h4' gutterBottom>
@@ -134,10 +137,10 @@ function Account() {
             <Paper className={classes.paper}>
               {!!username ? (
                 <Grid container spacing={2}>
-                  <Grid item xs={4}>
-                    <Typography>Username</Typography>
+                  <Grid item sm={5} xs={4}>
+                    <Typography variant='subtitle2' className={classes.subtitle}>Username</Typography>
                   </Grid>
-                  <Grid item xs={8}>
+                  <Grid item sm={7} xs={8}>
                     <Box>
                       <Typography>
                         {username}
@@ -157,10 +160,10 @@ function Account() {
               )}
               {!!email ? (
                 <Grid container spacing={2}>
-                  <Grid item xs={4}>
-                    <Typography>Email</Typography>
+                  <Grid item sm={5} xs={4}>
+                    <Typography variant='subtitle2' className={classes.subtitle}>Email</Typography>
                   </Grid>
-                  <Grid item xs={8}>
+                  <Grid item sm={7} xs={8}>
                     <Box>
                       <Typography>
                         {email}
@@ -179,10 +182,10 @@ function Account() {
                 <Skeleton className={classes.skeleton} />
               )}
               <Grid container spacing={2}>
-                <Grid item xs={4}>
-                  <Typography>Password</Typography>
+                <Grid item sm={5} xs={4}>
+                  <Typography variant='subtitle2' className={classes.subtitle}>Password</Typography>
                 </Grid>
-                <Grid item xs={8}>
+                <Grid item sm={7} xs={8}>
                   <Box>
                     <Typography>
                       ********

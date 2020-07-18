@@ -114,7 +114,7 @@ function ResetPassword() {
 
   return (
     <Layout title='Reset Password | trackportfol.io' openLogin={openLoginModal} openJoin={openSignupModal}>
-      <Container maxWidth='sm'>
+      <Container maxWidth='md'>
         <Box my={2}>
           <Typography variant='h4' component='h4' gutterBottom>
           Reset Password
