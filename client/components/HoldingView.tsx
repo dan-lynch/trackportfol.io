@@ -174,7 +174,7 @@ export default function HoldingView(props: Props) {
           <Grid container spacing={0}>
             <Grid item xs={4} md={2}>
               <Typography variant='h5' className={classes.code}>
-                {code}
+                {code.replace('-USD','')}
               </Typography>
             </Grid>
             <Grid item xs={8} md={5} className={classes.amount}>
