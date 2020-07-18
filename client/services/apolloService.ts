@@ -3,12 +3,20 @@ import { WebSocketLink } from '@apollo/link-ws'
 import { onError } from '@apollo/link-error'
 import { setContext } from '@apollo/link-context'
 import { getMainDefinition } from 'apollo-utilities'
+import { userService } from 'services/userService'
 import { API_URL, WS_URL, TOKEN } from 'helpers/constants'
 import Cookie from 'js-cookie'
 
 global.fetch = require('node-fetch')
 
 let globalApolloClient: any = null
+
+const logout = () => {
+  if (!!userService.loggedInUser) {
+  userService.logout()
+  location.replace("/")
+  }
+}
 
 const wsLinkwithoutAuth = () =>
   new WebSocketLink({
@@ -48,6 +56,7 @@ const errorLink = onError(({ networkError, graphQLErrors }) => {
   }
   if (networkError) {
     console.warn(networkError)
+    logout()
   }
 })
 
