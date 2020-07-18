@@ -19,7 +19,7 @@ import { initApolloClient } from 'services/apolloService'
 import { Instrument, Holding } from 'helpers/types'
 import { isNumeric } from 'helpers/misc'
 import Cookie from 'js-cookie'
-import { TOKEN } from 'helpers/constants'
+import { TOKEN, DISMISS_UPDATE } from 'helpers/constants'
 
 const useStyles = makeStyles(() => ({
   paper: {
@@ -54,6 +54,10 @@ const useStyles = makeStyles(() => ({
   padding: {
     paddingBottom: '1rem',
   },
+  update: {
+    width: '100%',
+    margin: '0.5rem 0.75rem'
+  }
 }))
 
 function Dashboard() {
@@ -67,6 +71,13 @@ function Dashboard() {
   const [welcomeMessage, setWelcomeMessage] = useState<string | null>(null)
   const [notification, setNotification] = useState<Notification>({ show: false })
   const [createHoldingLoading, setCreateHoldingLoading] = useState<boolean>(false)
+
+  const [dashboardUpdate, setDashboardUpdate] = useState<Notification>({ show: false })
+
+  const dismissDashboardUpdate = () => {
+    setDashboardUpdate({ show: false, type: dashboardUpdate.type })
+    Cookie.set(DISMISS_UPDATE, 'true')
+  }
 
   const [createHolding] = useMutation(graphqlService.CREATE_HOLDING)
 
@@ -128,6 +139,15 @@ function Dashboard() {
     if (!Cookie.getJSON(TOKEN)) {
       logoutUser()
     }
+
+    if (!Cookie.getJSON(DISMISS_UPDATE)) {
+      setDashboardUpdate({
+        show: true,
+        message:
+          "Major dashboard changes coming soon - we're rebuilding the dashboard to support historical prices, so you can track your portfolio over time!",
+        type: 'info',
+      })
+    }
   }, [])
 
   const processSearch = (searchQuery: Instrument | null) => {
@@ -172,6 +192,15 @@ function Dashboard() {
             {welcomeMessage}
           </Typography>
         </Grid>
+        <Collapse in={dashboardUpdate.show} className={classes.update}>
+          <Grid item xs={12}>
+            <NotificationComponent
+              message={dashboardUpdate.message}
+              type={dashboardUpdate.type}
+              onClose={dismissDashboardUpdate}
+            />
+          </Grid>
+        </Collapse>
         <Grid item md={6} xs={12}>
           <Paper className={classes.paper}>
             <Typography variant='h6' className={classes.holdings}>
