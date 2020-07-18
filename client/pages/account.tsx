@@ -4,18 +4,9 @@ import { useQuery } from '@apollo/client'
 import { withApollo } from 'components/withApollo'
 import { initApolloClient } from 'services/apolloService'
 import { AppContext } from 'context/AppContext'
-import {
-  Container,
-  Typography,
-  Grid,
-  Paper,
-  IconButton,
-  Box,
-  Collapse,
-} from '@material-ui/core'
+import { Typography, Grid, Paper, Collapse, Button } from '@material-ui/core'
 import { Skeleton } from '@material-ui/lab'
 import { makeStyles, createStyles } from '@material-ui/core/styles'
-import EditIcon from '@material-ui/icons/Edit'
 import Layout from 'components/Layout/LoggedInLayout'
 import NotificationComponent, { Notification } from 'components/Notification'
 import Modal from 'components/Modal'
@@ -30,16 +21,13 @@ const useStyles = makeStyles(() =>
   createStyles({
     paper: {
       padding: '1rem',
-      flex: '1 0 auto',
-      marginBottom: '1.5rem',
     },
     account: {
       padding: '1rem 0 0 1rem !important',
     },
     button: {
       padding: '0.25rem',
-      marginBottom: '0.375rem',
-      marginLeft: '0.25rem',
+      marginBottom: '1rem',
     },
     skeleton: {
       paddingBottom: '1rem',
@@ -49,8 +37,9 @@ const useStyles = makeStyles(() =>
       margin: '0px 1rem',
     },
     subtitle: {
-      paddingTop: '0.25rem',
-    }
+      paddingTop: '0.125rem',
+      marginBottom: '1.25rem',
+    },
   })
 )
 
@@ -61,7 +50,7 @@ function Account() {
   const [notification, setNotification] = useState<Notification>({ show: false })
   const [username, setUsername] = useState<string>('')
   const [email, setEmail] = useState<string>('')
-  
+
   const [currentModal, setCurrentModal] = React.useState<AccountModalOptions>(AccountModalOptions.None)
   const openUsernameModal = () => setCurrentModal(AccountModalOptions.Username)
   const openEmailModal = () => setCurrentModal(AccountModalOptions.Email)
@@ -117,117 +106,119 @@ function Account() {
 
   return (
     <Layout title='Account | trackportfol.io'>
-      <Container maxWidth='md'>
-        <Grid container spacing={3}>
-          <Grid item xs={12} className={classes.account}>
-            <Typography variant='h4' component='h4' gutterBottom>
-              Your account
-            </Typography>
-          </Grid>
-          <Collapse in={notification.show} className={classes.collapse}>
-            <Grid item xs={12}>
-              <NotificationComponent
-                message={notification.message}
-                type={notification.type}
-                onClose={() => setNotification({ show: false, type: notification.type })}
-              />
-            </Grid>
-          </Collapse>
+      <Grid container spacing={3}>
+        <Grid item xs={12} className={classes.account}>
+          <Typography variant='h4' component='h4' gutterBottom>
+            Your account
+          </Typography>
+        </Grid>
+        <Collapse in={notification.show} className={classes.collapse}>
           <Grid item xs={12}>
-            <Paper className={classes.paper}>
-              {!!username ? (
-                <Grid container spacing={2}>
-                  <Grid item sm={5} xs={4}>
-                    <Typography variant='subtitle2' className={classes.subtitle}>Username</Typography>
-                  </Grid>
-                  <Grid item sm={7} xs={8}>
-                    <Box>
-                      <Typography>
-                        {username}
-                        <IconButton
-                          className={classes.button}
-                          size='small'
-                          aria-label='Change Username'
-                          onClick={openUsernameModal}>
-                          <EditIcon fontSize='small' />
-                        </IconButton>
-                      </Typography>
-                    </Box>
-                  </Grid>
-                </Grid>
-              ) : (
-                <Skeleton className={classes.skeleton} />
-              )}
-              {!!email ? (
-                <Grid container spacing={2}>
-                  <Grid item sm={5} xs={4}>
-                    <Typography variant='subtitle2' className={classes.subtitle}>Email</Typography>
-                  </Grid>
-                  <Grid item sm={7} xs={8}>
-                    <Box>
-                      <Typography>
-                        {email}
-                        <IconButton
-                          className={classes.button}
-                          size='small'
-                          aria-label='Update Email'
-                          onClick={openEmailModal}>
-                          <EditIcon fontSize='small' />
-                        </IconButton>
-                      </Typography>
-                    </Box>
-                  </Grid>
-                </Grid>
-              ) : (
-                <Skeleton className={classes.skeleton} />
-              )}
+            <NotificationComponent
+              message={notification.message}
+              type={notification.type}
+              onClose={() => setNotification({ show: false, type: notification.type })}
+            />
+          </Grid>
+        </Collapse>
+        <Grid item md={6} xs={12}>
+          <Paper className={classes.paper}>
+            {!!username ? (
               <Grid container spacing={2}>
                 <Grid item sm={5} xs={4}>
-                  <Typography variant='subtitle2' className={classes.subtitle}>Password</Typography>
+                  <Typography variant='subtitle2' className={classes.subtitle}>
+                    Username
+                  </Typography>
                 </Grid>
                 <Grid item sm={7} xs={8}>
-                  <Box>
-                    <Typography>
-                      ********
-                      <IconButton
-                        className={classes.button}
-                        size='small'
-                        aria-label='Update Password'
-                        onClick={openPasswordModal}>
-                        <EditIcon fontSize='small' />
-                      </IconButton>
-                    </Typography>
-                  </Box>
+                  <Typography>{username}</Typography>
                 </Grid>
               </Grid>
-            </Paper>
-          </Grid>
+            ) : (
+              <Skeleton className={classes.skeleton} />
+            )}
+            {!!email ? (
+              <Grid container spacing={2}>
+                <Grid item sm={5} xs={4}>
+                  <Typography variant='subtitle2' className={classes.subtitle}>
+                    Email
+                  </Typography>
+                </Grid>
+                <Grid item sm={7} xs={8}>
+                  <Typography>{email}</Typography>
+                </Grid>
+              </Grid>
+            ) : (
+              <Skeleton className={classes.skeleton} />
+            )}
+            <Grid container spacing={2}>
+              <Grid item sm={5} xs={4}>
+                <Typography variant='subtitle2' className={classes.subtitle}>
+                  Password
+                </Typography>
+              </Grid>
+              <Grid item sm={7} xs={8}>
+                <Typography>********</Typography>
+              </Grid>
+            </Grid>
+          </Paper>
         </Grid>
-        <Modal
-          open={currentModal === AccountModalOptions.Username}
-          onClose={closeModal}
-          label='Change Username form'
-          title='Change username'
-          titleId='change-username'>
-          <UpdateUsernameForm currentUsername={username} usernameUpdated={handleUpdatedUsername} />
-        </Modal>
-        <Modal
-          open={currentModal === AccountModalOptions.Email}
-          onClose={closeModal}
-          label='Update Email form'
-          title='Update email'
-          titleId='update-email'>
-          <UpdateEmailForm currentEmail={email} emailUpdated={handleUpdatedEmail} />
-        </Modal>
-        <Modal
-          open={currentModal === AccountModalOptions.Password}
-          onClose={closeModal}
-          label='Update Password form'
-          title='Update password'
-          titleId='update-password'>
-          <UpdatePasswordForm passwordUpdated={handleUpdatedPassword} />
-        </Modal>
-      </Container>
+        <Grid item md={6} xs={12}>
+          <Paper className={classes.paper}>
+            <Button
+              aria-label='Change Username'
+              fullWidth
+              variant={appContext.isDarkTheme ? 'outlined' : 'contained'}
+              color='secondary'
+              className={classes.button}
+              onClick={openUsernameModal}>
+              Change Username
+            </Button>
+            <Button
+              aria-label='Update Email'
+              fullWidth
+              variant={appContext.isDarkTheme ? 'outlined' : 'contained'}
+              color='secondary'
+              className={classes.button}
+              onClick={openEmailModal}>
+              Update Email
+            </Button>
+            <Button
+              aria-label='Change password'
+              fullWidth
+              variant={appContext.isDarkTheme ? 'outlined' : 'contained'}
+              color='secondary'
+              className={classes.button}
+              onClick={openPasswordModal}>
+              Change password
+            </Button>
+          </Paper>
+        </Grid>
+      </Grid>
+      <Modal
+        open={currentModal === AccountModalOptions.Username}
+        onClose={closeModal}
+        label='Change Username form'
+        title='Change username'
+        titleId='change-username'>
+        <UpdateUsernameForm currentUsername={username} usernameUpdated={handleUpdatedUsername} />
+      </Modal>
+      <Modal
+        open={currentModal === AccountModalOptions.Email}
+        onClose={closeModal}
+        label='Update Email form'
+        title='Update email'
+        titleId='update-email'>
+        <UpdateEmailForm currentEmail={email} emailUpdated={handleUpdatedEmail} />
+      </Modal>
+      <Modal
+        open={currentModal === AccountModalOptions.Password}
+        onClose={closeModal}
+        label='Update Password form'
+        title='Update password'
+        titleId='update-password'>
+        <UpdatePasswordForm passwordUpdated={handleUpdatedPassword} />
+      </Modal>
     </Layout>
   )
 }
