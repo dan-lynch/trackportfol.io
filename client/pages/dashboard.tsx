@@ -11,10 +11,10 @@ import SearchStock from 'components/SearchStock'
 import HoldingView from 'components/HoldingView'
 import { withApollo } from 'components/withApollo'
 import NotificationComponent, { Notification } from 'components/Notification'
-import { AppContext } from 'context/AppContext'
+import { AppContext } from 'context/ContextProvider'
 import { graphqlService } from 'services/graphql'
 import { gaService } from 'services/gaService'
-import { userService } from 'services/userService'
+import { authService } from 'services/authService'
 import { initApolloClient } from 'services/apolloService'
 import { Instrument, Holding } from 'helpers/types'
 import { isNumeric } from 'helpers/misc'
@@ -110,9 +110,9 @@ function Dashboard() {
       })
   }
 
-  const logoutUser = () => {
+  const logoutUser = async () => {
     appContext.setIsLoggedIn(false)
-    userService.logout()
+    await authService.signout()
     Router.push('/')
   }
 
@@ -122,7 +122,6 @@ function Dashboard() {
       setUserId(data.currentUser.id)
       appContext.setIsDarkTheme(data.currentUser.darkTheme)
       appContext.setIsLoggedIn(true)
-      userService.storeUserData(data)
       setWelcomeMessage(`Welcome to your dashboard, ${data.currentUser.username}!`)
     }
   }, [data])

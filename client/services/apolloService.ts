@@ -3,7 +3,7 @@ import { WebSocketLink } from '@apollo/link-ws'
 import { onError } from '@apollo/link-error'
 import { setContext } from '@apollo/link-context'
 import { getMainDefinition } from 'apollo-utilities'
-import { userService } from 'services/userService'
+import { authService } from 'services/authService'
 import { API_URL, WS_URL, TOKEN } from 'helpers/constants'
 import Cookie from 'js-cookie'
 

@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { useLazyQuery } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import {
   Grid,
   Typography,
@@ -15,10 +15,10 @@ import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
 import { makeStyles, createStyles } from '@material-ui/core/styles'
 import { useForm } from 'react-hook-form'
-import { AppContext } from 'context/AppContext'
+import { AppContext } from 'context/ContextProvider'
 import { graphqlService } from 'services/graphql'
 import { gaService } from 'services/gaService'
-import { userService } from 'services/userService'
+import { authService } from 'services/authService'
 import NotificationComponent, { Notification } from 'components/Notification'
 
 const useStyles = makeStyles((theme) =>
@@ -55,35 +55,52 @@ export default function Login(props: Props) {
 
   const [notification, setNotification] = useState<Notification>({ show: false })
   const [showPassword, setShowPassword] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
 
   const classes = useStyles()
   const appContext = useContext(AppContext)
   const { register, handleSubmit, errors } = useForm()
 
-  const [authenticate, { loading, data }] = useLazyQuery(graphqlService.AUTHENTICATE)
+  const [validateUser] = useMutation(graphqlService.VALIDATE_USER)
 
-  const onSubmit = (values: any) => {
+  const onSubmit = async (values: any) => {
+    setLoading(true)
     setNotification({ show: false, type: notification.type })
     const { email, password } = values
-    authenticate({ variables: { email: email, password: password } })
-  }
-
-  const onConfirm = async (data: any) => {
-    const loginResult = await userService.login(data.authenticate)
-    if (loginResult) {
-      appContext.setIsLoggedIn(true)
-      gaService.loginSuccessEvent()
-      window.location.replace('/dashboard')
+    const user = await authService.signin(email, password)
+    if (user) {
+      const token = await user.getIdToken()
+      console.log('firebase token: ' + token)
+      validateUser({ variables: { token } })
+        .then((response: any) => {
+          if (response.data.authenticate) {
+            console.log('graphql valid token: ' + token)
+            authService.storeGraphqlToken(token)
+            appContext.setIsLoggedIn(true)
+            gaService.loginSuccessEvent()
+            setLoading(false)
+            window.location.replace('/dashboard')
+          } else {
+            console.log('graphql validateUser returned false')
+            onError()
+          }
+        })
+        .catch(() => {
+          console.log('graphql validateUser error (possible network issue)')
+          onError()
+        })
     } else {
+      console.log('firebase returned invalid user; expected if wrong user or pass')
       onError()
     }
   }
 
   const onError = () => {
     appContext.setIsLoggedIn(false)
-    userService.logout()
+    authService.signout()
     gaService.loginFailedEvent()
     setNotification({ show: true, message: 'Sign in unsuccessful, please try again', type: 'error' })
+    setLoading(false)
   }
 
   const handleClickShowPassword = () => {
@@ -93,12 +110,6 @@ export default function Login(props: Props) {
   const handleMouseDownPassword = (event: any) => {
     event.preventDefault()
   }
-
-  useEffect(() => {
-    if (data) {
-      data.authenticate ? onConfirm(data) : onError()
-    }
-  }, [data])
 
   useEffect(() => {
     if (appContext.signupEmail) {
@@ -174,7 +185,12 @@ export default function Login(props: Props) {
             }}
           />
           <Typography align='right'>
-            <Link type='button' className={appContext.isDarkTheme ? classes.white : ''} component='button' variant='body2' onClick={openForgotPassForm}>
+            <Link
+              type='button'
+              className={appContext.isDarkTheme ? classes.white : ''}
+              component='button'
+              variant='body2'
+              onClick={openForgotPassForm}>
               Forgot password?
             </Link>
           </Typography>

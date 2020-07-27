@@ -3,7 +3,7 @@ import Router from 'next/router'
 import { useQuery } from '@apollo/client'
 import { withApollo } from 'components/withApollo'
 import { initApolloClient } from 'services/apolloService'
-import { AppContext } from 'context/AppContext'
+import { AppContext } from 'context/ContextProvider'
 import { Typography, Grid, Paper, Collapse, Button } from '@material-ui/core'
 import { Skeleton } from '@material-ui/lab'
 import { makeStyles, createStyles } from '@material-ui/core/styles'
@@ -14,7 +14,7 @@ import UpdateUsernameForm from 'components/Forms/UpdateUsername'
 import UpdateEmailForm from 'components/Forms/UpdateEmail'
 import UpdatePasswordForm from 'components/Forms/UpdatePassword'
 import { graphqlService } from 'services/graphql'
-import { userService } from 'services/userService'
+import { authService } from 'services/authService'
 import { AccountModalOptions } from 'helpers/types'
 
 const useStyles = makeStyles(() =>
@@ -82,9 +82,9 @@ function Account() {
     setNotification({ show: true, message: 'Your password has been successfully updated', type: 'success' })
   }
 
-  const logoutUser = () => {
+  const logoutUser = async () => {
     appContext.setIsLoggedIn(false)
-    userService.logout()
+    await authService.signout()
     Router.push('/')
   }
 
@@ -92,7 +92,6 @@ function Account() {
     if (currentUser.data && !currentUser.error) {
       setUsername(currentUser.data.currentUser.username)
       appContext.setIsLoggedIn(true)
-      userService.storeUserData(currentUser.data)
     } else if (currentUser.data && currentUser.error) {
       logoutUser()
     }

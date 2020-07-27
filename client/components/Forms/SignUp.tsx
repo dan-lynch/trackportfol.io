@@ -14,10 +14,10 @@ import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
 import { makeStyles, createStyles } from '@material-ui/core/styles'
 import { useForm } from 'react-hook-form'
-import { AppContext } from 'context/AppContext'
+import { AppContext } from 'context/ContextProvider'
 import { graphqlService } from 'services/graphql'
 import { gaService } from 'services/gaService'
-import { userService } from 'services/userService'
+import { authService } from 'services/authService'
 import NotificationComponent, { Notification } from 'components/Notification'
 
 const useStyles = makeStyles((theme) =>
@@ -83,7 +83,7 @@ export default function SignUp(props: Props) {
 
   async function onError() {
     appContext.setIsLoggedIn(false)
-    userService.logout()
+    await authService.signout()
     gaService.registerFailedEvent()
     setNotification({
       show: true,

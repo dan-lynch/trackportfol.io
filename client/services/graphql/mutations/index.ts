@@ -8,6 +8,7 @@ import { UPDATE_USER_EMAIL } from './updateUserEmail'
 import { UPDATE_USER_PASSWORD } from './updateUserPassword'
 import { FORGOT_PASSWORD } from './forgotPassword'
 import { RESET_PASSWORD } from './resetPassword'
+import { VALIDATE_USER } from './validateUser'
 
 export {
   REGISTER_USER,
@@ -19,5 +20,6 @@ export {
   UPDATE_USER_EMAIL,
   UPDATE_USER_PASSWORD,
   FORGOT_PASSWORD,
-  RESET_PASSWORD
+  RESET_PASSWORD,
+  VALIDATE_USER
 }

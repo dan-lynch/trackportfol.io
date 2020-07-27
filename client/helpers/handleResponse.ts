@@ -1,4 +1,4 @@
-import { userService } from 'services/userService'
+import { authService } from 'services/authService'
 
 export async function handleResponse(response: Response) {
   const text = await response.text()

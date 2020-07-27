@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Typography, CircularProgress } from '@material-ui/core'
-import { AppContext } from 'context/AppContext'
+import { AppContext } from 'context/ContextProvider'
 import { API_KEY } from 'helpers/constants'
 import { parseData } from 'helpers/utils'
 

@@ -1,12 +1,15 @@
-import React from 'react'
-import { userService } from 'services/userService'
+import React, { useEffect } from 'react'
+import { auth } from 'services/authService'
 
-export const ContextProvider = ({ children }: any) => {
+export const AppContext = React.createContext<Partial<ContextProps>>({})
+
+const ContextProvider = ({ children }: any) => {
   const [signupEmail, setSignupEmail] = React.useState<string>('')
   const [stock, setStock] = React.useState<string>('')
-  const [isDarkTheme, setIsDarkTheme] = React.useState<boolean>(userService.theme === 'dark' || false)
+  const [isDarkTheme, setIsDarkTheme] = React.useState<boolean>(false)
   const [isLoggedIn, setIsLoggedIn] = React.useState<boolean>(false)
   const [resetPassSuccess, setResetPassSuccess] = React.useState<boolean>(false)
+  const [user, setUser] = React.useState<firebase.User | undefined | null>(null)
 
   const contextProps: Partial<ContextProps> = {
     signupEmail,
@@ -17,10 +20,17 @@ export const ContextProvider = ({ children }: any) => {
     setIsDarkTheme,
     isLoggedIn,
     setIsLoggedIn,
-    userService,
     resetPassSuccess,
     setResetPassSuccess,
+    user,
+    setUser
   }
+
+  useEffect(() => {
+    auth.onAuthStateChanged(userAuth => {
+      setUser(userAuth);
+    });
+  }, [])
 
   return <AppContext.Provider value={contextProps}>{children}</AppContext.Provider>
 }
@@ -34,9 +44,10 @@ type ContextProps = {
   setIsDarkTheme: any
   isLoggedIn: boolean
   setIsLoggedIn: any
-  userService: any
   resetPassSuccess: boolean
-  setResetPassSuccess: any
+  setResetPassSuccess: any,
+  user: firebase.User | null,
+  setUser: any
 }
 
-export const AppContext = React.createContext<Partial<ContextProps>>({})
+export default ContextProvider

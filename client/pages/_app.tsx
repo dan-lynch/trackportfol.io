@@ -5,7 +5,7 @@ import { ThemeProvider } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import ReactGA from 'react-ga'
 import { lightTheme, darkTheme } from 'helpers/theme'
-import { ContextProvider, AppContext } from 'context/AppContext'
+import ContextProvider, { AppContext } from 'context/ContextProvider'
 import { GA_ID } from 'helpers/constants'
 
 class MyApp extends App {

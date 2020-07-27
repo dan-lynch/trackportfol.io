@@ -8,7 +8,7 @@ import NotificationComponent, { Notification } from 'components/Notification'
 import { graphqlService } from 'services/graphql'
 import { useForm } from 'react-hook-form'
 import { gaService } from 'services/gaService'
-import { AppContext } from 'context/AppContext'
+import { AppContext } from 'context/ContextProvider'
 
 const useStyles = makeStyles((theme) =>
   createStyles({
