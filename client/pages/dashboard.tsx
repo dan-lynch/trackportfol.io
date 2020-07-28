@@ -118,11 +118,11 @@ function Dashboard() {
 
   useEffect(() => {
     if (data && !error) {
-      refreshHoldings(data.currentUser.holdingsByUserId.nodes)
+      // refreshHoldings(data.allHoldings.nodes)
       setUserId(data.currentUser.id)
-      appContext.setIsDarkTheme(data.currentUser.darkTheme)
+      appContext.setIsDarkTheme(data.currentUser.prefersDarkTheme)
       appContext.setIsLoggedIn(true)
-      setWelcomeMessage(`Welcome to your dashboard, ${data.currentUser.username}!`)
+      setWelcomeMessage(`Welcome to your dashboard, ${data.currentUser.displayName}!`)
     }
   }, [data])
 

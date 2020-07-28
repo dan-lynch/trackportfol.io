@@ -61,8 +61,6 @@ export default function Login(props: Props) {
   const appContext = useContext(AppContext)
   const { register, handleSubmit, errors } = useForm()
 
-  const [validateUser] = useMutation(graphqlService.VALIDATE_USER)
-
   const onSubmit = async (values: any) => {
     setLoading(true)
     setNotification({ show: false, type: notification.type })
@@ -70,27 +68,19 @@ export default function Login(props: Props) {
     const user = await authService.signin(email, password)
     if (user) {
       const token = await user.getIdToken()
-      console.log('firebase token: ' + token)
-      validateUser({ variables: { token } })
-        .then((response: any) => {
-          if (response.data.authenticate) {
-            console.log('graphql valid token: ' + token)
-            authService.storeGraphqlToken(token)
-            appContext.setIsLoggedIn(true)
-            gaService.loginSuccessEvent()
-            setLoading(false)
-            window.location.replace('/dashboard')
-          } else {
-            console.log('graphql validateUser returned false')
-            onError()
+      const validateResponse = await authService.validateUser(token)
+      if (validateResponse && validateResponse.data) {
+        authService.storeGraphqlToken(validateResponse.data.data.validateUser.userValidated.token)
+        appContext.setIsLoggedIn(true)
+        gaService.loginSuccessEvent()
+        setLoading(false)
+        window.location.replace('/dashboard')
+      } else {
+        console.log('graphql validateUser returned false (still in dev...)')
+        onError()
           }
-        })
-        .catch(() => {
-          console.log('graphql validateUser error (possible network issue)')
-          onError()
-        })
     } else {
-      console.log('firebase returned invalid user; expected if wrong user or pass')
+      console.log('firebase returned invalid user (expected if incorrect user or pass)')
       onError()
     }
   }

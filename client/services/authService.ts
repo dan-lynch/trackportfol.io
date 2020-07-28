@@ -1,6 +1,7 @@
-import firebase from "firebase/app";
-import "firebase/auth";
-import { TOKEN } from 'helpers/constants'
+import firebase from 'firebase/app'
+import axios from 'axios'
+import 'firebase/auth'
+import { TOKEN, AUTH_URL } from 'helpers/constants'
 import Cookie from 'js-cookie'
 
 export type Token = {
@@ -16,12 +17,12 @@ const firebaseConfig = {
   storageBucket: 'trackportfolio-1.appspot.com',
   messagingSenderId: '934663939041',
   appId: '1:934663939041:web:70e604c151ee45d19428a0',
-  measurementId: 'G-VQZFXPE6CC'
-};
+  measurementId: 'G-VQZFXPE6CC',
+}
 
-firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig)
 
-export const auth = firebase.auth();
+export const auth = firebase.auth()
 
 export const authService = {
   signin,
@@ -31,66 +32,61 @@ export const authService = {
   confirmPasswordReset,
   storeGraphqlToken,
   removeGraphqlToken,
+  validateUser,
   get graphqltoken(): string | null {
     return !!currentGraphqlToken ? currentGraphqlToken : null
-  }
+  },
 }
 
 async function signin(email: string, password: string) {
   try {
-    const {user} = await auth.signInWithEmailAndPassword(email, password);
-    console.log(JSON.stringify(user));
-    return user;
-  }
-  catch(error){
-    console.log('Error: authService | signin(email, password)');
-    return false;
+    const { user } = await auth.signInWithEmailAndPassword(email, password)
+    console.log(JSON.stringify(user))
+    return user
+  } catch (error) {
+    console.log('Error: authService | signin(email, password)')
+    return false
   }
 }
 
 async function signup(email: string, password: string) {
   try {
-    const {user} = await auth.createUserWithEmailAndPassword(email, password);
-    console.log(JSON.stringify(user));
-    return user;
-  }
-  catch(error){
-    console.log('Error: authService | signup(email, password)');
-    return false;
+    const { user } = await auth.createUserWithEmailAndPassword(email, password)
+    console.log(JSON.stringify(user))
+    return user
+  } catch (error) {
+    console.log('Error: authService | signup(email, password)')
+    return false
   }
 }
 
 async function signout() {
   try {
     await auth.signOut()
-    return true;
-  }
-  catch(error){
-    console.log('Error: authService | signout()');
-    return false;
-  }
-}
-
-
-async function sendPasswordResetEmail (email: string) {
-  try {
-    await auth.sendPasswordResetEmail(email);
-    return true;
-  }
-  catch(error){
-    console.log('Error: authService | sendPasswordResetEmail()');
-    return false;
+    return true
+  } catch (error) {
+    console.log('Error: authService | signout()')
+    return false
   }
 }
 
-async function confirmPasswordReset (code: string, password: string) {
+async function sendPasswordResetEmail(email: string) {
   try {
-    await auth.confirmPasswordReset(code, password);
-    return true;
+    await auth.sendPasswordResetEmail(email)
+    return true
+  } catch (error) {
+    console.log('Error: authService | sendPasswordResetEmail()')
+    return false
   }
-  catch(error){
-    console.log('Error: authService | sendPasswordResetEmail()');
-    return false;
+}
+
+async function confirmPasswordReset(code: string, password: string) {
+  try {
+    await auth.confirmPasswordReset(code, password)
+    return true
+  } catch (error) {
+    console.log('Error: authService | sendPasswordResetEmail()')
+    return false
   }
 }
 
@@ -100,4 +96,14 @@ function storeGraphqlToken(jwtToken: string) {
 
 function removeGraphqlToken() {
   Cookie.remove(TOKEN)
+}
+
+async function validateUser(firebaseToken: string) {
+  try {
+    const url = AUTH_URL + '?token=' + firebaseToken
+    const data = await axios.get(url)
+    return data
+  } catch {
+    return null
+  }
 }

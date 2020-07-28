@@ -1,5 +1,4 @@
 import React, { useState, useContext } from 'react'
-import { useMutation } from '@apollo/client'
 import {
   Grid,
   Typography,
@@ -15,7 +14,6 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff'
 import { makeStyles, createStyles } from '@material-ui/core/styles'
 import { useForm } from 'react-hook-form'
 import { AppContext } from 'context/ContextProvider'
-import { graphqlService } from 'services/graphql'
 import { gaService } from 'services/gaService'
 import { authService } from 'services/authService'
 import NotificationComponent, { Notification } from 'components/Notification'
@@ -57,22 +55,22 @@ export default function SignUp(props: Props) {
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
 
-  const [registerMutation] = useMutation(graphqlService.REGISTER_USER)
   const { register, handleSubmit, errors } = useForm()
 
   const onSubmit = (values: any) => {
     setLoading(true)
     setNotification({ show: false, type: notification.type })
-    const { username, email, password } = values
-    registerMutation({ variables: { username, email, password } })
-      .then((response: any) => {
-        setLoading(false)
-        response.data.registerUser ? onConfirm(email) : onError()
-      })
-      .catch(() => {
-        setLoading(false)
-        onError()
-      })
+    // const { username, email, password } = values
+    // TODO (with Firebase)
+    // registerMutation({ variables: { username, email, password } })
+    //   .then((response: any) => {
+    //     setLoading(false)
+    //     response.data.registerUser ? onConfirm(email) : onError()
+    //   })
+    //   .catch(() => {
+    //     setLoading(false)
+    //     onError()
+    //   })
   }
 
   async function onConfirm(email: string) {

@@ -90,7 +90,7 @@ function Account() {
 
   useEffect(() => {
     if (currentUser.data && !currentUser.error) {
-      setUsername(currentUser.data.currentUser.username)
+      setUsername(currentUser.data.currentUser.displayName)
       appContext.setIsLoggedIn(true)
     } else if (currentUser.data && currentUser.error) {
       logoutUser()

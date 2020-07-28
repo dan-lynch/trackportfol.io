@@ -1,26 +1,30 @@
 import { gql } from '@apollo/client'
 
 export const CURRENT_USER = gql`
-  query currentUser {
-    currentUser {
+query currentUser {
+  currentUser {
+    createdAt
+    userId
+    displayName
+    email
+    emailVerified
+    phoneNumber
+    prefersDarkTheme
+    lastLoginAt
+  }
+  allHoldings {
+    nodes {
       id
-      username
-      darkTheme
-      holdingsByUserId {
-        nodes {
-          id
-          amount
-          createdAt
-          instrumentId
-          instrumentByInstrumentId {
-            id
-            code
-            description
-            latestPrice
-          }
-        }
-        totalCount
+      userId
+      instrumentByInstrumentId {
+        code
+        description
+        lastUpdated
+        latestPrice
       }
+      amount
+      createdAt
     }
   }
+}
 `

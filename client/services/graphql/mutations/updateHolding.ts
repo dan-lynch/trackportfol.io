@@ -1,23 +1,25 @@
 import { gql } from '@apollo/client'
 
 export const UPDATE_HOLDING = gql`
-  mutation updateHolding($id: Int!, $amount: BigFloat!) {
-    updateHoldingById(
-      input: { holdingPatch: { amount: $amount }, id: $id }
-    ) {
-      userByUserId {
-        holdingsByUserId {
+  mutation updateHolding($id: String!, $amount: BigFloat!) {
+    updateHoldingById(input: {holdingPatch: {amount: $amount}, id: $id}) {
+      holding {
+        amount
+        id
+      }
+      query {
+        allHoldings {
           nodes {
             id
-            amount
-            createdAt
-            instrumentId
+            userId
             instrumentByInstrumentId {
-              id
               code
               description
+              lastUpdated
               latestPrice
             }
+            amount
+            createdAt
           }
         }
       }

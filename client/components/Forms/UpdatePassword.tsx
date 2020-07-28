@@ -31,11 +31,9 @@ type Props = {
   }
 
 export default function UpdatePassword(props: Props) {
-  const { passwordUpdated } = props
+  // const { passwordUpdated } = props
   const classes = useStyles()
   const appContext = useContext(AppContext)
-
-  const [updatePasswordMutation] = useMutation(graphqlService.UPDATE_USER_PASSWORD)
 
   const [notification, setNotification] = useState<Notification>({ show: false })
   const [showOldPassword, setShowOldPassword] = useState<boolean>(false)
@@ -47,20 +45,21 @@ export default function UpdatePassword(props: Props) {
   const onSubmit = (values: any) => {
     setLoading(true)
     setNotification({ show: false, type: notification.type })
-    const { oldPassword, newPassword } = values
-    updatePasswordMutation({ variables: { oldPassword: oldPassword, newPassword: newPassword } })
-      .then((response) => {
-        if (response.data.updateUserPassword.updatedUserPassword.success) {
-        setLoading(false)
-        gaService.passwordUpdatedSuccessEvent()
-        passwordUpdated()
-      } else {
-        updatePasswordFailed()
-      }
-      })
-      .catch(() => {
-        updatePasswordFailed()
-      })
+    // TODO (with Firebase and only if email/password account)
+    // const { oldPassword, newPassword } = values
+    // updatePasswordMutation({ variables: { oldPassword: oldPassword, newPassword: newPassword } })
+    //   .then((response) => {
+    //     if (response.data.updateUserPassword.updatedUserPassword.success) {
+    //     setLoading(false)
+    //     gaService.passwordUpdatedSuccessEvent()
+    //     passwordUpdated()
+    //   } else {
+    //     updatePasswordFailed()
+    //   }
+    //   })
+    //   .catch(() => {
+    //     updatePasswordFailed()
+    //   })
   }
 
   const updatePasswordFailed = () => {

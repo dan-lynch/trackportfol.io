@@ -1,21 +1,24 @@
 import { gql } from '@apollo/client'
 
 export const CREATE_HOLDING = gql`
-  mutation createHolding($userId: Int!, $instrumentId: Int!, $amount: BigFloat!) {
-    createHolding(input: { holding: { userId: $userId, instrumentId: $instrumentId, amount: $amount } }) {
-      userByUserId {
-        holdingsByUserId {
+  mutation createHolding($userId: String!, $instrumentId: Int!, $amount: BigFloat!) {
+    createHolding(input: {holding: { userId: $userId, instrumentId: $instrumentId, amount: $amount }}) {
+      holding {
+        id
+      }
+      query {
+        allHoldings {
           nodes {
             id
-            amount
-            createdAt
-            instrumentId
+            userId
             instrumentByInstrumentId {
-              id
               code
               description
+              lastUpdated
               latestPrice
             }
+            amount
+            createdAt
           }
         }
       }
