@@ -20,7 +20,9 @@ const firebaseConfig = {
   measurementId: 'G-VQZFXPE6CC',
 }
 
-firebase.initializeApp(firebaseConfig)
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
 export const auth = firebase.auth()
 
@@ -28,6 +30,9 @@ export const authService = {
   signin,
   signup,
   signout,
+  updateEmail,
+  updatePassword,
+  updateDisplayName,
   sendPasswordResetEmail,
   confirmPasswordReset,
   storeGraphqlToken,
@@ -75,8 +80,7 @@ async function sendPasswordResetEmail(email: string) {
     await auth.sendPasswordResetEmail(email)
     return true
   } catch (error) {
-    console.log('Error: authService | sendPasswordResetEmail()')
-    return false
+    return true // don't expose to user if email was valid (security reason)
   }
 }
 
@@ -86,6 +90,36 @@ async function confirmPasswordReset(code: string, password: string) {
     return true
   } catch (error) {
     console.log('Error: authService | sendPasswordResetEmail()')
+    return false
+  }
+}
+
+async function updateEmail(user: firebase.User, email: string) {
+  try {
+    await user.updateEmail(email)
+    return true
+  } catch (error) {
+    console.log('Error: authService | updateEmail()')
+    return false
+  }
+}
+
+async function updatePassword(user: firebase.User, password: string) {
+  try {
+    await user.updatePassword(password)
+    return true
+  } catch (error) {
+    console.log('Error: authService | updatePassword()')
+    return false
+  }
+}
+
+async function updateDisplayName(user: firebase.User, displayName: string) {
+  try {
+    await user.updateProfile({displayName})
+    return true
+  } catch (error) {
+    console.log('Error: authService | updateDisplayName()')
     return false
   }
 }

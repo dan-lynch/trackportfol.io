@@ -14,7 +14,7 @@ app.use(compression())
 app.use(
   postgraphile(
     process.env.DATABASE_URL,
-    "public",
+    "tp_public",
     {
     ownerConnectionString: process.env.ROOT_DATABASE_URL,
     appendPlugins: [ConnectionFilterPlugin, SubscriptionsPlugin.default],
@@ -28,7 +28,7 @@ app.use(
     enhanceGraphiql: true,
     pgDefaultRole: process.env.DEFAULT_ROLE,
     jwtSecret: process.env.JWT_SECRET,
-    jwtPgTypeIdentifier: 'public.jwt_token',
+    jwtPgTypeIdentifier: 'tp_public.jwt_token',
     enableCors: 'true'
     }
   )

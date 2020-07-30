@@ -1,12 +1,11 @@
 import React, { useState, useContext } from 'react'
-import { useMutation } from '@apollo/client'
 import { withApollo } from 'components/withApollo'
 import { initApolloClient } from 'services/apolloService'
 import { Typography, Grid, Collapse, TextField, Button, CircularProgress } from '@material-ui/core'
 import { makeStyles, createStyles } from '@material-ui/core/styles'
 import NotificationComponent, { Notification } from 'components/Notification'
-import { graphqlService } from 'services/graphql'
 import { useForm } from 'react-hook-form'
+import { authService } from 'services/authService'
 import { gaService } from 'services/gaService'
 import { AppContext } from 'context/ContextProvider'
 
@@ -48,32 +47,20 @@ function ForgotPass() {
   const [notification, setNotification] = useState<Notification>({ show: false })
   const [loading, setLoading] = useState<boolean>(false)
 
-  const [forgotPasswordMutation] = useMutation(graphqlService.FORGOT_PASSWORD)
   const { register, handleSubmit, errors } = useForm()
 
-  const onSubmit = (values: any) => {
+  const onSubmit = async (values: any) => {
     setLoading(true)
     setNotification({ show: false, type: notification.type })
     const { emailInput } = values
-    forgotPasswordMutation({ variables: { emailInput } })
-      .then(() => {
-        setLoading(false)
-        gaService.resetPasswordRequestEvent()
-        setNotification({
-          show: true,
-          message: 'If a user exists with this email address, an email has been sent with a password reset link',
-          type: 'success',
-        })
-      })
-      .catch(() => {
-        setLoading(false)
-        gaService.resetPasswordRequestEvent()
-        setNotification({
-          show: true,
-          message: 'If a user exists with this email address, an email has been sent with a password reset link',
-          type: 'success',
-        })
-      })
+    await authService.sendPasswordResetEmail(emailInput)
+    setLoading(false)
+    gaService.resetPasswordRequestEvent()
+    setNotification({
+      show: true,
+      message: 'If a user exists with this email address, an email has been sent with a password reset link',
+      type: 'success',
+    })
   }
 
   return (

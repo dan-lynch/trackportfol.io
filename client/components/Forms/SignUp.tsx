@@ -57,26 +57,25 @@ export default function SignUp(props: Props) {
 
   const { register, handleSubmit, errors } = useForm()
 
-  const onSubmit = (values: any) => {
+  const onSubmit = async (values: any) => {
     setLoading(true)
     setNotification({ show: false, type: notification.type })
-    // const { username, email, password } = values
-    // TODO (with Firebase)
-    // registerMutation({ variables: { username, email, password } })
-    //   .then((response: any) => {
-    //     setLoading(false)
-    //     response.data.registerUser ? onConfirm(email) : onError()
-    //   })
-    //   .catch(() => {
-    //     setLoading(false)
-    //     onError()
-    //   })
-  }
-
-  async function onConfirm(email: string) {
-    gaService.registerSuccessEvent()
-    appContext.setSignupEmail(email)
-    openLoginForm()
+    const { email, password } = values
+    const user = await authService.signup(email, password)
+    if (user) {
+      const token = await user.getIdToken()
+      const validateResponse = await authService.validateUser(token)
+      if (validateResponse && validateResponse.data) {
+        authService.storeGraphqlToken(validateResponse.data.data.validateUser.userValidated.token)
+        appContext.setIsLoggedIn(true)
+        gaService.registerSuccessEvent()
+        setLoading(false)
+        window.location.replace('/dashboard')
+      } else {
+        setLoading(false)
+        onError()
+      }
+    }
   }
 
   async function onError() {
@@ -111,26 +110,6 @@ export default function SignUp(props: Props) {
       </Collapse>
       <Grid item xs={12}>
         <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
-          <TextField
-            id='username'
-            inputRef={register({
-              required: 'Please enter your desired username',
-              pattern: {
-                value: /^[A-Z0-9.]{3,}$/i,
-                message:
-                  'Username must be at least three characters long, containing only letters (a-z), numbers (0-9), and periods (.)',
-              },
-            })}
-            name='username'
-            label='Username'
-            variant='outlined'
-            fullWidth
-            autoFocus
-            autoComplete='on'
-            autoCapitalize='off'
-            helperText={errors.username?.message}
-            error={!!errors.username}
-          />
           <TextField
             id='email'
             inputRef={register({

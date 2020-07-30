@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react'
 import Router from 'next/router'
-import { useMutation, useSubscription } from '@apollo/client'
+import { useMutation, useSubscription, useQuery } from '@apollo/client'
 import { Grid, Paper, Typography, TextField, Button, CircularProgress, Collapse } from '@material-ui/core'
 import { Skeleton } from '@material-ui/lab'
 import { makeStyles } from '@material-ui/core/styles'
@@ -67,7 +67,7 @@ function Dashboard() {
   const [instrumentToAdd, setInstrumentToAdd] = useState<Instrument | null>(null)
   const [instrumentIdToAdd, setInstrumentIdToAdd] = useState<number | null>(null)
   const [quantityToAdd, setQuantityToAdd] = useState<number | undefined>(0.0)
-  const [userId, setUserId] = useState<number | null>(null)
+  const [userId, setUserId] = useState<string | null>(null)
   const [welcomeMessage, setWelcomeMessage] = useState<string | null>(null)
   const [notification, setNotification] = useState<Notification>({ show: false })
   const [createHoldingLoading, setCreateHoldingLoading] = useState<boolean>(false)
@@ -84,7 +84,11 @@ function Dashboard() {
   const classes = useStyles()
   const appContext = useContext(AppContext)
 
-  const { error, data } = useSubscription(graphqlService.SUBSCRIBE_CURRENT_USER, {
+  const currentUser = useQuery(graphqlService.CURRENT_USER, {
+    variables: {},
+  })
+
+  const { error, data } = useSubscription(graphqlService.SUBSCRIBE_ALL_HOLDINGS, {
     variables: {},
   })
 
@@ -117,12 +121,32 @@ function Dashboard() {
   }
 
   useEffect(() => {
-    if (data && !error) {
-      // refreshHoldings(data.allHoldings.nodes)
-      setUserId(data.currentUser.id)
-      appContext.setIsDarkTheme(data.currentUser.prefersDarkTheme)
+    if (currentUser.data && currentUser.data.currentUser && !currentUser.error) {
+      setUserId(currentUser.data.currentUser.userId)
+      appContext.setIsDarkTheme(currentUser.data.currentUser.prefersDarkTheme)
+    } else if (currentUser.data && currentUser.error) {
+      console.log('No TP user found (could be offline or network error)')
+    }
+  }, [currentUser])
+
+  useEffect(() => {
+    if (appContext.user) {
       appContext.setIsLoggedIn(true)
-      setWelcomeMessage(`Welcome to your dashboard, ${data.currentUser.displayName}!`)
+      if (appContext.user.displayName) {
+        setWelcomeMessage(`Welcome to your dashboard, ${appContext.user.displayName}!`)
+      } else {
+        setWelcomeMessage('Welcome to your dashboard!')
+      }
+    } else {
+      console.log('No firebase user found, logging out...')
+      logoutUser()
+    }
+  }, [appContext.user])
+  
+
+  useEffect(() => {
+    if (data && !error) {
+      refreshHoldings(data.allHoldings.nodes)
     }
   }, [data])
 

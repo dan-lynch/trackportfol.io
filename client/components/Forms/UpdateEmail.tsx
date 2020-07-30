@@ -1,10 +1,9 @@
 import React, { useState, useContext } from 'react'
-import { useMutation } from '@apollo/client'
 import { Typography, Grid, Collapse, TextField, Button, CircularProgress } from '@material-ui/core'
 import { makeStyles, createStyles } from '@material-ui/core/styles'
 import NotificationComponent, { Notification } from 'components/Notification'
-import { graphqlService } from 'services/graphql'
 import { useForm } from 'react-hook-form'
+import { authService } from 'services/authService'
 import { gaService } from 'services/gaService'
 import { AppContext } from 'context/ContextProvider'
 
@@ -34,30 +33,27 @@ export default function UpdateEmail(props: Props) {
   const classes = useStyles()
   const appContext = useContext(AppContext)
 
-  const [updateEmailMutation] = useMutation(graphqlService.UPDATE_USER_EMAIL)
-
   const [notification, setNotification] = useState<Notification>({ show: false })
   const [loading, setLoading] = useState<boolean>(false)
 
   const { register, handleSubmit, errors } = useForm()
 
-  const onSubmit = (values: any) => {
+  const onSubmit = async (values: any) => {
     setLoading(true)
     setNotification({ show: false, type: notification.type })
     const { email } = values
-    updateEmailMutation({ variables: { newEmail: email } })
-      .then((response) => {
-        if (response.data.updateUserEmail.updatedUserEmail.success) {
-          setLoading(false)
-          gaService.emailUpdatedSuccessEvent()
-          emailUpdated(response.data.updateUserEmail.updatedUserEmail.updatedEmail)
-        } else {
-          updateEmailFailed()
-        }
-      })
-      .catch(() => {
+    if (appContext.user) {
+      const updateEmailResult = await authService.updateEmail(appContext.user, email)
+      if (updateEmailResult) {
+        setLoading(false)
+        gaService.emailUpdatedSuccessEvent()
+        emailUpdated(email)
+      } else {
         updateEmailFailed()
-      })
+      }
+    } else {
+      updateEmailFailed()
+    }
   }
 
   const updateEmailFailed = () => {
@@ -65,8 +61,7 @@ export default function UpdateEmail(props: Props) {
     gaService.emailUpdatedFailedEvent()
     setNotification({
       show: true,
-      message:
-        'Could not update email, please refresh the page or try again later',
+      message: 'Could not update email, please refresh the page or try again later',
       type: 'error',
     })
   }
@@ -88,11 +83,11 @@ export default function UpdateEmail(props: Props) {
           <TextField
             id='email'
             inputRef={register({
-                required: 'Please enter your email address',
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                  message: "This doesn't look quite right, please enter your email address",
-                },
+              required: 'Please enter your email address',
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                message: "This doesn't look quite right, please enter your email address",
+              },
             })}
             name='email'
             label='New Email'

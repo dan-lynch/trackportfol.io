@@ -12,19 +12,5 @@ query currentUser {
     prefersDarkTheme
     lastLoginAt
   }
-  allHoldings {
-    nodes {
-      id
-      userId
-      instrumentByInstrumentId {
-        code
-        description
-        lastUpdated
-        latestPrice
-      }
-      amount
-      createdAt
-    }
-  }
 }
 `
