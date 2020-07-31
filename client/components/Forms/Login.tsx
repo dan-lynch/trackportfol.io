@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
+import { useRouter } from 'next/router'
 import {
   Grid,
   Typography,
@@ -51,40 +52,31 @@ type Props = {
 export default function Login(props: Props) {
   const { openSignupForm, openForgotPassForm } = props
 
+  const classes = useStyles()
+  const router = useRouter()
+  const appContext = useContext(AppContext)
+
   const [notification, setNotification] = useState<Notification>({ show: false })
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
 
-  const classes = useStyles()
-  const appContext = useContext(AppContext)
   const { register, handleSubmit, errors } = useForm()
 
   const onSubmit = async (values: any) => {
     setLoading(true)
     setNotification({ show: false, type: notification.type })
     const { email, password } = values
-    const user = await authService.signin(email, password)
-    if (user) {
-      const token = await user.getIdToken()
-      const validateResponse = await authService.validateUser(token)
-      if (validateResponse && validateResponse.data) {
-        authService.storeGraphqlToken(validateResponse.data.data.validateUser.userValidated.token)
-        appContext.setIsLoggedIn(true)
-        gaService.loginSuccessEvent()
-        setLoading(false)
-        window.location.replace('/dashboard')
-      } else {
-        console.log('graphql validateUser returned false (still in dev...)')
-        onError()
-          }
+    const isAuthenticated = await authService.signin(email, password)
+    if (isAuthenticated) {
+      gaService.loginSuccessEvent()
+      setLoading(false)
+      router.push('/dashboard')
     } else {
-      console.log('firebase returned invalid user (expected if incorrect user or pass)')
       onError()
     }
   }
 
   const onError = () => {
-    appContext.setIsLoggedIn(false)
     authService.signout()
     gaService.loginFailedEvent()
     setNotification({ show: true, message: 'Sign in unsuccessful, please try again', type: 'error' })

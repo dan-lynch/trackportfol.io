@@ -1,5 +1,4 @@
 import React, { useEffect, useContext, useState } from 'react'
-import Router from 'next/router'
 import { withApollo } from 'components/withApollo'
 import { initApolloClient } from 'services/apolloService'
 import { AppContext } from 'context/ContextProvider'
@@ -9,7 +8,7 @@ import { makeStyles, createStyles } from '@material-ui/core/styles'
 import Layout from 'components/Layout/LoggedInLayout'
 import NotificationComponent, { Notification } from 'components/Notification'
 import Modal from 'components/Modal'
-import UpdateUsernameForm from 'components/Forms/UpdateDisplayName'
+import UpdateDisplayNameForm from 'components/Forms/UpdateDisplayName'
 import UpdateEmailForm from 'components/Forms/UpdateEmail'
 import UpdatePasswordForm from 'components/Forms/UpdatePassword'
 import { authService } from 'services/authService'
@@ -50,21 +49,25 @@ function Account() {
   const [email, setEmail] = useState<string>('')
 
   const [currentModal, setCurrentModal] = React.useState<AccountModalOptions>(AccountModalOptions.None)
-  const openUsernameModal = () => setCurrentModal(AccountModalOptions.Username)
+  const openDisplayNameModal = () => setCurrentModal(AccountModalOptions.DisplayName)
   const openEmailModal = () => setCurrentModal(AccountModalOptions.Email)
   const openPasswordModal = () => setCurrentModal(AccountModalOptions.Password)
   const closeModal = () => setCurrentModal(AccountModalOptions.None)
 
-  const handleUpdatedDisplayName = (username: string) => {
+  const handleUpdatedDisplayName = (displayName: string) => {
     closeModal()
-    setDisplayName(username)
+    setDisplayName(displayName)
     setNotification({ show: true, message: 'Your display name has been successfully updated', type: 'success' })
   }
 
   const handleUpdatedEmail = (email: string) => {
     closeModal()
     setEmail(email)
-    setNotification({ show: true, message: 'For your security, a confirmation email has been sent to your original email address', type: 'success' })
+    setNotification({
+      show: true,
+      message: 'Your email address has been successfully updated',
+      type: 'success',
+    })
   }
 
   const handleUpdatedPassword = () => {
@@ -73,21 +76,23 @@ function Account() {
     setNotification({ show: true, message: 'Your password has been successfully updated', type: 'success' })
   }
 
-  const logoutUser = async () => {
-    appContext.setIsLoggedIn(false)
-    await authService.signout()
-    Router.push('/')
-  }
-
   useEffect(() => {
-    if (appContext.user) {
-      setDisplayName(appContext.user.displayName || '')
-      setEmail(appContext.user.email || '')
-      appContext.setIsLoggedIn(true)
-    } else {
-      logoutUser()
+    async function setUser() {
+      if (authService.currentUser) {
+        setDisplayName(authService.currentUser.displayName || 'No display name set')
+        setEmail(authService.currentUser.email || 'No email set')
+      } else {
+        const updatedUser = await authService.refreshUser()
+        if (updatedUser) {
+          setDisplayName(updatedUser.displayName || 'No display name set')
+          setEmail(updatedUser.email || 'No email set')
+        } else {
+          authService.signout()
+        }
+      }
     }
-  }, [])
+    setUser()
+  }, [authService.currentUser])
 
   return (
     <Layout title='Account | trackportfol.io'>
@@ -112,7 +117,7 @@ function Account() {
               <Grid container spacing={2}>
                 <Grid item sm={5} xs={4}>
                   <Typography variant='subtitle2' className={classes.subtitle}>
-                    Username
+                    Display Name
                   </Typography>
                 </Grid>
                 <Grid item sm={7} xs={8}>
@@ -151,13 +156,13 @@ function Account() {
         <Grid item md={6} xs={12}>
           <Paper className={classes.paper}>
             <Button
-              aria-label='Change Username'
+              aria-label='Update Display Name'
               fullWidth
               variant={appContext.isDarkTheme ? 'outlined' : 'contained'}
               color='secondary'
               className={classes.button}
-              onClick={openUsernameModal}>
-              Change Username
+              onClick={openDisplayNameModal}>
+              Change Display Name
             </Button>
             <Button
               aria-label='Update Email'
@@ -181,12 +186,12 @@ function Account() {
         </Grid>
       </Grid>
       <Modal
-        open={currentModal === AccountModalOptions.Username}
+        open={currentModal === AccountModalOptions.DisplayName}
         onClose={closeModal}
         label='Change Display Name form'
         title='Change display name'
         titleId='change-displayname'>
-        <UpdateUsernameForm currentDisplayName={displayName} displayNameUpdated={handleUpdatedDisplayName} />
+        <UpdateDisplayNameForm currentDisplayName={displayName} displayNameUpdated={handleUpdatedDisplayName} />
       </Modal>
       <Modal
         open={currentModal === AccountModalOptions.Email}

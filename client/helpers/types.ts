@@ -27,7 +27,7 @@ export enum ModalOptions {
 
 export enum AccountModalOptions {
   None,
-  Username,
+  DisplayName,
   Email,
   Password
 }

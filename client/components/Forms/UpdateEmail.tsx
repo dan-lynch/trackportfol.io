@@ -1,5 +1,7 @@
 import React, { useState, useContext } from 'react'
-import { Typography, Grid, Collapse, TextField, Button, CircularProgress } from '@material-ui/core'
+import { Typography, Grid, Collapse, TextField, Button, CircularProgress, InputAdornment, IconButton } from '@material-ui/core'
+import Visibility from '@material-ui/icons/Visibility'
+import VisibilityOff from '@material-ui/icons/VisibilityOff'
 import { makeStyles, createStyles } from '@material-ui/core/styles'
 import NotificationComponent, { Notification } from 'components/Notification'
 import { useForm } from 'react-hook-form'
@@ -34,6 +36,7 @@ export default function UpdateEmail(props: Props) {
   const appContext = useContext(AppContext)
 
   const [notification, setNotification] = useState<Notification>({ show: false })
+  const [showPassword, setShowPassword] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
 
   const { register, handleSubmit, errors } = useForm()
@@ -41,16 +44,12 @@ export default function UpdateEmail(props: Props) {
   const onSubmit = async (values: any) => {
     setLoading(true)
     setNotification({ show: false, type: notification.type })
-    const { email } = values
-    if (appContext.user) {
-      const updateEmailResult = await authService.updateEmail(appContext.user, email)
-      if (updateEmailResult) {
-        setLoading(false)
-        gaService.emailUpdatedSuccessEvent()
-        emailUpdated(email)
-      } else {
-        updateEmailFailed()
-      }
+    const { password, email } = values
+    const updateEmailResult = await authService.updateEmail(password, email)
+    if (updateEmailResult) {
+      setLoading(false)
+      gaService.emailUpdatedSuccessEvent()
+      emailUpdated(email)
     } else {
       updateEmailFailed()
     }
@@ -66,6 +65,14 @@ export default function UpdateEmail(props: Props) {
     })
   }
 
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword)
+  }
+
+  const handleMouseDownPassword = (event: any) => {
+    event.preventDefault()
+  }
+
   return (
     <React.Fragment>
       <Collapse in={notification.show}>
@@ -78,8 +85,35 @@ export default function UpdateEmail(props: Props) {
         </Grid>
       </Collapse>
       <Grid item xs={12}>
-        <Typography>To update your email, enter your new email address below and click submit.</Typography>
+        <Typography>To update your email, enter your password and new email address below and click submit.</Typography>
         <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
+        <TextField
+            id='password'
+            inputRef={register({
+              required: 'Please enter your password',
+            })}
+            name='password'
+            label='Password'
+            type={showPassword ? 'text' : 'password'}
+            variant='outlined'
+            fullWidth
+            autoComplete='off'
+            helperText={errors.password?.message}
+            error={!!errors.password}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position='end'>
+                  <IconButton
+                    aria-label='toggle password visibility'
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge='end'>
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
           <TextField
             id='email'
             inputRef={register({

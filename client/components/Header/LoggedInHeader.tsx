@@ -80,7 +80,6 @@ export default function LoggedInHeader() {
 
   const logout = async () => {
     await authService.signout()
-    appContext.setIsLoggedIn(false)
     router.push('/')
   }
 

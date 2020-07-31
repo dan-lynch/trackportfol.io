@@ -13,7 +13,7 @@ import {
   CircularProgress,
   InputAdornment,
   IconButton,
-  Box
+  Box,
 } from '@material-ui/core'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
@@ -84,7 +84,7 @@ function ResetPassword() {
     setLoading(true)
     setNotification({ show: false, type: notification.type })
     const { newPassword } = values
-    if (token && typeof(token) == 'string') {
+    if (token && typeof token == 'string') {
       const confirmPasswordReset = await authService.confirmPasswordReset(token, newPassword)
       if (confirmPasswordReset) {
         setLoading(false)
@@ -94,20 +94,20 @@ function ResetPassword() {
       } else {
         onError()
       }
-  } else {
-    onError()
+    } else {
+      onError()
+    }
   }
-}
 
-async function onError() {
-  setLoading(false)
-  gaService.resetPasswordFailedEvent()
-  setNotification({
-    show: true,
-    message: 'Could not reset password, please refresh the page or try again later',
-    type: 'error',
-  })
-}
+  async function onError() {
+    setLoading(false)
+    gaService.resetPasswordFailedEvent()
+    setNotification({
+      show: true,
+      message: 'Could not reset password, please refresh the page or try again later',
+      type: 'error',
+    })
+  }
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword)
@@ -122,9 +122,9 @@ async function onError() {
       <Container maxWidth='md'>
         <Box my={2}>
           <Typography variant='h4' component='h4' gutterBottom>
-          Reset Password
+            Reset Password
           </Typography>
-          </Box>
+        </Box>
         <Grid container spacing={3}>
           <Collapse in={notification.show} className={classes.collapse}>
             <Grid item xs={12}>

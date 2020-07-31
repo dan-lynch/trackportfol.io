@@ -7,7 +7,6 @@ export type Notification = {
   type?: 'success' | 'info' | 'warning' | 'error'
 }
 
-
 export type Props = {
   message?: string
   type?: 'success' | 'info' | 'warning' | 'error'

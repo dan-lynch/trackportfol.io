@@ -24,9 +24,9 @@ const useStyles = makeStyles((theme) =>
 )
 
 type Props = {
-    currentDisplayName: string
-    displayNameUpdated: any
-  }
+  currentDisplayName: string
+  displayNameUpdated: any
+}
 
 export default function UpdateDisplayName(props: Props) {
   const { currentDisplayName, displayNameUpdated } = props
@@ -42,15 +42,11 @@ export default function UpdateDisplayName(props: Props) {
     setLoading(true)
     setNotification({ show: false, type: notification.type })
     const { displayName } = values
-    if (appContext.user) {
-      const updateEmailResult = await authService.updateDisplayName(appContext.user, displayName)
-      if (updateEmailResult) {
-        setLoading(false)
-        gaService.usernameUpdatedSuccessEvent()
-        displayNameUpdated(displayName)
-      } else {
-        updateDisplayNameFailed()
-      }
+    const updateEmailResult = await authService.updateDisplayName(displayName)
+    if (updateEmailResult) {
+      setLoading(false)
+      gaService.usernameUpdatedSuccessEvent()
+      displayNameUpdated(displayName)
     } else {
       updateDisplayNameFailed()
     }
@@ -78,9 +74,7 @@ export default function UpdateDisplayName(props: Props) {
         </Grid>
       </Collapse>
       <Grid item xs={12}>
-        <Typography>
-          To change your display name, enter your new display name below and click submit.
-        </Typography>
+        <Typography>To change your display name, enter your new display name below and click submit.</Typography>
         <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
           <TextField
             id='displayName'

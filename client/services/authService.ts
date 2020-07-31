@@ -1,32 +1,50 @@
 import firebase from 'firebase/app'
 import axios from 'axios'
-import 'firebase/auth'
-import { TOKEN, AUTH_URL } from 'helpers/constants'
+import { BehaviorSubject } from 'rxjs'
 import Cookie from 'js-cookie'
+import Router from 'next/router'
+import 'firebase/auth'
+import {
+  TOKEN,
+  USER,
+  AUTH_URL,
+  FIREBASE_API_KEY,
+  FIREBASE_AUTH_DOMAIN,
+  FIREBASE_DATABASE_URL,
+  FIREBASE_MEASUREMENT_ID,
+  FIREBASE_MESSAGING_APP_ID,
+  FIREBASE_MESSAGING_SENDER_ID,
+  FIREBASE_PROJECT_ID,
+  FIREBASE_STORAGE_BUCKET,
+} from 'helpers/constants'
 
 export type Token = {
   authToken: string
 }
-const currentGraphqlToken = Cookie.getJSON(TOKEN)
+
+const userCookie = new BehaviorSubject<firebase.User | null>(Cookie.getJSON(USER)!)
+
+const token = new BehaviorSubject<Token | null>(Cookie.getJSON(TOKEN)!)
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyBT51vdcixu6f-DAWXOSULymqiiP7cIBVk',
-  authDomain: 'trackportfolio-1.firebaseapp.com',
-  databaseURL: 'https://trackportfolio-1.firebaseio.com',
-  projectId: 'trackportfolio-1',
-  storageBucket: 'trackportfolio-1.appspot.com',
-  messagingSenderId: '934663939041',
-  appId: '1:934663939041:web:70e604c151ee45d19428a0',
-  measurementId: 'G-VQZFXPE6CC',
+  apiKey: FIREBASE_API_KEY,
+  authDomain: FIREBASE_AUTH_DOMAIN,
+  databaseURL: FIREBASE_DATABASE_URL,
+  projectId: FIREBASE_PROJECT_ID,
+  storageBucket: FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
+  appId: FIREBASE_MESSAGING_APP_ID,
+  measurementId: FIREBASE_MEASUREMENT_ID,
 }
 
 if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
+  firebase.initializeApp(firebaseConfig)
 }
 
 export const auth = firebase.auth()
 
 export const authService = {
+  refreshUser,
   signin,
   signup,
   signout,
@@ -38,29 +56,65 @@ export const authService = {
   storeGraphqlToken,
   removeGraphqlToken,
   validateUser,
-  get graphqltoken(): string | null {
-    return !!currentGraphqlToken ? currentGraphqlToken : null
+  get currentToken(): string | null {
+    return token.value ? token.value.authToken : null
   },
+  get currentUser(): firebase.User | null {
+    return firebase.auth().currentUser
+  },
+}
+
+async function refreshUser() {
+  try {
+    await firebase.auth().currentUser?.reload()
+    if (firebase.auth().currentUser) {
+      return firebase.auth().currentUser
+    } else if (userCookie.value) {
+      await firebase.auth().updateCurrentUser(userCookie.value)
+      return firebase.auth().currentUser
+    } else {
+      return null
+    }
+  } catch (error) {
+    // console.log('Error: authService | refreshUser() - Error: ' + error)
+    return null
+  }
 }
 
 async function signin(email: string, password: string) {
   try {
     const { user } = await auth.signInWithEmailAndPassword(email, password)
-    console.log(JSON.stringify(user))
-    return user
+    if (user) {
+      await auth.updateCurrentUser(user)
+      storeUserCookie(user)
+      const token = await user.getIdToken()
+      const isValidUser = await authService.validateUser(token)
+      return isValidUser
+    } else {
+      return false
+    }
   } catch (error) {
-    console.log('Error: authService | signin(email, password)')
+    // console.log('Error: authService | signin(email, password) - Error: ' + error)
     return false
   }
 }
 
-async function signup(email: string, password: string) {
+async function signup(email: string, password: string, displayName: string) {
   try {
     const { user } = await auth.createUserWithEmailAndPassword(email, password)
-    console.log(JSON.stringify(user))
-    return user
+    if (user) {
+      await user.updateProfile({ displayName })
+      await auth.updateCurrentUser(user)
+      await user.sendEmailVerification()
+      storeUserCookie(user)
+      const token = await user.getIdToken()
+      const isValidUser = await validateUser(token)
+      return isValidUser
+    } else {
+      return false
+    }
   } catch (error) {
-    console.log('Error: authService | signup(email, password)')
+    // console.log('Error: authService | signup(email, password) - Error: ' + error)
     return false
   }
 }
@@ -68,9 +122,24 @@ async function signup(email: string, password: string) {
 async function signout() {
   try {
     await auth.signOut()
+    removeGraphqlToken()
+    removeUserCookie()
+    Router.push('/')
     return true
   } catch (error) {
-    console.log('Error: authService | signout()')
+    // console.log('Error: authService | signout() - Error: ' + error)
+    return false
+  }
+}
+
+async function validateUser(firebaseToken: string) {
+  try {
+    const url = AUTH_URL + '?token=' + firebaseToken
+    const { data } = await axios.get(url)
+    storeGraphqlToken(data.data.validateUser.userValidated.token)
+    return true
+  } catch (error) {
+    // console.log('Error: authService | validateUser() - Error: ' + error)
     return false
   }
 }
@@ -80,7 +149,7 @@ async function sendPasswordResetEmail(email: string) {
     await auth.sendPasswordResetEmail(email)
     return true
   } catch (error) {
-    return true // don't expose to user if email was valid (security reason)
+    return true // don't expose to user if email was valid (security)
   }
 }
 
@@ -89,55 +158,91 @@ async function confirmPasswordReset(code: string, password: string) {
     await auth.confirmPasswordReset(code, password)
     return true
   } catch (error) {
-    console.log('Error: authService | sendPasswordResetEmail()')
+    // console.log('Error: authService | sendPasswordResetEmail() - Error: ' + error)
     return false
   }
 }
 
-async function updateEmail(user: firebase.User, email: string) {
+async function updateEmail(password: string, email: string) {
   try {
-    await user.updateEmail(email)
-    return true
+    const originalEmail = firebase.auth().currentUser?.email
+    if (originalEmail) {
+      const { user } = await auth.signInWithEmailAndPassword(originalEmail, password)
+      if (user) {
+        await user.updateEmail(email)
+        const updatedUser = firebase.auth().currentUser
+        if (updatedUser) {
+          storeUserCookie(updatedUser)
+        }
+        return true
+      } else {
+        // console.log('Error: authService | updateEmail() - Error: No user found')
+        return false
+      }
+    }
   } catch (error) {
-    console.log('Error: authService | updateEmail()')
+    // console.log('Error: authService | updateEmail() - Error: ' + error)
     return false
   }
 }
 
-async function updatePassword(user: firebase.User, password: string) {
+async function updatePassword(password: string) {
   try {
-    await user.updatePassword(password)
-    return true
+    const user = firebase.auth().currentUser
+    if (user) {
+      await user.updatePassword(password)
+      const updatedUser = firebase.auth().currentUser
+      if (updatedUser) {
+        storeUserCookie(updatedUser)
+      }
+      return true
+    } else {
+      // console.log('Error: authService | updatePassword() - Error: No user found')
+      return false
+    }
   } catch (error) {
-    console.log('Error: authService | updatePassword()')
+    // console.log('Error: authService | updatePassword() - Error: ' + error)
     return false
   }
 }
 
-async function updateDisplayName(user: firebase.User, displayName: string) {
+async function updateDisplayName(displayName: string) {
   try {
-    await user.updateProfile({displayName})
-    return true
+    const user = firebase.auth().currentUser
+    if (user) {
+      await user.updateProfile({ displayName })
+      const updatedUser = firebase.auth().currentUser
+      if (updatedUser) {
+        storeUserCookie(updatedUser)
+      }
+      return true
+    } else {
+      // console.log('Error: authService | updateDisplayName() - Error: No user found')
+      return false
+    }
   } catch (error) {
-    console.log('Error: authService | updateDisplayName()')
+    // console.log('Error: authService | updateDisplayName() - Error: ' + error)
     return false
   }
 }
 
 function storeGraphqlToken(jwtToken: string) {
-  Cookie.set(TOKEN, jwtToken)
+  const tokenObj: Token = { authToken: jwtToken }
+  Cookie.set(TOKEN, tokenObj)
+  token.next(tokenObj)
 }
 
 function removeGraphqlToken() {
   Cookie.remove(TOKEN)
+  token.next(null)
 }
 
-async function validateUser(firebaseToken: string) {
-  try {
-    const url = AUTH_URL + '?token=' + firebaseToken
-    const data = await axios.get(url)
-    return data
-  } catch {
-    return null
-  }
+function storeUserCookie(user: firebase.User) {
+  Cookie.set(USER, user)
+  userCookie.next(user)
+}
+
+function removeUserCookie() {
+  Cookie.remove(USER)
+  userCookie.next(null)
 }

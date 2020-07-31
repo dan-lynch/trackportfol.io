@@ -8,6 +8,7 @@ import {
 import {
   CURRENT_USER,
   ALL_INSTRUMENTS,
+  ALL_HOLDINGS,
   SEARCH_INSTRUMENTS
 } from 'services/graphql/queries'
 
@@ -23,6 +24,7 @@ export const graphqlService = {
   UPDATE_THEME,
   CURRENT_USER,
   ALL_INSTRUMENTS,
+  ALL_HOLDINGS,
   SEARCH_INSTRUMENTS,
   SUBSCRIBE_CURRENT_USER,
   SUBSCRIBE_ALL_HOLDINGS

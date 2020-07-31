@@ -54,15 +54,11 @@ export default function UpdatePassword(props: Props) {
     setLoading(true)
     setNotification({ show: false, type: notification.type })
     const { newPassword } = values
-    if (appContext.user) {
-      const updatePasswordResult = await authService.updatePassword(appContext.user, newPassword)
-      if (updatePasswordResult) {
-        setLoading(false)
-        gaService.passwordUpdatedSuccessEvent()
-        passwordUpdated()
-      } else {
-        updatePasswordFailed()
-      }
+    const updatePasswordResult = await authService.updatePassword(newPassword)
+    if (updatePasswordResult) {
+      setLoading(false)
+      gaService.passwordUpdatedSuccessEvent()
+      passwordUpdated()
     } else {
       updatePasswordFailed()
     }

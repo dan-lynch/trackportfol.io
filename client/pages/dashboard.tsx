@@ -1,5 +1,4 @@
 import React, { useEffect, useContext, useState } from 'react'
-import Router from 'next/router'
 import { useMutation, useSubscription, useQuery } from '@apollo/client'
 import { Grid, Paper, Typography, TextField, Button, CircularProgress, Collapse } from '@material-ui/core'
 import { Skeleton } from '@material-ui/lab'
@@ -19,7 +18,7 @@ import { initApolloClient } from 'services/apolloService'
 import { Instrument, Holding } from 'helpers/types'
 import { isNumeric } from 'helpers/misc'
 import Cookie from 'js-cookie'
-import { TOKEN, DISMISS_UPDATE } from 'helpers/constants'
+import { DISMISS_UPDATE } from 'helpers/constants'
 
 const useStyles = makeStyles(() => ({
   paper: {
@@ -56,8 +55,8 @@ const useStyles = makeStyles(() => ({
   },
   update: {
     width: '100%',
-    margin: '0.5rem 0.75rem'
-  }
+    margin: '0.5rem 0.75rem',
+  },
 }))
 
 function Dashboard() {
@@ -88,6 +87,12 @@ function Dashboard() {
     variables: {},
   })
 
+  const backupHoldings = useQuery(graphqlService.ALL_HOLDINGS, {
+    variables: {
+      pollInterval: 5000,
+    },
+  })
+
   const { error, data } = useSubscription(graphqlService.SUBSCRIBE_ALL_HOLDINGS, {
     variables: {},
   })
@@ -114,55 +119,54 @@ function Dashboard() {
       })
   }
 
-  const logoutUser = async () => {
-    appContext.setIsLoggedIn(false)
-    await authService.signout()
-    Router.push('/')
-  }
-
   useEffect(() => {
     if (currentUser.data && currentUser.data.currentUser && !currentUser.error) {
       setUserId(currentUser.data.currentUser.userId)
       appContext.setIsDarkTheme(currentUser.data.currentUser.prefersDarkTheme)
-    } else if (currentUser.data && currentUser.error) {
-      console.log('No TP user found (could be offline or network error)')
     }
   }, [currentUser])
 
   useEffect(() => {
-    if (appContext.user) {
-      appContext.setIsLoggedIn(true)
-      if (appContext.user.displayName) {
-        setWelcomeMessage(`Welcome to your dashboard, ${appContext.user.displayName}!`)
+    async function setUser() {
+      if (authService.currentUser) {
+        if (authService.currentUser.displayName) {
+          setWelcomeMessage(`Welcome to your dashboard, ${authService.currentUser.displayName}!`)
+        } else {
+          setWelcomeMessage('Welcome to your dashboard!')
+        }
       } else {
-        setWelcomeMessage('Welcome to your dashboard!')
+        const updatedUser = await authService.refreshUser()
+        if (updatedUser) {
+          if (updatedUser.displayName) {
+            setWelcomeMessage(`Welcome to your dashboard, ${updatedUser.displayName}!`)
+          } else {
+            setWelcomeMessage('Welcome to your dashboard!')
+          }
+        }
       }
-    } else {
-      console.log('No firebase user found, logging out...')
-      logoutUser()
     }
-  }, [appContext.user])
-  
+    setUser()
+  }, [authService.currentUser])
 
   useEffect(() => {
     if (data && !error) {
       refreshHoldings(data.allHoldings.nodes)
+    }
+    else if (backupHoldings.data) {
+      // Fallback to graphql query if issue with subscription
+      refreshHoldings(backupHoldings.data.allHoldings.nodes)
     }
   }, [data])
 
   useEffect(() => {
     if (error) {
       if (error.message === 'jwt malformed' || error.message === 'jwt expired') {
-        logoutUser()
+        authService.signout()
       }
     }
   }, [error])
 
   useEffect(() => {
-    if (!Cookie.getJSON(TOKEN)) {
-      logoutUser()
-    }
-
     if (!Cookie.getJSON(DISMISS_UPDATE)) {
       setDashboardUpdate({
         show: true,
@@ -251,7 +255,7 @@ function Dashboard() {
                     <HoldingView
                       id={holding.id}
                       amount={holding.amount}
-                      key={holding.instrumentByInstrumentId.id}
+                      key={holding.id}
                       code={holding.instrumentByInstrumentId.code}
                       price={holding.instrumentByInstrumentId.latestPrice}
                     />
