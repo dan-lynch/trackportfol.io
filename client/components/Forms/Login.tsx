@@ -77,7 +77,6 @@ export default function Login(props: Props) {
   }
 
   const onError = () => {
-    authService.signout()
     gaService.loginFailedEvent()
     setNotification({ show: true, message: 'Sign in unsuccessful, please try again', type: 'error' })
     setLoading(false)
@@ -95,14 +94,14 @@ export default function Login(props: Props) {
     if (appContext.signupEmail) {
       setNotification({ show: true, message: 'Account created successfully! You can now sign in', type: 'success' })
     }
-  }, [])
+  }, [appContext.signupEmail])
 
   useEffect(() => {
     if (appContext.resetPassSuccess) {
       setNotification({ show: true, message: 'Password updated successfully! You can now sign in', type: 'success' })
       appContext.setResetPassSuccess(false)
     }
-  }, [])
+  }, [appContext])
 
   return (
     <React.Fragment>
@@ -133,7 +132,7 @@ export default function Login(props: Props) {
             fullWidth
             autoFocus
             autoComplete='on'
-            autoCapitalize='off'
+            autoCapitalize='none'
             helperText={errors.email?.message}
             error={!!errors.email}
           />

@@ -129,7 +129,7 @@ export default function UpdateEmail(props: Props) {
             fullWidth
             placeholder={currentEmail}
             autoComplete='on'
-            autoCapitalize='off'
+            autoCapitalize='none'
             helperText={errors.email?.message}
             error={!!errors.email}
           />

@@ -94,7 +94,7 @@ function ForgotPass() {
             variant='outlined'
             fullWidth
             autoComplete='on'
-            autoCapitalize='off'
+            autoCapitalize='none'
             helperText={errors.emailInput?.message}
             error={!!errors.emailInput}
           />

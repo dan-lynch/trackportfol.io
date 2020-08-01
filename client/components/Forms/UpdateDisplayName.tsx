@@ -92,7 +92,6 @@ export default function UpdateDisplayName(props: Props) {
             fullWidth
             placeholder={currentDisplayName}
             autoComplete='on'
-            autoCapitalize='off'
             helperText={errors.displayName?.message}
             error={!!errors.displayName}
           />

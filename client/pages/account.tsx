@@ -92,7 +92,7 @@ function Account() {
       }
     }
     setUser()
-  }, [authService.currentUser])
+  }, [])
 
   return (
     <Layout title='Account | trackportfol.io'>

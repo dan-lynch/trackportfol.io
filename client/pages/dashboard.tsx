@@ -70,7 +70,6 @@ function Dashboard() {
   const [welcomeMessage, setWelcomeMessage] = useState<string | null>(null)
   const [notification, setNotification] = useState<Notification>({ show: false })
   const [createHoldingLoading, setCreateHoldingLoading] = useState<boolean>(false)
-
   const [dashboardUpdate, setDashboardUpdate] = useState<Notification>({ show: false })
 
   const dismissDashboardUpdate = () => {
@@ -124,7 +123,7 @@ function Dashboard() {
       setUserId(currentUser.data.currentUser.userId)
       appContext.setIsDarkTheme(currentUser.data.currentUser.prefersDarkTheme)
     }
-  }, [currentUser])
+  }, [currentUser, appContext])
 
   useEffect(() => {
     async function setUser() {
@@ -142,17 +141,19 @@ function Dashboard() {
       }
     }
     setUser()
-  }, [authService.currentUser])
+  }, [])
 
   useEffect(() => {
     if (allHoldingsSub && !allHoldingsSubError) {
-      refreshHoldings(allHoldingsSub.allHoldings.nodes)
+      setHoldings(allHoldingsSub.allHoldings.nodes)
+      calculateTotalHoldings(allHoldingsSub.allHoldings.nodes)
     }
     else if (allHoldingsQuery && !allHoldingsQueryError) {
       // Fallback to graphql query if issue with subscription
-      refreshHoldings(allHoldingsQuery.allHoldings.nodes)
+      setHoldings(allHoldingsQuery.allHoldings.nodes)
+      calculateTotalHoldings(allHoldingsQuery.allHoldings.nodes)
     }
-  }, [allHoldingsQuery, allHoldingsSub])
+  }, [allHoldingsQuery, allHoldingsSub, allHoldingsQueryError, allHoldingsSubError])
 
   useEffect(() => {
     if (allHoldingsQueryError) {
@@ -172,7 +173,7 @@ function Dashboard() {
       })
     }
     client.resetStore()
-  }, [])
+  }, [client])
 
   const processSearch = (searchQuery: Instrument | null) => {
     if (searchQuery && searchQuery.code) {
@@ -193,11 +194,6 @@ function Dashboard() {
     if (isNumeric(quantity) || quantity === '') {
       setQuantityToAdd(quantity)
     }
-  }
-
-  const refreshHoldings = (holdings: any) => {
-    setHoldings(holdings)
-    calculateTotalHoldings(holdings)
   }
 
   const calculateTotalHoldings = (holdings: Holding[]) => {
