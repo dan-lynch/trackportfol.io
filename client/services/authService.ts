@@ -2,7 +2,6 @@ import firebase from 'firebase/app'
 import axios from 'axios'
 import { BehaviorSubject } from 'rxjs'
 import Cookie from 'js-cookie'
-import Router from 'next/router'
 import 'firebase/auth'
 import {
   TOKEN,
@@ -124,7 +123,7 @@ async function signout() {
     await auth.signOut()
     removeGraphqlToken()
     removeUserCookie()
-    Router.push('/')
+    window.location.replace('/')
     return true
   } catch (error) {
     // console.log('Error: authService | signout() - Error: ' + error)

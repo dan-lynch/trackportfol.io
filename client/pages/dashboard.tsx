@@ -87,13 +87,13 @@ function Dashboard() {
     variables: {},
   })
 
-  const backupHoldings = useQuery(graphqlService.ALL_HOLDINGS, {
+  const { client, error: allHoldingsQueryError, data: allHoldingsQuery } = useQuery(graphqlService.ALL_HOLDINGS, {
     variables: {
       pollInterval: 5000,
     },
   })
 
-  const { error, data } = useSubscription(graphqlService.SUBSCRIBE_ALL_HOLDINGS, {
+  const { error: allHoldingsSubError, data: allHoldingsSub } = useSubscription(graphqlService.SUBSCRIBE_ALL_HOLDINGS, {
     variables: {},
   })
 
@@ -129,19 +129,15 @@ function Dashboard() {
   useEffect(() => {
     async function setUser() {
       if (authService.currentUser) {
-        if (authService.currentUser.displayName) {
-          setWelcomeMessage(`Welcome to your dashboard, ${authService.currentUser.displayName}!`)
-        } else {
+        authService.currentUser.displayName ?
+          setWelcomeMessage(`Welcome to your dashboard, ${authService.currentUser.displayName}!`) :
           setWelcomeMessage('Welcome to your dashboard!')
-        }
       } else {
         const updatedUser = await authService.refreshUser()
         if (updatedUser) {
-          if (updatedUser.displayName) {
-            setWelcomeMessage(`Welcome to your dashboard, ${updatedUser.displayName}!`)
-          } else {
+          updatedUser.displayName ?
+            setWelcomeMessage(`Welcome to your dashboard, ${updatedUser.displayName}!`) :
             setWelcomeMessage('Welcome to your dashboard!')
-          }
         }
       }
     }
@@ -149,22 +145,22 @@ function Dashboard() {
   }, [authService.currentUser])
 
   useEffect(() => {
-    if (data && !error) {
-      refreshHoldings(data.allHoldings.nodes)
+    if (allHoldingsSub && !allHoldingsSubError) {
+      refreshHoldings(allHoldingsSub.allHoldings.nodes)
     }
-    else if (backupHoldings.data) {
+    else if (allHoldingsQuery && !allHoldingsQueryError) {
       // Fallback to graphql query if issue with subscription
-      refreshHoldings(backupHoldings.data.allHoldings.nodes)
+      refreshHoldings(allHoldingsQuery.allHoldings.nodes)
     }
-  }, [data])
+  }, [allHoldingsQuery, allHoldingsSub])
 
   useEffect(() => {
-    if (error) {
-      if (error.message === 'jwt malformed' || error.message === 'jwt expired') {
+    if (allHoldingsQueryError) {
+      if (allHoldingsQueryError.message === 'jwt malformed' || allHoldingsQueryError.message === 'jwt expired') {
         authService.signout()
       }
     }
-  }, [error])
+  }, [allHoldingsQueryError])
 
   useEffect(() => {
     if (!Cookie.getJSON(DISMISS_UPDATE)) {
@@ -175,6 +171,7 @@ function Dashboard() {
         type: 'info',
       })
     }
+    client.resetStore()
   }, [])
 
   const processSearch = (searchQuery: Instrument | null) => {
