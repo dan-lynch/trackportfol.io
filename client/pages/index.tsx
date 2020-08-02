@@ -1,17 +1,18 @@
 import React, { useEffect } from 'react'
+import { useRouter } from 'next/router'
 import { withApollo } from 'components/withApollo'
 import { initApolloClient } from 'services/apolloService'
 import { Container, Typography, Box, Paper } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
+import { Alert } from '@material-ui/lab'
+import Cookie from 'js-cookie'
 import Layout from 'components/Layout/LoggedOutLayout'
 import Modal from 'components/Modal'
 import LoginForm from 'components/Forms/Login'
 import SignUpForm from 'components/Forms/SignUp'
 import ForgotPassForm from 'components/Forms/ForgotPass'
-import Cookie from 'js-cookie'
-import { TOKEN } from 'helpers/constants'
+import { TOKEN, USER } from 'helpers/constants'
 import { ModalOptions } from 'helpers/types'
-import { Alert } from '@material-ui/lab'
 
 const useStyles = makeStyles(() => ({
   message: {
@@ -30,6 +31,7 @@ const useStyles = makeStyles(() => ({
 
 function Home() {
   const classes = useStyles()
+  const router = useRouter()
 
   const [currentModal, setCurrentModal] = React.useState<ModalOptions>(ModalOptions.None)
   const openLoginModal = () => setCurrentModal(ModalOptions.Login)
@@ -38,8 +40,8 @@ function Home() {
   const closeModal = () => setCurrentModal(ModalOptions.None)
 
   useEffect(() => {
-    if (Cookie.getJSON(TOKEN)) {
-      window.location.replace('/dashboard')
+    if (Cookie.getJSON(TOKEN) && Cookie.getJSON(USER)) {
+      router.push('/dashboard')
     }
   }, [])
 

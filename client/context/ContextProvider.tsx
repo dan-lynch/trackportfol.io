@@ -1,11 +1,11 @@
 import React from 'react'
-import { userService } from 'services/userService'
 
-export const ContextProvider = ({ children }: any) => {
+export const AppContext = React.createContext<Partial<ContextProps>>({})
+
+const ContextProvider = ({ children }: any) => {
   const [signupEmail, setSignupEmail] = React.useState<string>('')
   const [stock, setStock] = React.useState<string>('')
-  const [isDarkTheme, setIsDarkTheme] = React.useState<boolean>(userService.theme === 'dark' || false)
-  const [isLoggedIn, setIsLoggedIn] = React.useState<boolean>(false)
+  const [isDarkTheme, setIsDarkTheme] = React.useState<boolean>(false)
   const [resetPassSuccess, setResetPassSuccess] = React.useState<boolean>(false)
 
   const contextProps: Partial<ContextProps> = {
@@ -15,9 +15,6 @@ export const ContextProvider = ({ children }: any) => {
     setStock,
     isDarkTheme,
     setIsDarkTheme,
-    isLoggedIn,
-    setIsLoggedIn,
-    userService,
     resetPassSuccess,
     setResetPassSuccess,
   }
@@ -32,11 +29,8 @@ type ContextProps = {
   setStock: any
   isDarkTheme: boolean
   setIsDarkTheme: any
-  isLoggedIn: boolean
-  setIsLoggedIn: any
-  userService: any
   resetPassSuccess: boolean
   setResetPassSuccess: any
 }
 
-export const AppContext = React.createContext<Partial<ContextProps>>({})
+export default ContextProvider

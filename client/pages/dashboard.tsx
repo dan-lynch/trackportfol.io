@@ -1,6 +1,5 @@
 import React, { useEffect, useContext, useState } from 'react'
-import Router from 'next/router'
-import { useMutation, useSubscription } from '@apollo/client'
+import { useMutation, useSubscription, useQuery } from '@apollo/client'
 import { Grid, Paper, Typography, TextField, Button, CircularProgress, Collapse } from '@material-ui/core'
 import { Skeleton } from '@material-ui/lab'
 import { makeStyles } from '@material-ui/core/styles'
@@ -11,15 +10,15 @@ import SearchStock from 'components/SearchStock'
 import HoldingView from 'components/HoldingView'
 import { withApollo } from 'components/withApollo'
 import NotificationComponent, { Notification } from 'components/Notification'
-import { AppContext } from 'context/AppContext'
+import { AppContext } from 'context/ContextProvider'
 import { graphqlService } from 'services/graphql'
 import { gaService } from 'services/gaService'
-import { userService } from 'services/userService'
+import { authService } from 'services/authService'
 import { initApolloClient } from 'services/apolloService'
 import { Instrument, Holding } from 'helpers/types'
 import { isNumeric } from 'helpers/misc'
 import Cookie from 'js-cookie'
-import { TOKEN, DISMISS_UPDATE } from 'helpers/constants'
+import { DISMISS_UPDATE } from 'helpers/constants'
 
 const useStyles = makeStyles(() => ({
   paper: {
@@ -56,8 +55,8 @@ const useStyles = makeStyles(() => ({
   },
   update: {
     width: '100%',
-    margin: '0.5rem 0.75rem'
-  }
+    margin: '0.5rem 0.75rem',
+  },
 }))
 
 function Dashboard() {
@@ -67,11 +66,10 @@ function Dashboard() {
   const [instrumentToAdd, setInstrumentToAdd] = useState<Instrument | null>(null)
   const [instrumentIdToAdd, setInstrumentIdToAdd] = useState<number | null>(null)
   const [quantityToAdd, setQuantityToAdd] = useState<number | undefined>(0.0)
-  const [userId, setUserId] = useState<number | null>(null)
+  const [userId, setUserId] = useState<string | null>(null)
   const [welcomeMessage, setWelcomeMessage] = useState<string | null>(null)
   const [notification, setNotification] = useState<Notification>({ show: false })
   const [createHoldingLoading, setCreateHoldingLoading] = useState<boolean>(false)
-
   const [dashboardUpdate, setDashboardUpdate] = useState<Notification>({ show: false })
 
   const dismissDashboardUpdate = () => {
@@ -84,7 +82,17 @@ function Dashboard() {
   const classes = useStyles()
   const appContext = useContext(AppContext)
 
-  const { error, data } = useSubscription(graphqlService.SUBSCRIBE_CURRENT_USER, {
+  const currentUser = useQuery(graphqlService.CURRENT_USER, {
+    variables: {},
+  })
+
+  const { client, error: allHoldingsQueryError, data: allHoldingsQuery } = useQuery(graphqlService.ALL_HOLDINGS, {
+    variables: {
+      pollInterval: 5000,
+    },
+  })
+
+  const { error: allHoldingsSubError, data: allHoldingsSub } = useSubscription(graphqlService.SUBSCRIBE_ALL_HOLDINGS, {
     variables: {},
   })
 
@@ -110,36 +118,52 @@ function Dashboard() {
       })
   }
 
-  const logoutUser = () => {
-    appContext.setIsLoggedIn(false)
-    userService.logout()
-    Router.push('/')
-  }
-
   useEffect(() => {
-    if (data && !error) {
-      refreshHoldings(data.currentUser.holdingsByUserId.nodes)
-      setUserId(data.currentUser.id)
-      appContext.setIsDarkTheme(data.currentUser.darkTheme)
-      appContext.setIsLoggedIn(true)
-      userService.storeUserData(data)
-      setWelcomeMessage(`Welcome to your dashboard, ${data.currentUser.username}!`)
+    if (currentUser.data && currentUser.data.currentUser && !currentUser.error) {
+      setUserId(currentUser.data.currentUser.userId)
+      appContext.setIsDarkTheme(currentUser.data.currentUser.prefersDarkTheme)
     }
-  }, [data])
+  }, [currentUser, appContext])
 
   useEffect(() => {
-    if (error) {
-      if (error.message === 'jwt malformed' || error.message === 'jwt expired') {
-        logoutUser()
+    async function setUser() {
+      if (authService.currentUser) {
+        authService.currentUser.displayName ?
+          setWelcomeMessage(`Welcome to your dashboard, ${authService.currentUser.displayName}!`) :
+          setWelcomeMessage('Welcome to your dashboard!')
+      } else {
+        const updatedUser = await authService.refreshUser()
+        if (updatedUser) {
+          updatedUser.displayName ?
+            setWelcomeMessage(`Welcome to your dashboard, ${updatedUser.displayName}!`) :
+            setWelcomeMessage('Welcome to your dashboard!')
+        }
       }
     }
-  }, [error])
+    setUser()
+  }, [])
 
   useEffect(() => {
-    if (!Cookie.getJSON(TOKEN)) {
-      logoutUser()
+    if (allHoldingsSub && !allHoldingsSubError) {
+      setHoldings(allHoldingsSub.allHoldings.nodes)
+      calculateTotalHoldings(allHoldingsSub.allHoldings.nodes)
     }
+    else if (allHoldingsQuery && !allHoldingsQueryError) {
+      // Fallback to graphql query if issue with subscription
+      setHoldings(allHoldingsQuery.allHoldings.nodes)
+      calculateTotalHoldings(allHoldingsQuery.allHoldings.nodes)
+    }
+  }, [allHoldingsQuery, allHoldingsSub, allHoldingsQueryError, allHoldingsSubError])
 
+  useEffect(() => {
+    if (allHoldingsQueryError) {
+      if (allHoldingsQueryError.message === 'jwt malformed' || allHoldingsQueryError.message === 'jwt expired') {
+        authService.signout()
+      }
+    }
+  }, [allHoldingsQueryError])
+
+  useEffect(() => {
     if (!Cookie.getJSON(DISMISS_UPDATE)) {
       setDashboardUpdate({
         show: true,
@@ -148,7 +172,8 @@ function Dashboard() {
         type: 'info',
       })
     }
-  }, [])
+    client.resetStore()
+  }, [client])
 
   const processSearch = (searchQuery: Instrument | null) => {
     if (searchQuery && searchQuery.code) {
@@ -169,11 +194,6 @@ function Dashboard() {
     if (isNumeric(quantity) || quantity === '') {
       setQuantityToAdd(quantity)
     }
-  }
-
-  const refreshHoldings = (holdings: any) => {
-    setHoldings(holdings)
-    calculateTotalHoldings(holdings)
   }
 
   const calculateTotalHoldings = (holdings: Holding[]) => {
@@ -228,7 +248,7 @@ function Dashboard() {
                     <HoldingView
                       id={holding.id}
                       amount={holding.amount}
-                      key={holding.instrumentByInstrumentId.id}
+                      key={holding.id}
                       code={holding.instrumentByInstrumentId.code}
                       price={holding.instrumentByInstrumentId.latestPrice}
                     />

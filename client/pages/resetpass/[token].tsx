@@ -1,6 +1,5 @@
 import React, { useState, useContext } from 'react'
 import { useRouter } from 'next/router'
-import { useMutation } from '@apollo/client'
 import { withApollo } from 'components/withApollo'
 import { initApolloClient } from 'services/apolloService'
 import {
@@ -14,22 +13,22 @@ import {
   CircularProgress,
   InputAdornment,
   IconButton,
-  Box
+  Box,
 } from '@material-ui/core'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
 import { makeStyles, createStyles } from '@material-ui/core/styles'
 import Layout from 'components/Layout/LoggedOutLayout'
 import NotificationComponent, { Notification } from 'components/Notification'
-import { graphqlService } from 'services/graphql'
 import { useForm } from 'react-hook-form'
 import { gaService } from 'services/gaService'
-import { AppContext } from 'context/AppContext'
+import { AppContext } from 'context/ContextProvider'
 import { ModalOptions } from 'helpers/types'
 import Modal from 'components/Modal'
 import LoginForm from 'components/Forms/Login'
 import SignUpForm from 'components/Forms/SignUp'
 import ForgotPassForm from 'components/Forms/ForgotPass'
+import { authService } from 'services/authService'
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -79,29 +78,35 @@ function ResetPassword() {
 
   const { token } = router.query
 
-  const [resetPasswordMutation] = useMutation(graphqlService.RESET_PASSWORD)
   const { register, handleSubmit, errors } = useForm()
 
-  const onSubmit = (values: any) => {
+  const onSubmit = async (values: any) => {
     setLoading(true)
     setNotification({ show: false, type: notification.type })
     const { newPassword } = values
-    resetPasswordMutation({ variables: { token, newPassword } })
-      .then(() => {
-        appContext.setResetPassSuccess(true)
+    if (token && typeof token == 'string') {
+      const confirmPasswordReset = await authService.confirmPasswordReset(token, newPassword)
+      if (confirmPasswordReset) {
         setLoading(false)
+        appContext.setResetPassSuccess(true)
         gaService.resetPasswordSuccessEvent()
         openLoginModal()
-      })
-      .catch(() => {
-        setLoading(false)
-        gaService.resetPasswordFailedEvent()
-        setNotification({
-          show: true,
-          message: 'Could not change password, please refresh the page or try again later',
-          type: 'error',
-        })
-      })
+      } else {
+        onError()
+      }
+    } else {
+      onError()
+    }
+  }
+
+  async function onError() {
+    setLoading(false)
+    gaService.resetPasswordFailedEvent()
+    setNotification({
+      show: true,
+      message: 'Could not reset password, please refresh the page or try again later',
+      type: 'error',
+    })
   }
 
   const handleClickShowPassword = () => {
@@ -117,9 +122,9 @@ function ResetPassword() {
       <Container maxWidth='md'>
         <Box my={2}>
           <Typography variant='h4' component='h4' gutterBottom>
-          Reset Password
+            Reset Password
           </Typography>
-          </Box>
+        </Box>
         <Grid container spacing={3}>
           <Collapse in={notification.show} className={classes.collapse}>
             <Grid item xs={12}>

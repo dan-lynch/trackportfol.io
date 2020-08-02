@@ -2,22 +2,21 @@ import { gql } from '@apollo/client'
 
 export const DELETE_HOLDING = gql`
   mutation deleteHolding($id: Int!) {
-    deleteHoldingById(input: { id: $id }) {
-      userByUserId {
-        username
-        id
-        holdingsByUserId {
+    deleteHoldingById(input: {id: $id}) {
+      deletedHoldingId
+      query {
+        allHoldings {
           nodes {
             id
-            amount
-            createdAt
-            instrumentId
+            userId
             instrumentByInstrumentId {
-              id
               code
               description
+              lastUpdated
               latestPrice
             }
+            amount
+            createdAt
           }
         }
       }

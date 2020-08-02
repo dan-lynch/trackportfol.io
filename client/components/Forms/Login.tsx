@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { useLazyQuery } from '@apollo/client'
+import { useRouter } from 'next/router'
 import {
   Grid,
   Typography,
@@ -15,10 +15,9 @@ import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
 import { makeStyles, createStyles } from '@material-ui/core/styles'
 import { useForm } from 'react-hook-form'
-import { AppContext } from 'context/AppContext'
-import { graphqlService } from 'services/graphql'
+import { AppContext } from 'context/ContextProvider'
 import { gaService } from 'services/gaService'
-import { userService } from 'services/userService'
+import { authService } from 'services/authService'
 import NotificationComponent, { Notification } from 'components/Notification'
 
 const useStyles = makeStyles((theme) =>
@@ -53,37 +52,34 @@ type Props = {
 export default function Login(props: Props) {
   const { openSignupForm, openForgotPassForm } = props
 
+  const classes = useStyles()
+  const router = useRouter()
+  const appContext = useContext(AppContext)
+
   const [notification, setNotification] = useState<Notification>({ show: false })
   const [showPassword, setShowPassword] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
 
-  const classes = useStyles()
-  const appContext = useContext(AppContext)
   const { register, handleSubmit, errors } = useForm()
 
-  const [authenticate, { loading, data }] = useLazyQuery(graphqlService.AUTHENTICATE)
-
-  const onSubmit = (values: any) => {
+  const onSubmit = async (values: any) => {
+    setLoading(true)
     setNotification({ show: false, type: notification.type })
     const { email, password } = values
-    authenticate({ variables: { email: email, password: password } })
-  }
-
-  const onConfirm = async (data: any) => {
-    const loginResult = await userService.login(data.authenticate)
-    if (loginResult) {
-      appContext.setIsLoggedIn(true)
+    const isAuthenticated = await authService.signin(email, password)
+    if (isAuthenticated) {
       gaService.loginSuccessEvent()
-      window.location.replace('/dashboard')
+      setLoading(false)
+      router.push('/dashboard')
     } else {
       onError()
     }
   }
 
   const onError = () => {
-    appContext.setIsLoggedIn(false)
-    userService.logout()
     gaService.loginFailedEvent()
     setNotification({ show: true, message: 'Sign in unsuccessful, please try again', type: 'error' })
+    setLoading(false)
   }
 
   const handleClickShowPassword = () => {
@@ -95,23 +91,17 @@ export default function Login(props: Props) {
   }
 
   useEffect(() => {
-    if (data) {
-      data.authenticate ? onConfirm(data) : onError()
-    }
-  }, [data])
-
-  useEffect(() => {
     if (appContext.signupEmail) {
       setNotification({ show: true, message: 'Account created successfully! You can now sign in', type: 'success' })
     }
-  }, [])
+  }, [appContext.signupEmail])
 
   useEffect(() => {
     if (appContext.resetPassSuccess) {
       setNotification({ show: true, message: 'Password updated successfully! You can now sign in', type: 'success' })
       appContext.setResetPassSuccess(false)
     }
-  }, [])
+  }, [appContext])
 
   return (
     <React.Fragment>
@@ -142,7 +132,7 @@ export default function Login(props: Props) {
             fullWidth
             autoFocus
             autoComplete='on'
-            autoCapitalize='off'
+            autoCapitalize='none'
             helperText={errors.email?.message}
             error={!!errors.email}
           />
@@ -174,7 +164,12 @@ export default function Login(props: Props) {
             }}
           />
           <Typography align='right'>
-            <Link type='button' className={appContext.isDarkTheme ? classes.white : ''} component='button' variant='body2' onClick={openForgotPassForm}>
+            <Link
+              type='button'
+              className={appContext.isDarkTheme ? classes.white : ''}
+              component='button'
+              variant='body2'
+              onClick={openForgotPassForm}>
               Forgot password?
             </Link>
           </Typography>

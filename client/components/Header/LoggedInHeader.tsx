@@ -21,8 +21,8 @@ import MenuIcon from '@material-ui/icons/Menu'
 import PersonIcon from '@material-ui/icons/Person'
 import { makeStyles } from '@material-ui/core/styles'
 import BrightnessIcon from '@material-ui/icons/Brightness4'
-import { AppContext } from 'context/AppContext'
-import { userService } from 'services/userService'
+import { AppContext } from 'context/ContextProvider'
+import { authService } from 'services/authService'
 import { graphqlService } from 'services/graphql'
 import { gaService } from 'services/gaService'
 
@@ -65,7 +65,6 @@ export default function LoggedInHeader() {
   const handleUpdateTheme = () => {
     const currentTheme = appContext.isDarkTheme
     appContext.setIsDarkTheme(!currentTheme)
-    userService.updateTheme(!currentTheme)
     storeUserTheme(!currentTheme)
   }
 
@@ -79,9 +78,8 @@ export default function LoggedInHeader() {
     })
   }
 
-  const logout = () => {
-    userService.logout()
-    appContext.setIsLoggedIn(false)
+  const logout = async () => {
+    await authService.signout()
     router.push('/')
   }
 

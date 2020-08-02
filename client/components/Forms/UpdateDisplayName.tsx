@@ -1,12 +1,11 @@
 import React, { useState, useContext } from 'react'
-import { useMutation } from '@apollo/client'
 import { Typography, Grid, Collapse, TextField, Button, CircularProgress } from '@material-ui/core'
 import { makeStyles, createStyles } from '@material-ui/core/styles'
 import NotificationComponent, { Notification } from 'components/Notification'
-import { graphqlService } from 'services/graphql'
 import { useForm } from 'react-hook-form'
+import { authService } from 'services/authService'
 import { gaService } from 'services/gaService'
-import { AppContext } from 'context/AppContext'
+import { AppContext } from 'context/ContextProvider'
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -25,47 +24,40 @@ const useStyles = makeStyles((theme) =>
 )
 
 type Props = {
-    currentUsername: string
-    usernameUpdated: any
-  }
+  currentDisplayName: string
+  displayNameUpdated: any
+}
 
-export default function UpdateUsername(props: Props) {
-  const { currentUsername, usernameUpdated } = props
+export default function UpdateDisplayName(props: Props) {
+  const { currentDisplayName, displayNameUpdated } = props
   const classes = useStyles()
   const appContext = useContext(AppContext)
-
-  const [updateUsernameMutation] = useMutation(graphqlService.UPDATE_USERNAME)
 
   const [notification, setNotification] = useState<Notification>({ show: false })
   const [loading, setLoading] = useState<boolean>(false)
 
   const { register, handleSubmit, errors } = useForm()
 
-  const onSubmit = (values: any) => {
+  const onSubmit = async (values: any) => {
     setLoading(true)
     setNotification({ show: false, type: notification.type })
-    const { username } = values
-    updateUsernameMutation({ variables: { newUsername: username } })
-      .then((response) => {
-        if (response.data.updateUsername.updatedUsername.success) {
-          setLoading(false)
-          gaService.usernameUpdatedSuccessEvent()
-          usernameUpdated(response.data.updateUsername.updatedUsername.updatedUsername)
-        } else {
-          updateUsernameFailed()
-        }
-      })
-      .catch(() => {
-        updateUsernameFailed()
-      })
+    const { displayName } = values
+    const updateEmailResult = await authService.updateDisplayName(displayName)
+    if (updateEmailResult) {
+      setLoading(false)
+      gaService.usernameUpdatedSuccessEvent()
+      displayNameUpdated(displayName)
+    } else {
+      updateDisplayNameFailed()
+    }
   }
 
-  const updateUsernameFailed = () => {
+  const updateDisplayNameFailed = () => {
     setLoading(false)
     gaService.usernameUpdatedFailedEvent()
     setNotification({
       show: true,
-      message: 'Could not change username (may already be taken), please choose another username or try again later',
+      message: 'Could not update display name, please try again later',
       type: 'error',
     })
   }
@@ -82,33 +74,30 @@ export default function UpdateUsername(props: Props) {
         </Grid>
       </Collapse>
       <Grid item xs={12}>
-        <Typography>
-          To change your username, enter your desired new username below and click submit.
-        </Typography>
+        <Typography>To change your display name, enter your new display name below and click submit.</Typography>
         <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
           <TextField
-            id='username'
+            id='displayName'
             inputRef={register({
-              required: 'Please enter your desired username',
+              required: 'Please enter your desired display name',
               pattern: {
                 value: /^[A-Z0-9.]{3,}$/i,
                 message:
-                  'Username must be at least three characters long, containing only letters (a-z), numbers (0-9), and periods (.)',
+                  'Displayn name must be at least three characters long, containing only letters (a-z), numbers (0-9), and periods (.)',
               },
             })}
-            name='username'
-            label='New Username'
+            name='displayName'
+            label='Display Name'
             variant='outlined'
             fullWidth
-            placeholder={currentUsername}
+            placeholder={currentDisplayName}
             autoComplete='on'
-            autoCapitalize='off'
-            helperText={errors.username?.message}
-            error={!!errors.username}
+            helperText={errors.displayName?.message}
+            error={!!errors.displayName}
           />
           <Button
             type='submit'
-            aria-label='Change username'
+            aria-label='Change display name'
             fullWidth
             variant={appContext.isDarkTheme ? 'outlined' : 'contained'}
             color='secondary'>

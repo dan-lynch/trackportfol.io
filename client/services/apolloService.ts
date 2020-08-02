@@ -3,7 +3,7 @@ import { WebSocketLink } from '@apollo/link-ws'
 import { onError } from '@apollo/link-error'
 import { setContext } from '@apollo/link-context'
 import { getMainDefinition } from 'apollo-utilities'
-import { userService } from 'services/userService'
+import { authService } from 'services/authService'
 import { API_URL, WS_URL, TOKEN } from 'helpers/constants'
 import Cookie from 'js-cookie'
 
@@ -12,30 +12,11 @@ global.fetch = require('node-fetch')
 let globalApolloClient: any = null
 
 const logout = () => {
-  if (!!userService.loggedInUser) {
-  userService.logout()
-  location.replace("/")
+  if (!Cookie.getJSON(TOKEN)) {
+    authService.signout()
+    window.location.replace('/')
   }
 }
-
-const wsLinkwithoutAuth = () =>
-  new WebSocketLink({
-    uri: WS_URL,
-    options: {
-      reconnect: true,
-    },
-  })
-
-const wsLinkwithAuth = (token: string) =>
-  new WebSocketLink({
-    uri: WS_URL,
-    options: {
-      reconnect: true,
-      connectionParams: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
-  })
 
 function createIsomorphLink() {
   return new HttpLink({
@@ -44,8 +25,16 @@ function createIsomorphLink() {
 }
 
 function createWebSocketLink() {
-  const token = Cookie.getJSON(TOKEN)
-  return token ? wsLinkwithAuth(token) : wsLinkwithoutAuth()
+  const token = authService.currentToken
+  return new WebSocketLink({
+    uri: WS_URL,
+    options: {
+      reconnect: true,
+      connectionParams: {
+        Authorization: token ? `Bearer ${token}` : ``,
+      },
+    },
+  })
 }
 
 const errorLink = onError(({ networkError, graphQLErrors }) => {
@@ -61,7 +50,7 @@ const errorLink = onError(({ networkError, graphQLErrors }) => {
 })
 
 const authLink = setContext((_, { headers }) => {
-  const token = Cookie.getJSON(TOKEN)
+  const token = authService.currentToken
   return token
     ? {
         headers: {
@@ -83,17 +72,17 @@ export function createApolloClient(initialState = {}) {
   const cache = new InMemoryCache().restore(initialState)
 
   const link = ssrMode
-  ? httpLink
-  : process.browser
-  ? split(
-      ({ query }: any) => {
-        const { kind, operation }: OperationVariables = getMainDefinition(query)
-        return kind === 'OperationDefinition' && operation === 'subscription'
-      },
-      createWebSocketLink(),
-      httpLink
-    )
-  : httpLink
+    ? httpLink
+    : process.browser
+    ? split(
+        ({ query }: any) => {
+          const { kind, operation }: OperationVariables = getMainDefinition(query)
+          return kind === 'OperationDefinition' && operation === 'subscription'
+        },
+        createWebSocketLink(),
+        httpLink
+      )
+    : httpLink
 
   return new ApolloClient({
     ssrMode,

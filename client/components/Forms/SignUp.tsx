@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'
-import { useMutation } from '@apollo/client'
+import { useRouter } from 'next/router'
 import {
   Grid,
   Typography,
@@ -14,10 +14,9 @@ import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
 import { makeStyles, createStyles } from '@material-ui/core/styles'
 import { useForm } from 'react-hook-form'
-import { AppContext } from 'context/AppContext'
-import { graphqlService } from 'services/graphql'
+import { AppContext } from 'context/ContextProvider'
 import { gaService } from 'services/gaService'
-import { userService } from 'services/userService'
+import { authService } from 'services/authService'
 import NotificationComponent, { Notification } from 'components/Notification'
 
 const useStyles = makeStyles((theme) =>
@@ -50,46 +49,39 @@ type Props = {
 
 export default function SignUp(props: Props) {
   const { openLoginForm } = props
+
   const classes = useStyles()
+  const router = useRouter()
   const appContext = useContext(AppContext)
 
   const [notification, setNotification] = useState<Notification>({ show: false })
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
 
-  const [registerMutation] = useMutation(graphqlService.REGISTER_USER)
   const { register, handleSubmit, errors } = useForm()
 
-  const onSubmit = (values: any) => {
+  const onSubmit = async (values: any) => {
     setLoading(true)
     setNotification({ show: false, type: notification.type })
-    const { username, email, password } = values
-    registerMutation({ variables: { username, email, password } })
-      .then((response: any) => {
-        setLoading(false)
-        response.data.registerUser ? onConfirm(email) : onError()
-      })
-      .catch(() => {
-        setLoading(false)
-        onError()
-      })
-  }
-
-  async function onConfirm(email: string) {
-    gaService.registerSuccessEvent()
-    appContext.setSignupEmail(email)
-    openLoginForm()
+    const { displayName, email, password } = values
+    const isSignupValid = await authService.signup(email, password, displayName)
+    if (isSignupValid) {
+      gaService.registerSuccessEvent()
+      setLoading(false)
+      router.push('/dashboard')
+    } else {
+      onError()
+    }
   }
 
   async function onError() {
-    appContext.setIsLoggedIn(false)
-    userService.logout()
     gaService.registerFailedEvent()
     setNotification({
       show: true,
       message: 'Your account could not be created, please reload the page and try again',
       type: 'error',
     })
+    setLoading(false)
   }
 
   const handleClickShowPassword = () => {
@@ -114,24 +106,23 @@ export default function SignUp(props: Props) {
       <Grid item xs={12}>
         <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
           <TextField
-            id='username'
+            id='displayName'
             inputRef={register({
-              required: 'Please enter your desired username',
+              required: 'Please choose a display name',
               pattern: {
                 value: /^[A-Z0-9.]{3,}$/i,
                 message:
-                  'Username must be at least three characters long, containing only letters (a-z), numbers (0-9), and periods (.)',
+                  'Display name must be at least three characters long, containing only letters (a-z), numbers (0-9), and periods (.)',
               },
             })}
-            name='username'
-            label='Username'
+            name='displayName'
+            label='Display Name'
             variant='outlined'
             fullWidth
             autoFocus
             autoComplete='on'
-            autoCapitalize='off'
-            helperText={errors.username?.message}
-            error={!!errors.username}
+            helperText={errors.displayName?.message}
+            error={!!errors.displayName}
           />
           <TextField
             id='email'
@@ -147,14 +138,14 @@ export default function SignUp(props: Props) {
             variant='outlined'
             fullWidth
             autoComplete='on'
-            autoCapitalize='off'
+            autoCapitalize='none'
             helperText={errors.email?.message}
             error={!!errors.email}
           />
           <TextField
             id='password'
             inputRef={register({
-              required: 'Please enter your desired password',
+              required: 'Please choose a password',
               pattern: {
                 value: /^.{6,}$/i,
                 message: 'Password must be at least six characters long',

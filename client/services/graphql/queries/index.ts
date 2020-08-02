@@ -1,7 +1,6 @@
-import { AUTHENTICATE } from './authenticate'
 import { CURRENT_USER } from './currentUser'
 import { ALL_INSTRUMENTS } from './allInstruments'
+import { ALL_HOLDINGS } from './allHoldings'
 import { SEARCH_INSTRUMENTS } from './searchInstruments'
-import { GET_USER_EMAIL } from './getUserEmail'
 
-export { AUTHENTICATE, CURRENT_USER, ALL_INSTRUMENTS, SEARCH_INSTRUMENTS, GET_USER_EMAIL }
+export { CURRENT_USER, ALL_INSTRUMENTS, ALL_HOLDINGS, SEARCH_INSTRUMENTS }

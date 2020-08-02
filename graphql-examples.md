@@ -1,52 +1,61 @@
 ## Here is some examples of using GraphQL queries and mutations:
 
-```mutation registerUser {
-  registerUser(input: {username: "example", email: "example@gmail.com", password: "123456"}) {
-    user {
-      id
-      username
+```
+mutation validateUser {
+  validateUser(input: {token: "secret token", uid: "a1b2c3"}) {
+    userValidated {
+      success
+      new
+      token
     }
   }
 }
 ```
 
-```query authenticate {
-  authenticate(email: "example@gmail.com", password: "123456")
-}
 ```
-
-```query currentUser {
+query currentUser {
   currentUser {
     createdAt
-    id
-    lastActivity
-    username
-    darkTheme
-    holdingsByUserId {
-      nodes {
-        amount
-        instrumentByInstrumentId {
-          code
-          description
-          lastUpdated
-          latestPrice
-          id
-        }
+    userId
+    displayName
+    email
+    emailVerified
+    phoneNumber
+    prefersDarkTheme
+    lastLoginAt
+  }
+  allHoldings {
+    nodes {
+      id
+      userId
+      instrumentByInstrumentId {
+        code
+        description
+        lastUpdated
+        latestPrice
       }
+      amount
+      createdAt
     }
   }
 }
 ```
 
-```query getUserEmail {
-  getUserEmail {
-    email
+```
+mutation updateUsername {
+  updateDisplayName(input: {newDisplayName: "tester11"}) {
+    clientMutationId
+    updatedDisplayName {
+      success
+      updatedDisplayName
+    }
   }
 }
 ```
 
-```mutation updateUserEmail {
-  updateUserEmail(input: {newEmail: "demo@gmail.com"}) {
+```
+mutation updateUserEmail {
+  updateUserEmail(input: {newEmail: "tester11@trackportfol.io"}) {
     updatedUserEmail {
       success
       updatedEmail
@@ -55,27 +64,8 @@
 }
 ```
 
-```mutation updateUsername {
-  updateUsername(input: {newUsername: "demo"}) {
-    clientMutationId
-    updatedUsername {
-      success
-      updatedUsername
-    }
-  }
-}
 ```
-
-```mutation updateUserPassword {
-  updateUserPassword(input: {oldPassword: "123456", newPassword: "654321"}) {
-    updatedUserPassword {
-      success
-    }
-  }
-}
-```
-
-```mutation updateTheme {
+mutation updateTheme {
   updateTheme(input: {userDarkTheme: true}) {
     updatedTheme {
       success
@@ -84,68 +74,18 @@
 }
 ```
 
-```mutation createHolding {
-  createHolding(input: {holding: {userId: 1, instrumentId: 222, amount: "10"}}) {
-    userByUserId {
+```
+mutation createHolding {
+  createHolding(input: {holding: {userId: "a1b2c3", instrumentId: 342, amount: "10"}}) {
+    holding {
       id
-      lastActivity
-      holdingsByUserId {
-        nodes {
-          instrumentId
-          amount
-          instrumentByInstrumentId {
-            code
-            description
-          }
-        }
-      }
     }
   }
 }
 ```
 
-```query allUsers {
-  allUsers {
-    nodes {
-      createdAt
-      darkTheme
-      lastActivity
-      username
-      id
-      holdingsByUserId {
-        nodes {
-          amount
-          createdAt
-          instrumentByInstrumentId {
-            code
-            description
-          }
-        }
-      }
-    }
-  }
-}
 ```
-
-```query allHoldings {
-  allHoldings {
-    nodes {
-      instrumentByInstrumentId {
-        holdingsByInstrumentId {
-          nodes {
-            instrumentId
-            instrumentByInstrumentId {
-              code
-            }
-          }
-        }
-      }
-    }
-  }
-}
-```
-
-```query MFAPrice {
+query MFAInstrument {
   instrumentById(id: 6710) {
     latestPrice
     code
@@ -155,11 +95,71 @@
 }
 ```
 
-```query PricingQueue {
-  pricingQueueById(id: 1) {
-    id
-    instrumentCode
-    instrumentId
+```
+subscription currentUserSub {
+  currentUser {
+    createdAt
+    userId
+    displayName
+    email
+    emailVerified
+    phoneNumber
+    prefersDarkTheme
+    lastLoginAt
+  }
+}
+```
+
+```
+query allInstruments {
+  allInstruments {
+    nodes {
+      id
+      name
+      code
+      description
+      latestPrice
+    }
+    totalCount
+  }
+}
+```
+
+
+```
+query allHoldings {
+  allHoldings {
+    nodes {
+      id
+      userId
+      instrumentByInstrumentId {
+        code
+        description
+        lastUpdated
+        latestPrice
+      }
+      amount
+      createdAt
+    }
+  }
+}
+```
+
+```
+mutation updateHolding {
+  updateHoldingById(input: {holdingPatch: {amount: "20"}, id: 4}) {
+    holding {
+      amount
+      id
+    }
+  }
+}
+```
+
+```
+mutation deleteHolding {
+  deleteHoldingById(input: {id: 3}) {
+    deletedHoldingId
   }
 }
 ```

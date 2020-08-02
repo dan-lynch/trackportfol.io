@@ -67,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
   },
   collapse: {
     width: '100%',
-    padding: '0 0.5rem'
+    padding: '0',
   },
   right: {
     textAlign: 'right',
@@ -94,7 +94,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('lg')]: {
       marginRight: '3rem',
     },
-  }
+  },
 }))
 
 type Props = {
@@ -130,7 +130,11 @@ export default function HoldingView(props: Props) {
         setUpdateLoading(false)
         setIsEditing(false)
         gaService.updateInstrumentFailedEvent()
-        setNotification({ show: true, message: 'Could not update holding, please refresh the page or try again later', type: 'error' })
+        setNotification({
+          show: true,
+          message: 'Could not update holding, please refresh the page or try again later',
+          type: 'error',
+        })
       })
   }
 
@@ -138,13 +142,17 @@ export default function HoldingView(props: Props) {
     setDeleteLoading(true)
     deleteHolding({ variables: { id } })
       .then(() => {
-          setDeleteLoading(false)
-          gaService.deleteInstrumentSuccessEvent()
+        setDeleteLoading(false)
+        gaService.deleteInstrumentSuccessEvent()
       })
       .catch(() => {
         setDeleteLoading(false)
         gaService.deleteInstrumentFailedEvent()
-        setNotification({ show: true, message: 'Could not delete holding, please refresh the page or try again later', type: 'error' })
+        setNotification({
+          show: true,
+          message: 'Could not delete holding, please refresh the page or try again later',
+          type: 'error',
+        })
       })
   }
 
@@ -174,7 +182,7 @@ export default function HoldingView(props: Props) {
           <Grid container spacing={0}>
             <Grid item xs={4} md={2}>
               <Typography variant='h5' className={classes.code}>
-                {code.replace('-USD','')}
+                {code.replace('-USD', '')}
               </Typography>
             </Grid>
             <Grid item xs={8} md={5} className={classes.amount}>

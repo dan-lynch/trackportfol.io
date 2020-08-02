@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
   },
   signup: {
     lineHeight: 'initial',
-  }
+  },
 }))
 
 type Props = {
@@ -42,11 +42,11 @@ export default function LoggedOutHeader(props: Props) {
     <React.Fragment>
       <AppBar position='static'>
         <Toolbar>
-        <div className={classes.title}>
-          <Link href='/'>
-            <img src='/logo.svg' alt='trackportfol.io logo' className={classes.logo} />
-          </Link>
-        </div>
+          <div className={classes.title}>
+            <Link href='/'>
+              <img src='/logo.svg' alt='trackportfol.io logo' className={classes.logo} />
+            </Link>
+          </div>
           <Button color='inherit' onClick={openLogin}>
             Login
           </Button>
