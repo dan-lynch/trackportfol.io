@@ -32,7 +32,7 @@
     "react-dom": "16.13.1",
     "react-financial-charts": "^0.5.1",
     "react-ga": "^3.1.2",
-    "react-hook-form": "^6.0.8",
+    "react-hook-form": "^6.4.0",
     "react-number-format": "^4.4.1",
     "react-virtualized-auto-sizer": "^1.0.2",
     "rxjs": "^6.6.2",
