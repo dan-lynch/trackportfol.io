@@ -2,14 +2,15 @@
 # yarn lockfile v1
 
 
-"@graphile/lds@4.7.0":
-  version "4.7.0"
-  resolved "https://registry.yarnpkg.com/@graphile/lds/-/lds-4.7.0.tgz#575d9f873adecbd5467f7214d5c57dc528e60170"
-  integrity sha512-tWklRO5hEEVhkqQMA6PEVY23P05l/V1zXWKstGJTINsbJ+DA9oe1jHQEWaxYa8MUA+Eenc+r9LXrCe0N6nWTwA==
+"@graphile/lds@4.9.0":
+  version "4.9.0"
+  resolved "https://registry.yarnpkg.com/@graphile/lds/-/lds-4.9.0.tgz#b8984e9b8e13d3cabce5973c29b03088a7cf2749"
+  integrity sha512-hK0YrMpUb+uLBiITvRlDP61FPnKoqGmCMxOiFkslp8Z0A3lPN9M2VzNCnFHu9mEf84qCXSvKRcs2lrsydgcrOw==
   dependencies:
     "@types/pg" "^7.4.14"
     "@types/ws" "^6.0.1"
     pg ">=6.1.0 <9"
+    tslib "^2.0.1"
     ws "^7.0.0"
 
 "@graphile/lru@4.5.0":
@@ -17,13 +18,14 @@
   resolved "https://registry.yarnpkg.com/@graphile/lru/-/lru-4.5.0.tgz#e8fe036d322dfe1715675aab171979981e28ac9e"
   integrity sha512-OoIgewLowjegJzz3tpcRE5LpQKqsap1ETFaZtC1r9p36h5ieUJnWTxCTpB7XIsU9muMTt7MMt8x0E5apS47QIQ==
 
-"@graphile/subscriptions-lds@^4.7.0":
-  version "4.7.0"
-  resolved "https://registry.yarnpkg.com/@graphile/subscriptions-lds/-/subscriptions-lds-4.7.0.tgz#20ad605240f61a29dfc1d54d240195b7073bddcd"
-  integrity sha512-OrvODxheM5C7J+l2Hj4Hm9GO1/oLJ1DVQ6iN7InFJOKbCs6UClKRh0rNuN9O3bglmEgWx37XN+sgJROqMgrptg==
+"@graphile/subscriptions-lds@^4.9.0":
+  version "4.9.0"
+  resolved "https://registry.yarnpkg.com/@graphile/subscriptions-lds/-/subscriptions-lds-4.9.0.tgz#440c15df056b3317ad08b149b0d8ee9b609b25de"
+  integrity sha512-hJWnM0I6rLC5Fpvk6QwYMhqoQ4kaPr2QNziQmcU90YQ32eqEzDMLDZrDzBxMaIc09p4Gg4V1kjVV2w3PJ7/Ajw==
   dependencies:
-    "@graphile/lds" "4.7.0"
+    "@graphile/lds" "4.9.0"
     "@types/ws" "^6.0.1"
+    tslib "^2.0.1"
     ws "^7.0.0"
 
 "@types/accepts@*":
@@ -1023,6 +1025,11 @@ tslib@^1.5.0:
   version "1.13.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.13.0.tgz#c881e13cc7015894ed914862d276436fa9a47043"
   integrity sha512-i/6DQjL8Xf3be4K/E6Wgpekn5Qasl1usyw++dAA35Ue5orEn65VIxOA+YvNNl9HV3qv70T7CNwjODHZrLwvd1Q==
+
+tslib@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.0.1.tgz#410eb0d113e5b6356490eec749603725b021b43e"
+  integrity sha512-SgIkNheinmEBgx1IUNirK0TUD4X9yjjBRTqqjggWCU3pUEqIk3/Uwl3yRixYKT6WjQuGiwDv4NomL3wqRCj+CQ==
 
 type-is@~1.6.17, type-is@~1.6.18:
   version "1.6.18"
