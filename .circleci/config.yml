@@ -1,0 +1,35 @@
+jobs:
+  build:
+    executor:
+      name: node/default
+    steps:
+      - checkout
+      - node/with-cache:
+          steps:
+            - run: npm install
+
+            version: 2
+            jobs:
+              test:
+                docker:
+                  - image: circleci/node:8.8-browsers
+                steps:
+                  - checkout
+                  - run: cd api
+                  - run: yarn install
+
+            workflows:
+              version: 2
+              commit:
+                jobs:
+                  - test
+              scheduled:
+                triggers:
+                  - schedule:
+                      cron: "0,10,20,30,40,50 * * * *"
+                      filters:
+                        branches:
+                          only:
+                            - master
+                jobs:
+                  - test
