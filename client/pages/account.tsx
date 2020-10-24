@@ -216,7 +216,7 @@ function Account() {
 export async function getStaticProps() {
   const client = await initApolloClient({})
   return {
-    unstable_revalidate: 300,
+    revalidate: 300,
     props: {
       apolloStaticCache: client.cache.extract(),
     },
