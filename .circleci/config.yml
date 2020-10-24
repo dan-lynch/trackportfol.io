@@ -1,0 +1,24 @@
+version: 2
+jobs:
+  test:
+    docker:
+      - image: circleci/node:8.8-browsers
+    steps:
+      - checkout
+      - run: cd client
+      - run: yarn install
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - test
+  scheduled:
+    triggers:
+      - schedule:
+          cron: "0,10,20,30,40,50 * * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - test
