@@ -35,7 +35,7 @@
     "react-hook-form": "^6.9.5",
     "react-number-format": "^4.4.1",
     "react-virtualized-auto-sizer": "^1.0.2",
-    "rxjs": "^6.6.2",
+    "rxjs": "^6.6.3",
     "subscriptions-transport-ws": "^0.9.18",
     "typeface-roboto": "^0.0.75"
   },
