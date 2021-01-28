@@ -1,5 +1,5 @@
 # build environment
-FROM node:15.2.1-alpine as build
+FROM node:15.7.0-alpine as build
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 COPY package.json ./
