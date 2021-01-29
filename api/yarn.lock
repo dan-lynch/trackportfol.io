@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@graphile/lds@4.9.0":
-  version "4.9.0"
-  resolved "https://registry.yarnpkg.com/@graphile/lds/-/lds-4.9.0.tgz#b8984e9b8e13d3cabce5973c29b03088a7cf2749"
-  integrity sha512-hK0YrMpUb+uLBiITvRlDP61FPnKoqGmCMxOiFkslp8Z0A3lPN9M2VzNCnFHu9mEf84qCXSvKRcs2lrsydgcrOw==
+"@graphile/lds@4.11.0":
+  version "4.11.0"
+  resolved "https://registry.yarnpkg.com/@graphile/lds/-/lds-4.11.0.tgz#cadfbb3ea7d7610da30413f11cffd65a8821cf2f"
+  integrity sha512-0P+eEiornay+J0GJ5NeLqH7Z8jB6qpPaKvClNPb7FrJc/KaBEfXmlvS1vxa21PR6t9XCDosv8TI/46YkIEBvhA==
   dependencies:
     "@types/pg" "^7.4.14"
     "@types/ws" "^6.0.1"
@@ -20,12 +20,12 @@
   dependencies:
     tslib "^2.0.1"
 
-"@graphile/subscriptions-lds@^4.9.0":
-  version "4.9.0"
-  resolved "https://registry.yarnpkg.com/@graphile/subscriptions-lds/-/subscriptions-lds-4.9.0.tgz#440c15df056b3317ad08b149b0d8ee9b609b25de"
-  integrity sha512-hJWnM0I6rLC5Fpvk6QwYMhqoQ4kaPr2QNziQmcU90YQ32eqEzDMLDZrDzBxMaIc09p4Gg4V1kjVV2w3PJ7/Ajw==
+"@graphile/subscriptions-lds@^4.11.0":
+  version "4.11.0"
+  resolved "https://registry.yarnpkg.com/@graphile/subscriptions-lds/-/subscriptions-lds-4.11.0.tgz#4a111518161294d4ea246e0a9d704f0727af0df0"
+  integrity sha512-zJqKRqwRnjVnVSzoP3VEW/Vq5gH/MJegrni8EkBAFPkwmTxFU5qUe24yhXEwICVDiru8XnZyskC+4CmqwNw/hw==
   dependencies:
-    "@graphile/lds" "4.9.0"
+    "@graphile/lds" "4.11.0"
     "@types/ws" "^6.0.1"
     tslib "^2.0.1"
     ws "^7.0.0"
