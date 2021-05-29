@@ -7,7 +7,7 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@graphile/subscriptions-lds": "^4.9.0",
+    "@graphile/subscriptions-lds": "^4.12.1",
     "@types/express": "^4.17.9",
     "compression": "^1.7.4",
     "express": "^4.17.1",
